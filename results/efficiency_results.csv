@@ -1,0 +1,17 @@
+samples,method,median_ms,iqr_ms,samples_per_second,source_input_bytes,explicit_buffer_bytes,storage_scope,output_unpacked,semantic_check
+1024,float_tnorm,0.0226,0.00030000000000000165,45309734.51327434,32768,33792,float source plus explicit output,True,True
+1024,bool_numpy,0.0122,0.0005499999999999984,83934426.22950819,8192,9216,byte source plus explicit output,True,True
+1024,packed_kernel,0.0038,0.00012499999999999968,269473684.2105263,1024,1152,already-packed source plus packed result,False,True
+1024,packed_end_to_end,0.0228,0.0003499999999999996,44912280.701754384,8192,10368,"byte source plus explicit packed input, packed result, and unpacked result",True,True
+16384,float_tnorm,0.1046,0.003250000000000003,156634799.23518166,524288,540672,float source plus explicit output,True,True
+16384,bool_numpy,0.0699,0.0015000000000000013,234391988.55507866,131072,147456,byte source plus explicit output,True,True
+16384,packed_kernel,0.01315,0.0002249999999999995,1245931558.9353614,16384,18432,already-packed source plus packed result,False,True
+16384,packed_end_to_end,0.2672,0.0267,61317365.26946108,131072,165888,"byte source plus explicit packed input, packed result, and unpacked result",True,True
+262144,float_tnorm,8.803149999999999,1.234399999999999,29778431.584148858,8388608,8650752,float source plus explicit output,True,True
+262144,bool_numpy,1.24375,0.24707500000000016,210769045.22613066,2097152,2359296,byte source plus explicit output,True,True
+262144,packed_kernel,0.12965,0.018924999999999984,2021935981.4886236,262144,294912,already-packed source plus packed result,False,True
+262144,packed_end_to_end,2.3526499999999997,0.9319250000000001,111424988.84236926,2097152,2654208,"byte source plus explicit packed input, packed result, and unpacked result",True,True
+1048576,float_tnorm,43.968450000000004,5.635300000000001,23848373.094798654,33554432,34603008,float source plus explicit output,True,True
+1048576,bool_numpy,8.45405,1.2418000000000005,124032386.84417526,8388608,9437184,byte source plus explicit output,True,True
+1048576,packed_kernel,0.45615,0.013900000000000023,2298752603.3103147,1048576,1179648,already-packed source plus packed result,False,True
+1048576,packed_end_to_end,11.71695,2.2792249999999985,89492231.34006716,8388608,10616832,"byte source plus explicit packed input, packed result, and unpacked result",True,True

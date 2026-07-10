@@ -1,0 +1,36 @@
+# Literature map and source links
+
+The report uses sources for field context; they are not used to manufacture any experimental number. “Current” below means checked through 2026-07-11. Preprints are marked as such.
+
+## Knowledge compilation and tractable circuits
+
+1. [Darwiche, *Decomposable Negation Normal Form* (2001)](https://doi.org/10.1145/502090.502091). DNNF gives a structural condition under which some Boolean queries are tractable.
+2. [Darwiche and Marquis, *A Knowledge Compilation Map* (2002)](https://doi.org/10.1613/jair.989). The standard taxonomy of compiled propositional representations and query trade-offs.
+3. [Chavira and Darwiche, *On Probabilistic Inference by Weighted Model Counting* (2008)](https://doi.org/10.1016/j.artint.2007.11.002). Connects WMC with compiled logical structure.
+4. [Darwiche, *Tractable Boolean and Arithmetic Circuits* (2022)](https://arxiv.org/abs/2202.02942). Modern review of structural requirements and the difference between an arbitrary Boolean circuit and a tractable one.
+
+## Differentiable and neuro-symbolic logic
+
+5. [Badreddine et al., *Logic Tensor Networks* (2022 version)](https://arxiv.org/abs/2012.13635). Fuzzy real-valued logic for combining data and first-order constraints.
+6. [Xu et al., *Semantic Loss* (2018)](https://proceedings.mlr.press/v80/xu18h.html). Compiles Boolean constraints to a circuit so loss and gradient are linear in compiled-circuit size; compilation itself remains a cost.
+7. [Manhaeve et al., *DeepProbLog* (2021 AIJ version)](https://doi.org/10.1016/j.artint.2021.103504). Neural probabilistic facts paired with probabilistic logic-program inference.
+8. [Huang et al., *Scallop* (NeurIPS 2021)](https://proceedings.neurips.cc/paper/2021/hash/d367eef13f90793bd8121e2f675f0dc2-Abstract.html). Differentiable Datalog-style reasoning through provenance semirings.
+9. [Dong et al., *Neural Logic Machines* (2019)](https://arxiv.org/abs/1904.11694). Relational neural-symbolic reasoning; object grounding tensors still scale with predicate arity.
+
+## Logic-gate networks and deployment
+
+10. [Petersen et al., *Deep Differentiable Logic Gate Networks* (2022)](https://doi.org/10.52202/068431-0146). Uses continuous mixtures of two-input gates in training and discrete gates at deployment.
+11. [Mielke et al., *Convolutional Differentiable Logic Gate Networks* (2024)](https://doi.org/10.52202/079017-3851). Extends the approach with convolutional logic trees and reports training/depth challenges alongside fast discrete inference.
+12. [WARP Logic Neural Networks (2026 preprint)](https://arxiv.org/abs/2602.03527). Recent work explicitly targeting high fan-in, redundancy, and soft-to-hard parameterization difficulties.
+
+## LLM/formal-system hybrid direction
+
+13. [Pan et al., *Logic-LM* (2023)](https://doi.org/10.18653/v1/2023.findings-emnlp.248). LLM formalization followed by symbolic solving and error feedback.
+14. [Trieu et al., *Solving Olympiad Geometry without Human Demonstrations* (2024)](https://doi.org/10.1038/s41586-023-06747-5). AlphaGeometry combines neural auxiliary-construction proposals with symbolic deduction.
+15. [Gold-medalist Performance in Solving Olympiad Geometry with AlphaGeometry2 (2025 preprint)](https://arxiv.org/abs/2502.03544). A recent example of neural guidance coupled to formal/symbolic verification rather than a single homogeneous reasoner.
+
+## Complexity and boundary references
+
+16. [Cook, *The Complexity of Theorem-Proving Procedures* (1971)](https://doi.org/10.1145/800157.805047). SAT NP-completeness.
+17. [Valiant, *The Complexity of Enumeration and Reliability Problems* (1979)](https://doi.org/10.1137/0208032). #P complexity, relevant to weighted model counting.
+18. [Shannon, *The Synthesis of Two-Terminal Switching Circuits* (1949)](https://doi.org/10.1002/j.1538-7305.1949.tb03624.x). Counting arguments behind the fact that most Boolean functions do not admit small circuits.

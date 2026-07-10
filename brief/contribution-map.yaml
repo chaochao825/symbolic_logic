@@ -1,0 +1,20 @@
+primary_claim:
+  text: "For finite, repeated local predicate computation, GateBeam can recover compact Boolean structure; an oracle local Boolean predicate plus a symbolic solver demonstrates the intended local-versus-global division of labor."
+  status: verified
+  falsified_if: "Gate synthesis cannot recover a compact local rule, hardening changes its behavior materially, or oracle local-predicate plus BFS fails on the constructed long-path setting."
+secondary_claims:
+  - text: "Bit-packed execution reduces storage and may accelerate repeated Boolean predicate evaluation, but packing and sparse-index construction can dominate at small batches."
+    status: verified
+  - text: "A fixed-depth AND/OR reachability circuit fails on paths longer than its unrolling depth, whereas an oracle local Boolean predicate plus BFS does not have that depth bound."
+    status: verified
+  - text: "Hard decisions discard uncertainty and are sensitive to predicate-grounding errors."
+    status: verified
+non_claims:
+  - "Logic gates replace first-order reasoning, variable binding, recursion, or general planning."
+  - "CPU NumPy timings imply FPGA/ASIC power or latency."
+  - "A gate-level graph is automatically a human-readable explanation."
+risks:
+  - "Synthetic Boolean rules may favor Boolean methods; report a random-LUT negative control."
+  - "A sparse filter that evaluates every pair remains O(N^2); separate logical filtering from candidate generation."
+  - "An oracle circuit may outperform learned gates; distinguish learning cost from compiled execution."
+  - "Training-data shortcut features can yield compact but semantically wrong circuits."

@@ -1,0 +1,6 @@
+component_id,name,role,input_format,output_format,is_novel,replaceable_by,ablation_priority,notes
+M01,Named predicate vector,concept-bottleneck proxy,8 binary or probability values,local truth input,no,perception encoder,high,Separates local Boolean computation from raw perception grounding
+M02,GateBeam synthesizer,learn compact Boolean expression,labeled finite binary assignments,hard Boolean DAG,yes,DLGN or SAT-based rule learner,high,Transparent project prototype; no claim of literature novelty
+M03,Bit packer,compile repeated predicates to byte lanes,batch of 8 binary columns,packed byte columns,no,hardware bit-vector implementation,medium,Reports kernel-only and packing-inclusive timing separately
+M04,Indexed relation filter,generate sparse local relation candidates,color shape position arrays,valid relation count,no,spatial hash or adjacency index,high,Separates indexing benefit from Boolean gate cost
+M05,BFS solver,perform global recursive reachability,layered Boolean adjacency and source,reached terminal set,no,SAT Datalog or planner,high,Used only after local edge validity is determined

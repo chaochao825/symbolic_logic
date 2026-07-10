@@ -1,0 +1,9 @@
+claim_id,claim,status,required_evidence,artifact,limitation
+C1,Gate synthesis recovers compact local Boolean structure,verified,Full truth-table accuracy and expression size across held-out combinations,results/predicate_results.csv,Synthetic finite predicate only
+C2,Compiled bit operations reduce resource use,verified,Timing and explicit-buffer accounting with unpacked versus packed inputs,results/efficiency_results.csv,CPU/NumPy prototype not hardware PPA
+C3,Oracle local gate plus BFS handles longer paths than fixed-depth circuit,verified,Reachability accuracy by path length,results/reachability_results.csv,BFS is hand-coded symbolic solver and local rule is oracle
+C4,Hardening loses uncertainty and grounding robustness,verified,Brier score and accuracy across uncertainty/noise levels,results/noise_results.csv,Independent Bernoulli noise model
+C5,Logic gates do not imply universal symbolic reasoning,verified,Fixed-depth counterexample and report limitations,results/reachability_results.csv,Does not cover all solver families
+L1,Neuro-symbolic systems combine neural learning with symbolic reasoning,verified,Primary survey and method citations,reports/references.md,Field taxonomy evolves
+L2,Knowledge compilation trades offline circuit construction for tractable circuit queries,verified,DNNF/SDD and WMC citations,reports/references.md,Guarantees require circuit structure
+L3,DLGN deployment and training have different computational properties,verified,DLGN and Conv-DLGN citations,reports/references.md,Published benchmarks differ from this prototype
