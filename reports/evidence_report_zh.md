@@ -81,7 +81,7 @@ encoder / LLM proposal
 
 ## 6. 证据边界与复现
 
-本项目仍是合成 CPU/NumPy 研究原型：没有视觉/语言端到端 grounding、FPGA/ASIC PPA、真实 DLGN 训练复现或概率路径边缘化。learned-Gate+BFS 的计时不包含门推理和数据布局；soft BFS 也先以 0.5 阈值把边概率离散化。新增 `SoftGateCircuit` 明确标为固定 wiring 的代理，规划 frontier 也是单调搜索代理，避免把它们误称为通用 LGN 或完整 solver。原始输入哈希、环境、CSV 和图表见 [provenance.md](provenance.md)、`results/` 和 `figures/`；当前回归测试为 14/14 通过；完整工程见 [README](../README.md)。
+本项目仍是合成 CPU/NumPy 研究原型：视觉证据现已覆盖 rendered gridworld 的像素到任务输出闭环，但不覆盖自然图像、语言 grounding、FPGA/ASIC PPA、真实 DLGN 训练复现或精确概率路径边缘化。learned-Gate+BFS 的旧计时不包含门推理和数据布局；新增 gridworld 结果则分别记录 encoder 与 solver 时间。`SoftGateCircuit` 是固定 wiring 代理，规划 frontier 也是单调搜索代理，避免把它们误称为通用 LGN 或完整 solver。原始输入哈希、环境、CSV 和图表见 [provenance.md](provenance.md)、`results/` 和 `figures/`；完整工程见 [README](../README.md)。
 
 ## 7. 不可压缩规则与一般硬件计算
 
@@ -167,4 +167,36 @@ perception numeric engine
   -> solver-specific memory and arithmetic
 ```
 
-门适合做局部合法性检查、mask、冲突检测、关系候选过滤和重复 bit-level kernel；状态转换适合承载变长遍历；proof search、规划和概率推理需要专门的控制、内存和数值单元。当前新增实验验证了随机规则、循环状态和概率语义三条边界，但没有声称已经测量真实 FPGA/ASIC PPA、完整 SAT/SMT、规划器或视觉感知模型。`reports/references.md` 和 `reports/provenance.md` 记录了理论来源、输入哈希和运行环境。
+门适合做局部合法性检查、mask、冲突检测、关系候选过滤和重复 bit-level kernel；状态转换适合承载变长遍历；proof search、规划和概率推理需要专门的控制、内存和数值单元。当前实验验证了随机规则、循环状态、概率语义和 rendered gridworld 视觉闭环，但没有声称已经测量真实 FPGA/ASIC PPA、完整 SAT/SMT、通用规划器或自然视觉模型。`reports/references.md` 和 `reports/provenance.md` 记录了理论来源、输入哈希和运行环境。
+
+## 12. 像素到符号求解器的端到端 Gridworld
+
+新增模型位于 `src/neurosymbolic_gridworld.py`，完整推理路径为：
+
+```text
+rendered RGB grid image
+  -> patch MLP encoder
+  -> temperature-calibrated free/wall/source/target predicates
+  -> learned soft edge gate -> argmax hardened gate
+  -> hard BFS / soft max-product reachability
+  -> confidence-routed fallback
+  -> reachability verifier
+```
+
+训练集是 8×8 gridworld，每个 cell 由 4×4 RGB 像素组成，包含颜色扰动和像素噪声。测试包含 clean 8×8、相关矩形遮挡，以及未在训练中出现的 10×10 尺寸。神经 encoder 使用 cell-level concept supervision；edge gate 从预测的 passability probability 和真实边标签学习，在三个 seed 中均 harden 为 `AND`。候选图仍由四邻接拓扑产生，因此这不是 learned sparse router。
+
+全量三 seed 结果见 `results/end_to_end_gridworld_results.csv`：
+
+| 条件 | Hard | Soft | Hybrid fallback | Cell grounding | Hybrid fallback rate |
+|---|---:|---:|---:|---:|---:|
+| clean 8×8 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 | 0.000 |
+| correlated occlusion 8×8 | 0.928 ± 0.024 | 0.943 ± 0.022 | **0.945 ± 0.020** | 0.980 | 0.133 |
+| size OOD 10×10 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 | 0.000 |
+
+![端到端 gridworld](../figures/end_to_end_gridworld.png)
+
+相关遮挡下，hard pipeline 的 Brier 为 `0.0717 ± 0.0243`，soft pipeline 为 `0.0528 ± 0.0183`，hybrid 为 `0.0639 ± 0.0189`。Hybrid 的任务准确率最高，但 soft 的概率校准更好，说明“低置信回退”需要分别优化分类效用和概率质量。相关遮挡下 source localization 为 `0.989 ± 0.009`、target localization 为 `1.000`；任务错误主要来自局部 wall/free grounding 和路径连通性放大。
+
+8×8 条件下，批量 encoder 时间约 `0.031 ms/image`，Python solver 中位数约 `0.15 ms/query`；10×10 分别约 `0.049 ms/image` 和 `0.20 ms/query`。这些是 NumPy 原型测量，不是神经网络加速器或硬件 PPA。
+
+这项实验完成了**原始像素输入到符号任务输出的推理闭环**，但仍有三条明确边界：encoder 与 gate 使用中间标签监督，而不是只用最终任务损失训练；四邻接候选拓扑由程序给出；learned gate 只导出 NumPy hard operator，尚未自动生成 packed C、AIG 或 RTL。模型权重与 gate IR 保存在 `results/gridworld_models/`，运行元数据包含源码哈希和运行开始时的 Git 状态。

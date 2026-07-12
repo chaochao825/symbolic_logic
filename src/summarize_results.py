@@ -102,6 +102,24 @@ def main() -> None:
         "probability_marginalization",
         rng,
     )
+    end_to_end = pd.read_csv(RESULTS / "end_to_end_gridworld_results.csv")
+    summary += emit_grouped(
+        end_to_end,
+        ["condition", "grid_size", "method"],
+        [
+            "accuracy",
+            "balanced_accuracy",
+            "brier",
+            "cell_grounding_accuracy",
+            "source_localization_accuracy",
+            "target_localization_accuracy",
+            "fallback_rate",
+            "encoder_ms_per_image",
+            "median_solver_ms",
+        ],
+        "end_to_end_gridworld",
+        rng,
+    )
     pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False)
     print(f"wrote {len(summary)} aggregate rows to {RESULTS / 'summary_metrics.csv'}")
 

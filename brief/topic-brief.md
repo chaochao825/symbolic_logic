@@ -6,7 +6,7 @@ Can logic-gate circuits serve as a useful, efficient component of symbolic AI?
 
 ## Bounded thesis
 
-This project tests a deliberately narrow claim: a gate circuit is a plausible **learnable and compilable local predicate layer** for neuro-symbolic systems, especially for finite Boolean composition, local constraint checks, and repeated bit-level evaluation. It is not evaluated as a replacement for a general theorem prover, Datalog engine, planner, or perception encoder.
+This project tests a deliberately narrow claim: a gate circuit is a plausible **learnable and compilable local predicate layer** for neuro-symbolic systems, especially for finite Boolean composition, local constraint checks, and repeated bit-level evaluation. The extension now includes a component-supervised pixel-to-predicate gridworld encoder, but the gate layer is not evaluated as a replacement for a general theorem prover, Datalog engine, planner, or perception encoder.
 
 ## Audience and deliverable
 
@@ -18,7 +18,7 @@ The two supplied documents agree on the architecture `encoder -> named predicate
 
 ## Scope limits
 
-- No claim of end-to-end visual or language grounding.
+- Visual end-to-end evidence is limited to rendered gridworld pixels with component-level cell supervision; there is no claim for natural images or language grounding.
 - No hardware PPA claim; CPU timing is a prototype measurement only.
 - No claim that an arbitrary Boolean network is human-interpretable.
 - No claim that a fixed-depth circuit replaces unbounded recursive search.

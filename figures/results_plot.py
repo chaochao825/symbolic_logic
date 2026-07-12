@@ -43,6 +43,9 @@ COLORS = {
     "ExactEnumeration": "#d62728",
     "ClosedFormSoftSemiring": "#2ca02c",
     "HardThreshold": "#9467bd",
+    "HardNeuroSymbolic": "#d62728",
+    "SoftNeuroSymbolic": "#1f77b4",
+    "HybridFallback": "#2ca02c",
 }
 
 
@@ -296,6 +299,32 @@ def plot_planning_frontier() -> None:
     finish(fig, "planning_frontier.pdf")
 
 
+def plot_end_to_end_gridworld() -> None:
+    data = pd.read_csv(RESULTS / "end_to_end_gridworld_results.csv")
+    methods = ["HardNeuroSymbolic", "SoftNeuroSymbolic", "HybridFallback"]
+    conditions = ["clean", "correlated_occlusion", "size_ood"]
+    aggregate = data.groupby(["condition", "method"])[["balanced_accuracy", "brier", "cell_grounding_accuracy"]].mean()
+    fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.1))
+    width = 0.24
+    positions = np.arange(len(conditions))
+    for index, method in enumerate(methods):
+        values = [aggregate.loc[(condition, method), "balanced_accuracy"] for condition in conditions]
+        brier = [aggregate.loc[(condition, method), "brier"] for condition in conditions]
+        offset = (index - 1) * width
+        label = method.replace("NeuroSymbolic", " neuro-symbolic").replace("Fallback", " fallback")
+        axes[0].bar(positions + offset, values, width=width, label=label, color=COLORS[method])
+        axes[1].bar(positions + offset, brier, width=width, label=label, color=COLORS[method])
+    labels = ["clean", "correlated\nocclusion", "size OOD"]
+    axes[0].set_xticks(positions, labels)
+    axes[1].set_xticks(positions, labels)
+    axes[0].set_ylim(0.85, 1.01)
+    axes[0].set_ylabel("End-to-end balanced accuracy")
+    axes[1].set_ylabel("End-to-end Brier score")
+    handles, legend_labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, legend_labels, loc="upper center", ncol=3, bbox_to_anchor=(0.5, 1.08))
+    finish(fig, "end_to_end_gridworld.pdf")
+
+
 def main() -> None:
     setup_style()
     plot_predicate()
@@ -308,6 +337,7 @@ def main() -> None:
     plot_noncompressible()
     plot_probability_marginalization()
     plot_planning_frontier()
+    plot_end_to_end_gridworld()
 
 
 if __name__ == "__main__":
