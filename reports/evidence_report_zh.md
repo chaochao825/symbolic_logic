@@ -81,4 +81,4 @@ encoder / LLM proposal
 
 ## 6. 证据边界与复现
 
-本项目仍是合成 CPU/NumPy 研究原型：没有视觉/语言端到端 grounding、FPGA/ASIC PPA、真实 DLGN 训练复现或概率路径边缘化。learned-Gate+BFS 的计时不包含门推理和数据布局；soft BFS 也先以 0.5 阈值把边概率离散化。新增 `SoftGateCircuit` 明确标为固定 wiring 的代理，避免把它误称为通用 LGN。原始输入哈希、环境、CSV 和图表见 [provenance.md](provenance.md)、`results/` 和 `figures/`；当前回归测试为 9/9 通过；完整工程见 [README](../README.md)。
+本项目仍是合成 CPU/NumPy 研究原型：没有视觉/语言端到端 grounding、FPGA/ASIC PPA、真实 DLGN 训练复现或概率路径边缘化。learned-Gate+BFS 的计时不包含门推理和数据布局；soft BFS 也先以 0.5 阈值把边概率离散化。新增 `SoftGateCircuit` 明确标为固定 wiring 的代理，避免把它误称为通用 LGN。原始输入哈希、环境、CSV 和图表见 [provenance.md](provenance.md)、`results/` 和 `figures/`；当前回归测试为 10/10 通过；完整工程见 [README](../README.md)。
