@@ -70,6 +70,38 @@ def main() -> None:
         "learned_gate_bfs",
         rng,
     )
+    state_transition = pd.read_csv(RESULTS / "state_transition_results.csv")
+    summary += emit_grouped(
+        state_transition,
+        ["width", "path_length", "method"],
+        ["accuracy", "balanced_accuracy", "positive_accuracy", "negative_accuracy", "median_query_ms", "mean_loop_iterations"],
+        "state_transition",
+        rng,
+    )
+    planning = pd.read_csv(RESULTS / "planning_frontier_results.csv")
+    summary += emit_grouped(
+        planning,
+        ["n_bits", "goal_depth", "method"],
+        ["positive_accuracy", "negative_accuracy", "balanced_accuracy", "median_pair_ms", "mean_expansions"],
+        "planning_frontier",
+        rng,
+    )
+    scaling = pd.read_csv(RESULTS / "noncompressible_scaling_results.csv")
+    summary += emit_grouped(
+        scaling,
+        ["family", "n_bits", "method"],
+        ["holdout_accuracy", "full_accuracy", "fit_seconds", "gate_count"],
+        "noncompressible_scaling",
+        rng,
+    )
+    probability = pd.read_csv(RESULTS / "probability_marginalization_results.csv")
+    summary += emit_grouped(
+        probability,
+        ["experiment", "n_bits", "method"],
+        ["exact_probability", "estimate", "absolute_error", "elapsed_ms"],
+        "probability_marginalization",
+        rng,
+    )
     pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False)
     print(f"wrote {len(summary)} aggregate rows to {RESULTS / 'summary_metrics.csv'}")
 

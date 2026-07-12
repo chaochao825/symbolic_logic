@@ -81,4 +81,90 @@ encoder / LLM proposal
 
 ## 6. 证据边界与复现
 
-本项目仍是合成 CPU/NumPy 研究原型：没有视觉/语言端到端 grounding、FPGA/ASIC PPA、真实 DLGN 训练复现或概率路径边缘化。learned-Gate+BFS 的计时不包含门推理和数据布局；soft BFS 也先以 0.5 阈值把边概率离散化。新增 `SoftGateCircuit` 明确标为固定 wiring 的代理，避免把它误称为通用 LGN。原始输入哈希、环境、CSV 和图表见 [provenance.md](provenance.md)、`results/` 和 `figures/`；当前回归测试为 10/10 通过；完整工程见 [README](../README.md)。
+本项目仍是合成 CPU/NumPy 研究原型：没有视觉/语言端到端 grounding、FPGA/ASIC PPA、真实 DLGN 训练复现或概率路径边缘化。learned-Gate+BFS 的计时不包含门推理和数据布局；soft BFS 也先以 0.5 阈值把边概率离散化。新增 `SoftGateCircuit` 明确标为固定 wiring 的代理，规划 frontier 也是单调搜索代理，避免把它们误称为通用 LGN 或完整 solver。原始输入哈希、环境、CSV 和图表见 [provenance.md](provenance.md)、`results/` 和 `figures/`；当前回归测试为 14/14 通过；完整工程见 [README](../README.md)。
+
+## 7. 不可压缩规则与一般硬件计算
+
+“不可压缩”不是门库不够大，而是目标函数本身没有可复用的短描述。对任意 `n` 位 Boolean 函数，真值表需要 `2^n` 位；存在函数的最小电路规模随 `n` 指数增长。此时硬件仍然可以高效执行，但优化目标变成**并行度、带宽、存储层次和吞吐**，不是把规则编译成很小的 DAG。
+
+| 工作负载 | 更合适的硬件机制 | 逻辑门能承担的部分 | 不能消除的部分 |
+|---|---|---|---|
+| 不可压缩 Boolean/LUT | ROM/LUT、bit-slicing、SIMD、流式查表 | 位运算、地址译码、批量比较 | 表容量和带宽仍近似随 `2^n` 增长 |
+| 遍历/递归闭包 | frontier bitset、稀疏矩阵乘、队列、状态寄存器 | 邻接谓词、mask、去重 | 循环次数、队列容量、动态终止 |
+| proof search/SAT/SMT | clause database、watch lists、分支控制、学习子句 | 冲突检查、位掩码、局部传播 | 分支树和内存不规则访问 |
+| 规划 | 并行 successor expansion、heuristic cache、开放/关闭表 | 状态合法性和动作约束 | 状态空间、启发式误差和搜索宽度 |
+| 概率边缘化/WMC | semiring/tensor contraction、知识编译、采样或变分近似 | 局部因子组合和稀疏零检测 | 精确求和通常是指数或 #P-hard |
+| 感知模型 | systolic array、tensor core、低比特量化、结构/非结构稀疏 | 量化比较、稀疏 mask、后处理约束 | 浮点/定点乘加、权重搬运和表示误差 |
+
+因此高效硬件通常不是“所有模块都改成逻辑门”，而是 `gate datapath + state/control + memory + numeric engine` 的异构组合。
+
+## 8. 循环门电路与状态转换是否能替代递归
+
+可以，但需要把门从无状态 DAG 扩展为带寄存器和控制器的转移系统：
+
+```text
+s[t+1] = F(s[t], input[t])
+frontier[t+1] = T(frontier[t]) & ~visited[t]
+visited[t+1] = visited[t] | frontier[t+1]
+```
+
+这类设计能表达变长遍历、循环图闭包和有限状态程序。它把“深度”换成“时钟周期”，把“递归栈”换成片上 RAM/队列或外存。若允许无界内存和无界时间，门加状态转换可以模拟通用计算；但有限硬件只能实现有限状态机，仍受状态容量、循环次数、带宽和终止条件限制。
+
+新增的 `state_transition_results.csv` 对循环图做了直接对照：
+
+| 方法 | 路径长度 ≤4 | 路径长度 >4 | 平均查询时间 |
+|---|---:|---:|---:|
+| FixedK=4StateUnroll | 1.0 | 0.5 | 0.029 ms |
+| LoopedStateTransition | 1.0 | **1.0** | 0.102 ms |
+
+![循环状态转换](../figures/state_transition.png)
+
+表中时间是跨可用 width 条件的简单均值；循环机制恢复了固定展开失去的表达能力，但查询时间约为固定展开的 3.6 倍。这不是失败，而是用动态迭代和状态存储换取了变长计算能力。对 proof search 和规划，循环状态机还需要分支、队列、回溯和启发式模块，不能只靠一个 `F` 门网络。
+
+这里的两个查询时间是 Python/NumPy 原型中的状态遍历时间，不是固定组合门、FPGA LUT 或 ASIC PPA 的测量；每个 query 都重新执行闭包，适合比较控制流语义，不适合直接外推硬件吞吐。
+
+`planning_frontier_results.csv` 给出了一个更直接的规划/证明前沿代理：状态是待满足的 Boolean 条件，动作一次设置一个合法 bit，另有一个被阻塞的 bit 形成负例。固定 K=4 在 goal depth 2/4 上平衡准确率为 1.0，在 depth 6/8 上降为 0.5；循环 frontier 在所有深度均为 1.0。跨可用 `n_bits` 的全量平均 pair 查询时间分别为 `0.382 ms` 和 `1.732 ms`，循环版本约慢 4.5×，并且平均扩展状态数从 262 增至 1,357。
+
+![规划 frontier](../figures/planning_frontier.png)
+
+这是单调状态空间的 planning/proof-search **代理**，不是完整 planner、SAT、SMT 或带启发式回溯的证明器；它验证的是控制流和状态存储的必要性，而不是某个求解器的硬件 PPA。
+
+## 9. 不可压缩性和概率边缘化的实验
+
+`noncompressible_scaling_results.csv` 测量了随机 LUT 与 parity 随位宽增加的行为。GateBeam 的随机 holdout 准确率在 8/10/12 位分别为 `0.495/0.516/0.508`；随机 LUT 没有组合泛化。Parity 也不是常数大小规则：在当前 `max_depth=4` 的 GateBeam 搜索下，准确率为 `0.445/0.405/0.440`，而 MLP 在 12 位达到 `0.989`，说明连续模型有时能表达受限门搜索深度无法覆盖的结构。这是 bounded-depth 的受控反例，不是一般电路下界证明。
+
+`probability_marginalization_results.csv` 进一步区分了三件事：
+
+- 对独立 Bernoulli parity，精确枚举与 closed-form soft semiring 的误差为 0；但枚举时间从 4 位的约 `0.022 ms` 增长到 16 位的约 `6.26 ms`。
+- 对同一不确定输入的 `x AND x` 或 `x OR x`，把两条线当成独立变量会产生约 `0.201` 的平均概率误差，说明局部 soft gate 只有在独立性、可分解性或共享变量被显式处理时才保持精确。
+- 先把每个输入硬阈值化再计算 parity，和真实事件概率的绝对误差约为 `0.5`；hard 输出是一个类别，不是边缘概率。
+
+![不可压缩规则缩放](../figures/noncompressible_scaling.png)
+
+![概率边缘化](../figures/probability_marginalization.png)
+
+## 10. soft 到 hard 的根本障碍
+
+即使暂时“不计代价”，soft→hard 仍有语义障碍：
+
+1. **期望与阈值不交换。** 一般有 `H(E[f(X)]) != E[f(H(X))]`。soft 模块表示分布或置信度，hard 模块只保留一个赋值。
+2. **相关性不局部可见。** 共享变量、循环状态和 proof branches 让局部概率不再独立；逐门乘法会错误地重复计算同一不确定性。
+3. **搜索需要保留多个分支。** soft 权重可以同时保留候选；hard argmax 只选一条路径，可能在后续约束下才发现错误，却无法恢复被丢弃的分支。
+4. **动态深度不是固定结构。** 递归、规划和证明的停止时间依赖输入；固定 hard DAG 必须预先给出最大深度，循环版本则需要状态、计数器、队列和终止检测。
+5. **感知表示不是 Boolean 语义。** 量化或二值化会把相近但有意义的实数表示折叠到同一 bit；分布外输入还可能放大阈值附近的小误差。
+
+所以“不计门成本”只能说明门加状态在计算表达能力上足够强，不能说明它保留了概率语义、搜索完整性或感知精度。
+
+## 11. 设计建议与范围边界
+
+推荐的硬件/系统分层是：
+
+```text
+perception numeric engine
+  -> calibrated uncertain predicates
+  -> packed local gate datapath
+  -> state/control engine (loop, queue, stack, counter)
+  -> solver-specific memory and arithmetic
+```
+
+门适合做局部合法性检查、mask、冲突检测、关系候选过滤和重复 bit-level kernel；状态转换适合承载变长遍历；proof search、规划和概率推理需要专门的控制、内存和数值单元。当前新增实验验证了随机规则、循环状态和概率语义三条边界，但没有声称已经测量真实 FPGA/ASIC PPA、完整 SAT/SMT、规划器或视觉感知模型。`reports/references.md` 和 `reports/provenance.md` 记录了理论来源、输入哈希和运行环境。

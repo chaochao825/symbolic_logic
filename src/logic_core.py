@@ -52,6 +52,18 @@ def xor_heavy_rule(x: np.ndarray) -> np.ndarray:
     return (x[..., 0] ^ x[..., 1] ^ x[..., 2] ^ (x[..., 3] & x[..., 4]) ^ x[..., 5]).astype(np.uint8)
 
 
+def parity_rule(x: np.ndarray) -> np.ndarray:
+    """Parity over all input bits; circuit size grows with input width."""
+    x = np.asarray(x, dtype=np.uint8)
+    return np.bitwise_xor.reduce(x, axis=-1).astype(np.uint8)
+
+
+def soft_parity_probability(probabilities: np.ndarray) -> np.ndarray:
+    """Exact probability that independent Bernoulli bits have odd parity."""
+    p = np.asarray(probabilities, dtype=np.float64)
+    return 0.5 * (1.0 - np.prod(1.0 - 2.0 * p, axis=-1))
+
+
 def random_lut_rule(x: np.ndarray, seed: int = 1701) -> np.ndarray:
     """A deterministic balanced random truth table: a non-compressible control."""
     x = np.asarray(x, dtype=np.uint8)

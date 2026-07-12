@@ -37,7 +37,9 @@ from logic_core import (
     compositional_rule,
     hamming_weight,
     packed_compositional_rule,
+    parity_rule,
     soft_probability_rule,
+    soft_parity_probability,
 )
 
 
@@ -494,6 +496,314 @@ def run_learned_gate_pipeline(mode: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     return write_csv(local_rows, "learned_gate_results.csv"), write_csv(graph_rows, "learned_gate_bfs_results.csv")
 
 
+def _cyclic_reachable(adjacency: np.ndarray, source: int) -> tuple[np.ndarray, np.ndarray, int]:
+    """Iterate a frontier/state register until a graph fixed point."""
+    width = adjacency.shape[0]
+    reached = np.zeros(width, dtype=bool)
+    frontier = np.zeros(width, dtype=bool)
+    frontier[source] = True
+    reached[source] = True
+    iterations = 0
+    while frontier.any():
+        next_frontier = np.any(adjacency[frontier, :], axis=0) & ~reached
+        reached |= next_frontier
+        frontier = next_frontier
+        iterations += 1
+    distances = np.full(width, -1, dtype=np.int32)
+    distances[source] = 0
+    frontier = np.zeros(width, dtype=bool)
+    frontier[source] = True
+    depth = 0
+    while frontier.any():
+        next_frontier = np.any(adjacency[frontier, :], axis=0) & (distances < 0)
+        distances[next_frontier] = depth + 1
+        frontier = next_frontier
+        depth += 1
+    return reached, distances, iterations
+
+
+def _fixed_k_cyclic(adjacency: np.ndarray, source: int, k: int) -> np.ndarray:
+    """K-step Boolean unrolling with a recurrent frontier register."""
+    frontier = np.zeros(adjacency.shape[0], dtype=bool)
+    frontier[source] = True
+    reached = frontier.copy()
+    for _ in range(k):
+        frontier = np.any(adjacency[frontier, :], axis=0) & ~reached if frontier.any() else np.zeros_like(frontier)
+        reached |= frontier
+    return reached
+
+
+def _make_cyclic_graph(width: int, path_length: int, rng: np.random.Generator) -> tuple[np.ndarray, int, int, int, int]:
+    """Create a cyclic graph with a positive path and an unreachable target."""
+    if path_length >= width:
+        raise ValueError("path_length must be smaller than width for a simple forced path")
+    for _ in range(200):
+        edge_probability = min(0.08, 0.8 / width)
+        adjacency = rng.random((width, width)) < edge_probability
+        source = int(rng.integers(width))
+        tail = rng.choice(np.delete(np.arange(width), source), size=path_length, replace=False)
+        path = np.concatenate(([source], tail))
+        for left, right in zip(path[:-1], path[1:]):
+            adjacency[int(left), int(right)] = True
+        reached, distances, _ = _cyclic_reachable(adjacency, source)
+        positive_target = int(path[-1])
+        if not reached[positive_target] or (path_length > 4 and distances[positive_target] <= 4):
+            continue
+        negatives = np.flatnonzero(~reached)
+        if len(negatives):
+            return adjacency, source, positive_target, int(rng.choice(negatives)), int(distances[positive_target])
+    raise RuntimeError("could not produce a cyclic graph with the requested path length")
+
+
+def run_state_transition(mode: str) -> pd.DataFrame:
+    """Compare fixed unrolling with a looped state-transition reachability engine."""
+    widths = (8, 16, 32)
+    depths = (2, 4, 6, 8, 12)
+    graphs_per_cell = 30 if mode == "smoke" else 100
+    rng = np.random.default_rng(606060)
+    rows: list[dict] = []
+    for width in widths:
+        for path_length in depths:
+            if path_length >= width:
+                continue
+            labels: list[int] = []
+            fixed_predictions: list[int] = []
+            loop_predictions: list[int] = []
+            fixed_ms: list[float] = []
+            loop_ms: list[float] = []
+            loop_iterations: list[int] = []
+            for _ in range(graphs_per_cell):
+                adjacency, source, positive_target, negative_target, shortest_path = _make_cyclic_graph(width, path_length, rng)
+                reached, _, iterations = _cyclic_reachable(adjacency, source)
+                if not reached[positive_target] or reached[negative_target]:
+                    raise AssertionError("cyclic graph labels are not balanced")
+                loop_iterations.append(iterations)
+                for label, target in ((1, positive_target), (0, negative_target)):
+                    started = time.perf_counter_ns()
+                    fixed_result = int(_fixed_k_cyclic(adjacency, source, k=4)[target])
+                    fixed_ms.append((time.perf_counter_ns() - started) / 1_000_000)
+                    started = time.perf_counter_ns()
+                    loop_result = int(_cyclic_reachable(adjacency, source)[0][target])
+                    loop_ms.append((time.perf_counter_ns() - started) / 1_000_000)
+                    labels.append(label)
+                    fixed_predictions.append(fixed_result)
+                    loop_predictions.append(loop_result)
+            for method, predictions, latencies in (
+                ("FixedK=4StateUnroll", fixed_predictions, fixed_ms),
+                ("LoopedStateTransition", loop_predictions, loop_ms),
+            ):
+                rows.append(
+                    {
+                        "width": width,
+                        "path_length": path_length,
+                        "queries": len(labels),
+                        "method": method,
+                        "accuracy": accuracy(np.asarray(labels), np.asarray(predictions)),
+                        "balanced_accuracy": balanced_accuracy(np.asarray(labels), np.asarray(predictions)),
+                        "positive_accuracy": accuracy(np.ones(sum(labels), dtype=np.uint8), np.asarray(predictions)[np.asarray(labels) == 1]),
+                        "negative_accuracy": accuracy(np.zeros(len(labels) - sum(labels), dtype=np.uint8), np.asarray(predictions)[np.asarray(labels) == 0]),
+                        "median_query_ms": float(np.median(latencies)),
+                        "mean_loop_iterations": float(np.mean(loop_iterations)),
+                        "shortest_path": shortest_path,
+                    }
+                )
+    return write_csv(rows, "state_transition_results.csv")
+
+
+def _planning_bfs(n_bits: int, blocked_bit: int, goal: int, max_steps: int | None = None) -> tuple[bool, int, int]:
+    """Monotone planning/proof-frontier proxy using a Boolean state register."""
+    frontier = {0}
+    visited = {0}
+    expansions = 0
+    steps = 0
+    while frontier and (max_steps is None or steps < max_steps):
+        if goal in frontier:
+            return True, steps, expansions
+        next_frontier: set[int] = set()
+        for state in frontier:
+            expansions += 1
+            for bit in range(n_bits):
+                if bit == blocked_bit or (state & (1 << bit)):
+                    continue
+                successor = state | (1 << bit)
+                if successor not in visited:
+                    visited.add(successor)
+                    next_frontier.add(successor)
+        frontier = next_frontier
+        steps += 1
+    return goal in visited, steps, expansions
+
+
+def run_planning_frontier(mode: str) -> pd.DataFrame:
+    """Use a monotone action system as a bounded planning/proof-search proxy."""
+    widths = (8, 10) if mode == "smoke" else (8, 10, 12)
+    depths = (2, 4, 6, 8)
+    rows: list[dict] = []
+    for n_bits in widths:
+        blocked_bit = n_bits - 1
+        for depth in depths:
+            if depth >= blocked_bit:
+                continue
+            goal = sum(1 << bit for bit in range(depth))
+            positive = _planning_bfs(n_bits, blocked_bit, goal)
+            negative = _planning_bfs(n_bits, blocked_bit, goal | (1 << blocked_bit))
+            for method, cap in (("FixedK=4Planning", 4), ("LoopedPlanningFrontier", None)):
+                positive_queries: list[bool] = []
+                negative_queries: list[bool] = []
+                times: list[float] = []
+                expansions: list[int] = []
+                for _ in range(5 if mode == "smoke" else 20):
+                    started = time.perf_counter_ns()
+                    pos_result = _planning_bfs(n_bits, blocked_bit, goal, cap)
+                    neg_result = _planning_bfs(n_bits, blocked_bit, goal | (1 << blocked_bit), cap)
+                    times.append((time.perf_counter_ns() - started) / 1_000_000)
+                    positive_queries.append(pos_result[0])
+                    negative_queries.append(neg_result[0])
+                    expansions.append(pos_result[2] + neg_result[2])
+                rows.append(
+                    {
+                        "n_bits": n_bits,
+                        "goal_depth": depth,
+                        "method": method,
+                        "positive_accuracy": float(np.mean(positive_queries)),
+                        "negative_accuracy": float(np.mean(np.logical_not(negative_queries))),
+                        "balanced_accuracy": float((np.mean(positive_queries) + np.mean(np.logical_not(negative_queries))) / 2),
+                        "median_pair_ms": float(np.median(times)),
+                        "mean_expansions": float(np.mean(expansions)),
+                        "oracle_positive": bool(positive[0]),
+                        "oracle_negative": bool(not negative[0]),
+                    }
+                )
+    return write_csv(rows, "planning_frontier_results.csv")
+
+
+def run_noncompressible_scaling(mode: str) -> pd.DataFrame:
+    """Scale a parity rule and a random LUT to expose circuit-complexity limits."""
+    widths = (8, 10) if mode == "smoke" else (8, 10, 12)
+    seeds = range(3 if mode == "smoke" else 5)
+    rows: list[dict] = []
+    for n_bits in widths:
+        x_full = all_assignments(n_bits)
+        permutation_base = np.arange(len(x_full))
+        for family in ("parity", "random_lut"):
+            y_full = parity_rule(x_full) if family == "parity" else RULES["random_lut"](x_full)
+            for seed in seeds:
+                rng = np.random.default_rng(77000 + n_bits * 100 + seed + (0 if family == "parity" else 1000))
+                permutation = rng.permutation(permutation_base)
+                n_train = len(x_full) // 2
+                train_index = permutation[:n_train]
+                holdout_index = permutation[n_train:]
+                x_train, y_train = x_full[train_index], y_full[train_index]
+                gate = GateBeamSynthesizer(max_depth=4, beam_width=192).fit(x_train, y_train)
+                assert gate.expression is not None
+                mlp = TinyMLP(n_bits, seed=seed + n_bits * 10, steps=900).fit(x_train, y_train)
+                for method_name, method, fit_seconds, gates in (
+                    ("GateBeam", gate, gate.fit_seconds, gate.expression.gates),
+                    ("MLP", mlp, mlp.fit_seconds, np.nan),
+                ):
+                    prediction = method.predict(x_full)  # type: ignore[attr-defined]
+                    rows.append(
+                        {
+                            "family": family,
+                            "n_bits": n_bits,
+                            "seed": seed,
+                            "train_examples": n_train,
+                            "method": method_name,
+                            "holdout_accuracy": accuracy(y_full[holdout_index], prediction[holdout_index]),
+                            "full_accuracy": accuracy(y_full, prediction),
+                            "exact_full_recovery": bool(np.array_equal(y_full, prediction)),
+                            "fit_seconds": fit_seconds,
+                            "gate_count": gates,
+                        }
+                    )
+    return write_csv(rows, "noncompressible_scaling_results.csv")
+
+
+def run_probability_marginalization(mode: str) -> pd.DataFrame:
+    """Measure exponential exact WMC scaling and hard-threshold semantic error."""
+    widths = (4, 8, 12) if mode == "smoke" else (4, 8, 12, 16)
+    seeds = range(3 if mode == "smoke" else 5)
+    rows: list[dict] = []
+    for n_bits in widths:
+        for seed in seeds:
+            rng = np.random.default_rng(88000 + n_bits * 100 + seed)
+            probabilities = rng.uniform(0.1, 0.9, size=n_bits)
+            assignments = all_assignments(n_bits)
+            started = time.perf_counter_ns()
+            weights = np.prod(np.where(assignments == 1, probabilities, 1.0 - probabilities), axis=1)
+            exact = float(np.sum(weights * parity_rule(assignments)))
+            exact_ms = (time.perf_counter_ns() - started) / 1_000_000
+            started = time.perf_counter_ns()
+            closed_form = float(soft_parity_probability(probabilities[None, :])[0])
+            closed_ms = (time.perf_counter_ns() - started) / 1_000_000
+            hard_value = float(parity_rule((probabilities >= 0.5).astype(np.uint8)[None, :])[0])
+            rows.extend(
+                [
+                    {
+                        "experiment": "parity_wmc_scaling",
+                        "n_bits": n_bits,
+                        "seed": seed,
+                        "method": "ExactEnumeration",
+                        "exact_probability": exact,
+                        "estimate": exact,
+                        "absolute_error": 0.0,
+                        "elapsed_ms": exact_ms,
+                        "notes": "2^n assignments",
+                    },
+                    {
+                        "experiment": "parity_wmc_scaling",
+                        "n_bits": n_bits,
+                        "seed": seed,
+                        "method": "ClosedFormSoftSemiring",
+                        "exact_probability": exact,
+                        "estimate": closed_form,
+                        "absolute_error": abs(exact - closed_form),
+                        "elapsed_ms": closed_ms,
+                        "notes": "independent Bernoulli parity identity",
+                    },
+                    {
+                        "experiment": "parity_wmc_scaling",
+                        "n_bits": n_bits,
+                        "seed": seed,
+                        "method": "HardThreshold",
+                        "exact_probability": exact,
+                        "estimate": hard_value,
+                        "absolute_error": abs(exact - hard_value),
+                        "elapsed_ms": np.nan,
+                        "notes": "threshold inputs then Boolean parity",
+                    },
+                ]
+            )
+            p = float(probabilities[0])
+            rows.extend(
+                [
+                    {
+                        "experiment": "shared_wire_dependency",
+                        "n_bits": 1,
+                        "seed": seed,
+                        "method": "AND_exact_shared",
+                        "exact_probability": p,
+                        "estimate": p * p,
+                        "absolute_error": abs(p - p * p),
+                        "elapsed_ms": np.nan,
+                        "notes": "naive independent-wire product is invalid",
+                    },
+                    {
+                        "experiment": "shared_wire_dependency",
+                        "n_bits": 1,
+                        "seed": seed,
+                        "method": "OR_exact_shared",
+                        "exact_probability": p,
+                        "estimate": 1.0 - (1.0 - p) ** 2,
+                        "absolute_error": abs(p - (1.0 - (1.0 - p) ** 2)),
+                        "elapsed_ms": np.nan,
+                        "notes": "duplicate wire creates correlation",
+                    },
+                ]
+            )
+    return write_csv(rows, "probability_marginalization_results.csv")
+
+
 def run_reachability(mode: str) -> pd.DataFrame:
     widths = (8, 16, 32)
     depths = (2, 4, 6, 8, 12)
@@ -596,6 +906,10 @@ def main() -> None:
     reachability = run_reachability(args.mode)
     noise = run_noise(args.mode)
     learned_gate, learned_gate_bfs = run_learned_gate_pipeline(args.mode)
+    state_transition = run_state_transition(args.mode)
+    planning_frontier = run_planning_frontier(args.mode)
+    noncompressible = run_noncompressible_scaling(args.mode)
+    probability = run_probability_marginalization(args.mode)
     timing_samples = efficiency_timing + relation_timing
     write_csv(timing_samples, "timing_samples.csv")
     source_hashes = {
@@ -622,6 +936,10 @@ def main() -> None:
             "noise": len(noise),
             "learned_gate": len(learned_gate),
             "learned_gate_bfs": len(learned_gate_bfs),
+            "state_transition": len(state_transition),
+            "planning_frontier": len(planning_frontier),
+            "noncompressible_scaling": len(noncompressible),
+            "probability_marginalization": len(probability),
             "timing_samples": len(timing_samples),
         },
     }

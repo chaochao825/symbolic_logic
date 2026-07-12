@@ -17,13 +17,18 @@ from logic_core import (  # noqa: E402
     all_assignments,
     compositional_rule,
     packed_compositional_rule,
+    parity_rule,
     soft_probability_rule,
+    soft_parity_probability,
 )
 from run_experiments import (  # noqa: E402
     _dense_relation_count,
     _fixed_k_reachable,
+    _fixed_k_cyclic,
+    _cyclic_reachable,
     _make_layered_graph_with_features,
     _indexed_relation_count,
+    _planning_bfs,
     _reachable,
 )
 
@@ -59,6 +64,14 @@ class LogicCoreTests(unittest.TestCase):
         assignment_weights = np.prod(np.where(assignments == 1, probabilities, 1 - probabilities), axis=1)
         expected = float(np.sum(assignment_weights * compositional_rule(assignments)))
         actual = float(soft_probability_rule(probabilities[None, :])[0])
+        self.assertAlmostEqual(actual, expected, places=12)
+
+    def test_soft_parity_matches_enumerated_bernoulli_semantics(self) -> None:
+        assignments = all_assignments(6)
+        probabilities = np.array([0.15, 0.35, 0.55, 0.80, 0.20, 0.60])
+        weights = np.prod(np.where(assignments == 1, probabilities, 1 - probabilities), axis=1)
+        expected = float(np.sum(weights * parity_rule(assignments)))
+        actual = float(soft_parity_probability(probabilities[None, :])[0])
         self.assertAlmostEqual(actual, expected, places=12)
 
     def test_beam_can_recover_known_compact_rule_from_full_table(self) -> None:
@@ -106,6 +119,29 @@ class LogicCoreTests(unittest.TestCase):
         reached = _reachable(valid, source)
         self.assertTrue(bool(reached[positive_target]))
         self.assertFalse(bool(reached[negative_target]))
+
+    def test_looped_state_transition_reaches_cycle_without_fixed_unroll(self) -> None:
+        adjacency = np.zeros((5, 5), dtype=bool)
+        adjacency[0, 1] = adjacency[1, 2] = adjacency[2, 3] = adjacency[3, 4] = True
+        adjacency[4, 1] = True
+        reached, _, iterations = _cyclic_reachable(adjacency, 0)
+        self.assertTrue(bool(reached[4]))
+        self.assertGreater(iterations, 4)
+        self.assertFalse(bool(_fixed_k_cyclic(adjacency, 0, 2)[4]))
+
+    def test_planning_frontier_loop_and_blocked_goal_semantics(self) -> None:
+        positive = 0b111111
+        blocked = positive | (1 << 7)
+        self.assertTrue(_planning_bfs(8, 7, positive, max_steps=None)[0])
+        self.assertFalse(_planning_bfs(8, 7, positive, max_steps=4)[0])
+        self.assertFalse(_planning_bfs(8, 7, blocked, max_steps=None)[0])
+
+    def test_shared_wire_probability_is_not_independent_product(self) -> None:
+        p = 0.37
+        exact_and = p  # P(x AND x)
+        exact_or = p  # P(x OR x)
+        self.assertGreater(abs(exact_and - p * p), 0.1)
+        self.assertGreater(abs(exact_or - (1.0 - (1.0 - p) ** 2)), 0.1)
 
 
 if __name__ == "__main__":

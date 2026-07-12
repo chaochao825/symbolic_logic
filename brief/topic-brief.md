@@ -22,3 +22,4 @@ The two supplied documents agree on the architecture `encoder -> named predicate
 - No hardware PPA claim; CPU timing is a prototype measurement only.
 - No claim that an arbitrary Boolean network is human-interpretable.
 - No claim that a fixed-depth circuit replaces unbounded recursive search.
+- The extension includes finite cyclic traversal and monotone planning/proof-frontier proxies to test state-transition loops, while keeping full solver and perception hardware evaluation out of scope.

@@ -38,6 +38,11 @@ COLORS = {
     "LearnedHardenedGate": "#d62728",
     "LearnedSoftGate+BFS": "#1f77b4",
     "LearnedHardenedGate+BFS": "#d62728",
+    "FixedK=4StateUnroll": "#d62728",
+    "LoopedStateTransition": "#1f77b4",
+    "ExactEnumeration": "#d62728",
+    "ClosedFormSoftSemiring": "#2ca02c",
+    "HardThreshold": "#9467bd",
 }
 
 
@@ -211,6 +216,86 @@ def plot_learned_gate() -> None:
     finish(fig, "learned_gate_integration.pdf")
 
 
+def plot_state_transition() -> None:
+    data = pd.read_csv(RESULTS / "state_transition_results.csv")
+    aggregate = data.groupby(["path_length", "method"])[["balanced_accuracy", "median_query_ms"]].mean().reset_index()
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0))
+    for method in ["FixedK=4StateUnroll", "LoopedStateTransition"]:
+        subset = aggregate[aggregate["method"] == method]
+        label = "fixed K=4" if method.startswith("Fixed") else "loop until fixed point"
+        axes[0].plot(subset["path_length"], subset["balanced_accuracy"], marker="o", label=label, color=COLORS[method])
+        axes[1].plot(subset["path_length"], subset["median_query_ms"], marker="o", label=label, color=COLORS[method])
+    axes[0].set_ylim(0.42, 1.05)
+    axes[0].set_xlabel("Forced shortest path length")
+    axes[0].set_ylabel("Balanced accuracy")
+    axes[1].set_xlabel("Forced shortest path length")
+    axes[1].set_ylabel("Median query time (ms)")
+    axes[0].legend(loc="lower left")
+    axes[1].legend(loc="upper left")
+    finish(fig, "state_transition.pdf")
+
+
+def plot_noncompressible() -> None:
+    data = pd.read_csv(RESULTS / "noncompressible_scaling_results.csv")
+    aggregate = data.groupby(["family", "n_bits", "method"])["holdout_accuracy"].mean().reset_index()
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0), sharey=True)
+    for axis, family, panel in zip(axes, ["parity", "random_lut"], ["(a)", "(b)"]):
+        for method in ["GateBeam", "MLP"]:
+            subset = aggregate[(aggregate["family"] == family) & (aggregate["method"] == method)]
+            axis.plot(subset["n_bits"], subset["holdout_accuracy"], marker="o", label=method, color=COLORS[method])
+        axis.axhline(0.5, color="black", linestyle="--", linewidth=0.8, alpha=0.6)
+        axis.set_ylim(0.35, 1.05)
+        axis.set_xlabel(f"{panel} {family.replace('_', ' ')}")
+        axis.grid(axis="y", linestyle="--", alpha=0.25)
+    axes[0].set_ylabel("Random holdout accuracy")
+    axes[0].legend(loc="upper right")
+    axes[1].legend(loc="upper right")
+    finish(fig, "noncompressible_scaling.pdf")
+
+
+def plot_probability_marginalization() -> None:
+    data = pd.read_csv(RESULTS / "probability_marginalization_results.csv")
+    scaling = data[data["experiment"] == "parity_wmc_scaling"]
+    aggregate = scaling.groupby(["n_bits", "method"])[["absolute_error", "elapsed_ms"]].mean().reset_index()
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0))
+    for method in ["ExactEnumeration", "ClosedFormSoftSemiring"]:
+        subset = aggregate[aggregate["method"] == method]
+        label = "exact enumeration" if method == "ExactEnumeration" else "closed-form soft semiring"
+        axes[0].plot(subset["n_bits"], subset["elapsed_ms"], marker="o", label=label, color=COLORS[method])
+    hard = aggregate[aggregate["method"] == "HardThreshold"]
+    soft = aggregate[aggregate["method"] == "ClosedFormSoftSemiring"]
+    axes[1].plot(hard["n_bits"], hard["absolute_error"], marker="o", label="hard threshold", color=COLORS["HardThreshold"])
+    axes[1].plot(soft["n_bits"], soft["absolute_error"], marker="o", label="soft semiring", color=COLORS["ClosedFormSoftSemiring"])
+    axes[0].set_yscale("log")
+    axes[0].set_xlabel("Number of uncertain bits")
+    axes[0].set_ylabel("Time (ms, log scale)")
+    axes[1].set_xlabel("Number of uncertain bits")
+    axes[1].set_ylabel("Absolute probability error")
+    axes[0].legend(loc="upper left")
+    axes[1].legend(loc="upper left")
+    finish(fig, "probability_marginalization.pdf")
+
+
+def plot_planning_frontier() -> None:
+    data = pd.read_csv(RESULTS / "planning_frontier_results.csv")
+    aggregate = data.groupby(["goal_depth", "method"])[["balanced_accuracy", "median_pair_ms"]].mean().reset_index()
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0))
+    for method in ["FixedK=4Planning", "LoopedPlanningFrontier"]:
+        subset = aggregate[aggregate["method"] == method]
+        label = "fixed K=4" if method.startswith("Fixed") else "looped frontier"
+        color = COLORS["FixedK=4StateUnroll"] if method.startswith("Fixed") else COLORS["LoopedStateTransition"]
+        axes[0].plot(subset["goal_depth"], subset["balanced_accuracy"], marker="o", label=label, color=color)
+        axes[1].plot(subset["goal_depth"], subset["median_pair_ms"], marker="o", label=label, color=color)
+    axes[0].set_ylim(0.42, 1.05)
+    axes[0].set_xlabel("Goal depth")
+    axes[0].set_ylabel("Balanced accuracy")
+    axes[1].set_xlabel("Goal depth")
+    axes[1].set_ylabel("Median pair query time (ms)")
+    axes[0].legend(loc="lower left")
+    axes[1].legend(loc="upper left")
+    finish(fig, "planning_frontier.pdf")
+
+
 def main() -> None:
     setup_style()
     plot_predicate()
@@ -219,6 +304,10 @@ def main() -> None:
     plot_noise()
     plot_relation_filter()
     plot_learned_gate()
+    plot_state_transition()
+    plot_noncompressible()
+    plot_probability_marginalization()
+    plot_planning_frontier()
 
 
 if __name__ == "__main__":
