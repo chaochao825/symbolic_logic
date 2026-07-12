@@ -13,7 +13,7 @@ The main result is in [reports/evidence_report_zh.md](reports/evidence_report_zh
 - Grounding bit-flip experiments contrasting hard decisions with uncertainty-preserving probability evaluation.
 - A fixed-wiring differentiable gate proxy with argmax hardening, plus an end-to-end `learned gate + BFS` audit (`results/learned_gate_results.csv` and `results/learned_gate_bfs_results.csv`).
 - State-transition loop versus fixed unrolling on cyclic reachability, a bounded monotone planning frontier, random-LUT/parity scaling, and exact probability-marginalization controls (`results/state_transition_results.csv`, `results/planning_frontier_results.csv`, `results/noncompressible_scaling_results.csv`, and `results/probability_marginalization_results.csv`).
-- A component-supervised visual gridworld model: rendered RGB pixels → calibrated neural cell predicates → learned soft/hardened edge gate → hard BFS or soft max-product reachability → task verifier. Three full-run seeds cover clean, correlated occlusion, and 10×10 size OOD conditions.
+- A component-supervised visual gridworld model: rendered RGB pixels → temperature-scaled neural cell predicates → learned soft/hardened edge gate → hard BFS or soft max-product reachability → task verifier. Three full-run seeds cover clean, correlated occlusion, and 10×10 size OOD conditions; grounding ECE is reported rather than assuming calibration.
 
 ## Reproduce
 

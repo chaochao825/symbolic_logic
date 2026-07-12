@@ -176,7 +176,7 @@ perception numeric engine
 ```text
 rendered RGB grid image
   -> patch MLP encoder
-  -> temperature-calibrated free/wall/source/target predicates
+  -> temperature-scaled free/wall/source/target predicates
   -> learned soft edge gate -> argmax hardened gate
   -> hard BFS / soft max-product reachability
   -> confidence-routed fallback
@@ -190,13 +190,15 @@ rendered RGB grid image
 | 条件 | Hard | Soft | Hybrid fallback | Cell grounding | Hybrid fallback rate |
 |---|---:|---:|---:|---:|---:|
 | clean 8×8 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 | 0.000 |
-| correlated occlusion 8×8 | 0.928 ± 0.024 | 0.943 ± 0.022 | **0.945 ± 0.020** | 0.980 | 0.133 |
+| correlated occlusion 8×8 | 0.928 ± 0.023 | 0.959 ± 0.019 | **0.963 ± 0.016** | 0.980 | 0.131 |
 | size OOD 10×10 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 ± 0.000 | 1.000 | 0.000 |
 
 ![端到端 gridworld](../figures/end_to_end_gridworld.png)
 
-相关遮挡下，hard pipeline 的 Brier 为 `0.0717 ± 0.0243`，soft pipeline 为 `0.0528 ± 0.0183`，hybrid 为 `0.0639 ± 0.0189`。Hybrid 的任务准确率最高，而 soft 的 max-product path score 在该测试集上的 Brier 更低；该 score 不是精确 reachability probability，不能据此宣称一般概率校准成立。相关遮挡下 source localization 为 `0.989 ± 0.009`、target localization 为 `1.000`；任务错误与局部 wall/free grounding 和路径连通性放大一致。
+相关遮挡下，hard pipeline 的 Brier 为 `0.0717 ± 0.0227`，soft pipeline 为 `0.0665 ± 0.0221`，hybrid 为 `0.0702 ± 0.0227`。Hybrid 的任务准确率最高，而 soft 的 max-product path score 在该测试集上的 Brier 更低；该 score 不是精确 reachability probability，不能据此宣称一般概率校准成立。相关遮挡下 cell grounding ECE 为 `0.0182 ± 0.0021`，source localization 为 `0.983 ± 0.009`、target localization 为 `0.999 ± 0.001`；任务错误与局部 wall/free grounding 和路径连通性放大一致。三个种子的最优温度均达到候选网格下界 `0.08`，因此这里只能证明温度缩放后在这些测试条件下 ECE 很低，不能证明校准超参数已经被充分识别。
 
-8×8 clean 条件下，批量 encoder 时间约 `0.030 ms/image`，Python solver 中位数约 `0.14 ms/query`；10×10 分别约 `0.047 ms/image` 和 `0.19 ms/query`。这些是 NumPy 原型测量，不是神经网络加速器或硬件 PPA。
+延迟拆分避免把同一总时间复制给不同求解器。在 8×8 clean 条件下，编码器为 `0.029 ms/image`，hard、soft、hybrid 求解器分别为 `0.034/0.102/0.034 ms/image`；在 10×10 size OOD 下分别为编码器 `0.047 ms/image`、求解器 `0.052/0.136/0.052 ms/image`。这说明当前 NumPy 原型里 soft 路径传播比 hard BFS 慢约 3 倍；本实验支持的是鲁棒性收益而非 soft 计算加速。
+
+这些延迟是 NumPy 原型测量，不是神经网络加速器或硬件 PPA；不同方法共享的编码器成本必须与各自求解器成本相加后再比较端到端延迟。
 
 这项实验完成了**原始像素输入到符号任务输出的推理闭环**，但仍有三条明确边界：encoder 与 gate 使用中间标签监督，而不是只用最终任务损失训练；四邻接候选拓扑由程序给出；learned gate 只导出 NumPy hard operator，尚未自动生成 packed C、AIG 或 RTL。模型权重与 gate IR 保存在 `results/gridworld_models/`，运行元数据包含源码哈希和运行开始时的 Git 状态。
