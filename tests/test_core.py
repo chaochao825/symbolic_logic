@@ -22,6 +22,7 @@ from logic_core import (  # noqa: E402
 from run_experiments import (  # noqa: E402
     _dense_relation_count,
     _fixed_k_reachable,
+    _make_layered_graph_with_features,
     _indexed_relation_count,
     _reachable,
 )
@@ -96,6 +97,15 @@ class LogicCoreTests(unittest.TestCase):
         self.assertTrue(_reachable(valid, 0)[0])
         self.assertFalse(_fixed_k_reachable(valid, 0, 2)[0])
         self.assertTrue(_fixed_k_reachable(valid, 0, 3)[0])
+
+    def test_featured_layered_graph_has_balanced_query_targets(self) -> None:
+        features, present, source, positive_target, negative_target = _make_layered_graph_with_features(
+            8, 4, np.random.default_rng(19)
+        )
+        valid = present & compositional_rule(features.reshape(-1, 8)).reshape(4, 8, 8).astype(bool)
+        reached = _reachable(valid, source)
+        self.assertTrue(bool(reached[positive_target]))
+        self.assertFalse(bool(reached[negative_target]))
 
 
 if __name__ == "__main__":
