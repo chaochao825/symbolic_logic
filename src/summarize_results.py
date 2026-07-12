@@ -54,6 +54,22 @@ def main() -> None:
     summary += emit_grouped(reachability, ["width", "layers", "method"], ["balanced_accuracy", "positive_accuracy", "negative_accuracy"], "reachability", rng)
     noise = pd.read_csv(RESULTS / "noise_results.csv")
     summary += emit_grouped(noise, ["epsilon", "method"], ["accuracy", "brier"], "noise", rng)
+    learned_gate = pd.read_csv(RESULTS / "learned_gate_results.csv")
+    summary += emit_grouped(
+        learned_gate,
+        ["train_fraction", "method"],
+        ["full_accuracy", "full_balanced_accuracy", "ood_accuracy", "ood_balanced_accuracy", "ood_brier", "fit_seconds", "hardening_seconds", "soft_to_hard_ood_balanced_drop"],
+        "learned_gate",
+        rng,
+    )
+    learned_bfs = pd.read_csv(RESULTS / "learned_gate_bfs_results.csv")
+    summary += emit_grouped(
+        learned_bfs,
+        ["train_fraction", "width", "layers", "method"],
+        ["accuracy", "balanced_accuracy", "positive_accuracy", "negative_accuracy", "median_query_ms"],
+        "learned_gate_bfs",
+        rng,
+    )
     pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False)
     print(f"wrote {len(summary)} aggregate rows to {RESULTS / 'summary_metrics.csv'}")
 

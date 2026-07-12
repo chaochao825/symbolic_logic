@@ -26,6 +26,7 @@ import pandas as pd
 from logic_core import (
     RULES,
     GateBeamSynthesizer,
+    SoftGateCircuit,
     TinyMLP,
     TruthMemorizer,
     accuracy,
@@ -369,6 +370,130 @@ def _make_layered_graph(width: int, layers: int, rng: np.random.Generator) -> tu
     raise RuntimeError("could not produce a graph with both query classes")
 
 
+def _make_layered_graph_with_features(
+    width: int, layers: int, rng: np.random.Generator
+) -> tuple[np.ndarray, np.ndarray, int, int, int]:
+    """Generate the same controlled graph while retaining predicate features."""
+    for _ in range(100):
+        features = rng.integers(0, 2, size=(layers, width, width, 8), dtype=np.uint8)
+        present = rng.random((layers, width, width)) < (0.60 / width)
+        source = int(rng.integers(width))
+        path = [source] + [int(rng.integers(width)) for _ in range(layers)]
+        force_features = np.array([1, 1, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
+        for layer in range(layers):
+            features[layer, path[layer], path[layer + 1]] = force_features
+            present[layer, path[layer], path[layer + 1]] = True
+        valid = present & compositional_rule(features.reshape(-1, 8)).reshape(layers, width, width).astype(bool)
+        reachable = _reachable(valid, source)
+        negatives = np.flatnonzero(~reachable)
+        if len(negatives):
+            return features, present, source, path[-1], int(rng.choice(negatives))
+    raise RuntimeError("could not produce a graph with both query classes")
+
+
+def run_learned_gate_pipeline(mode: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Measure soft-gate hardening locally and after insertion into BFS.
+
+    The learned model sees only a subset of the 8-bit truth table.  Its soft
+    probabilities and argmax-compiled Boolean circuit are evaluated on all
+    held-out assignments and on independently generated layered graphs.  This
+    closes the earlier evidence gap around ``learned-Gate+BFS``; the oracle
+    reachability experiment remains a separate upper bound.
+    """
+    x_full = all_assignments(8)
+    y_full = compositional_rule(x_full)
+    middle = np.flatnonzero((hamming_weight(x_full) >= 2) & (hamming_weight(x_full) <= 6))
+    fractions = (0.50,) if mode == "smoke" else (0.50, 0.75)
+    seeds = range(3 if mode == "smoke" else 10)
+    local_rows: list[dict] = []
+    graph_rows: list[dict] = []
+    for fraction in fractions:
+        for seed in seeds:
+            split_rng = np.random.default_rng(91_000 + int(fraction * 100) + seed)
+            permutation = split_rng.permutation(middle)
+            n_train = int(round(len(middle) * fraction))
+            train_index = permutation[:n_train]
+            ood = np.flatnonzero((hamming_weight(x_full) <= 1) | (hamming_weight(x_full) >= 7))
+            model = SoftGateCircuit(seed=seed + int(fraction * 100), steps=1200).fit(x_full[train_index], y_full[train_index])
+            soft_probability = model.predict_proba(x_full)
+            soft_prediction = (soft_probability >= 0.5).astype(np.uint8)
+            hard_started = time.perf_counter_ns()
+            hard_prediction = model.predict_hardened(x_full)
+            hard_seconds = (time.perf_counter_ns() - hard_started) / 1_000_000_000
+            soft_balanced = balanced_accuracy(y_full[ood], soft_prediction[ood])
+            hard_balanced = balanced_accuracy(y_full[ood], hard_prediction[ood])
+            for method, prediction, probability in (
+                ("LearnedSoftGate", soft_prediction, soft_probability),
+                ("LearnedHardenedGate", hard_prediction, hard_prediction.astype(float)),
+            ):
+                local_rows.append(
+                    {
+                        "scope": "local_predicate",
+                        "train_fraction": fraction,
+                        "seed": seed,
+                        "method": method,
+                        "full_accuracy": accuracy(y_full, prediction),
+                        "full_balanced_accuracy": balanced_accuracy(y_full, prediction),
+                        "ood_accuracy": accuracy(y_full[ood], prediction[ood]),
+                        "ood_balanced_accuracy": balanced_accuracy(y_full[ood], prediction[ood]),
+                        "ood_brier": brier_score(y_full[ood], probability[ood]),
+                        "fit_seconds": model.fit_seconds,
+                        "hardening_seconds": hard_seconds if method == "LearnedHardenedGate" else 0.0,
+                        "soft_to_hard_ood_balanced_drop": soft_balanced - hard_balanced,
+                        "selected_ops": " ".join(model.selected_ops()),
+                    }
+                )
+
+            graph_rng = np.random.default_rng(424242 + seed + int(fraction * 1000))
+            widths = (8, 16, 32)
+            depths = (4, 8, 12)
+            graphs_per_cell = 20 if mode == "smoke" else 60
+            for width in widths:
+                for layers in depths:
+                    labels: list[int] = []
+                    soft_predictions: list[int] = []
+                    hard_predictions: list[int] = []
+                    soft_ms: list[float] = []
+                    hard_ms: list[float] = []
+                    for _ in range(graphs_per_cell):
+                        features, present, source, positive_target, negative_target = _make_layered_graph_with_features(width, layers, graph_rng)
+                        edge_features = features.reshape(-1, 8)
+                        soft_edges = (model.predict_proba(edge_features) >= 0.5).reshape(layers, width, width)
+                        hard_edges = model.predict_hardened(edge_features).reshape(layers, width, width).astype(bool)
+                        for label, target in ((1, positive_target), (0, negative_target)):
+                            started = time.perf_counter_ns()
+                            soft_result = int(_reachable(present & soft_edges, source)[target])
+                            soft_ms.append((time.perf_counter_ns() - started) / 1_000_000)
+                            started = time.perf_counter_ns()
+                            hard_result = int(_reachable(present & hard_edges, source)[target])
+                            hard_ms.append((time.perf_counter_ns() - started) / 1_000_000)
+                            labels.append(label)
+                            soft_predictions.append(soft_result)
+                            hard_predictions.append(hard_result)
+                    for method, predictions, latencies in (
+                        ("LearnedSoftGate+BFS", soft_predictions, soft_ms),
+                        ("LearnedHardenedGate+BFS", hard_predictions, hard_ms),
+                    ):
+                        graph_rows.append(
+                            {
+                                "scope": "learned_gate_bfs",
+                                "train_fraction": fraction,
+                                "seed": seed,
+                                "width": width,
+                                "layers": layers,
+                                "queries": len(labels),
+                                "method": method,
+                                "accuracy": accuracy(np.asarray(labels), np.asarray(predictions)),
+                                "balanced_accuracy": balanced_accuracy(np.asarray(labels), np.asarray(predictions)),
+                                "positive_accuracy": accuracy(np.ones(sum(labels), dtype=np.uint8), np.asarray(predictions)[np.asarray(labels) == 1]),
+                                "negative_accuracy": accuracy(np.zeros(len(labels) - sum(labels), dtype=np.uint8), np.asarray(predictions)[np.asarray(labels) == 0]),
+                                "median_query_ms": float(np.median(latencies)),
+                                "iqr_query_ms": float(np.percentile(latencies, 75) - np.percentile(latencies, 25)),
+                            }
+                        )
+    return write_csv(local_rows, "learned_gate_results.csv"), write_csv(graph_rows, "learned_gate_bfs_results.csv")
+
+
 def run_reachability(mode: str) -> pd.DataFrame:
     widths = (8, 16, 32)
     depths = (2, 4, 6, 8, 12)
@@ -470,6 +595,7 @@ def main() -> None:
     relation, relation_timing = run_relation_filter(args.mode)
     reachability = run_reachability(args.mode)
     noise = run_noise(args.mode)
+    learned_gate, learned_gate_bfs = run_learned_gate_pipeline(args.mode)
     timing_samples = efficiency_timing + relation_timing
     write_csv(timing_samples, "timing_samples.csv")
     source_hashes = {
@@ -494,6 +620,8 @@ def main() -> None:
             "relation": len(relation),
             "reachability": len(reachability),
             "noise": len(noise),
+            "learned_gate": len(learned_gate),
+            "learned_gate_bfs": len(learned_gate_bfs),
             "timing_samples": len(timing_samples),
         },
     }

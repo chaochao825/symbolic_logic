@@ -2,7 +2,7 @@
 
 This repository tests a bounded proposition: a logic-gate circuit can be a **local, trainable/compilable predicate layer** in a neuro-symbolic system. It does not claim that a gate circuit replaces general symbolic search, recursion, planning, perception, or first-order reasoning.
 
-The main result is in [reports/evidence_report_zh.md](reports/evidence_report_zh.md). Raw measurements live in `results/`; every figure is regenerated from those CSV files by `figures/results_plot.py`.
+The main result is in [reports/evidence_report_zh.md](reports/evidence_report_zh.md). Raw measurements live in `results/`; every figure, including `figures/learned_gate_integration.pdf`, is regenerated from those CSV files by `figures/results_plot.py`.
 
 ## What is included
 
@@ -11,6 +11,7 @@ The main result is in [reports/evidence_report_zh.md](reports/evidence_report_zh
 - Dense versus indexed relation filtering to separate Boolean logic from candidate generation.
 - A constructive counterexample: fixed-depth gate reachability fails beyond its unrolling depth; an `oracle local gate predicate + BFS` does not.
 - Grounding bit-flip experiments contrasting hard decisions with uncertainty-preserving probability evaluation.
+- A fixed-wiring differentiable gate proxy with argmax hardening, plus an end-to-end `learned gate + BFS` audit (`results/learned_gate_results.csv` and `results/learned_gate_bfs_results.csv`).
 
 ## Reproduce
 

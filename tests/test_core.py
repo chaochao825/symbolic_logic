@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from logic_core import (  # noqa: E402
     GateBeamSynthesizer,
+    SoftGateCircuit,
     all_assignments,
     compositional_rule,
     packed_compositional_rule,
@@ -66,6 +67,15 @@ class LogicCoreTests(unittest.TestCase):
         self.assertIsNotNone(learner.expression)
         assert learner.expression is not None
         self.assertLessEqual(learner.expression.depth, 4)
+
+    def test_learned_soft_gate_hardening_matches_clean_truth_table(self) -> None:
+        x = all_assignments(8)
+        y = compositional_rule(x)
+        learner = SoftGateCircuit(seed=4, steps=600).fit(x, y)
+        soft = (learner.predict_proba(x) >= 0.5).astype(np.uint8)
+        hard = learner.predict_hardened(x)
+        self.assertGreaterEqual(float(np.mean(soft == y)), 0.99)
+        self.assertGreaterEqual(float(np.mean(hard == y)), 0.99)
 
     def test_indexed_filter_matches_dense_filter(self) -> None:
         rng = np.random.default_rng(3)

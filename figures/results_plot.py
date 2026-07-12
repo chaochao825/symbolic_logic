@@ -34,6 +34,10 @@ COLORS = {
     "SoftProbabilityCircuit": "#1f77b4",
     "dense_boolean_gate": "#d62728",
     "indexed_gate_filter": "#2ca02c",
+    "LearnedSoftGate": "#1f77b4",
+    "LearnedHardenedGate": "#d62728",
+    "LearnedSoftGate+BFS": "#1f77b4",
+    "LearnedHardenedGate+BFS": "#d62728",
 }
 
 
@@ -173,6 +177,40 @@ def plot_relation_filter() -> None:
     finish(fig, "relation_filter.pdf")
 
 
+def plot_learned_gate() -> None:
+    """Plot the newly measured soft-to-hard and learned-BFS interfaces."""
+    local = pd.read_csv(RESULTS / "learned_gate_results.csv")
+    graph = pd.read_csv(RESULTS / "learned_gate_bfs_results.csv")
+    local = local[local["train_fraction"] == 0.50]
+    graph = graph[graph["train_fraction"] == 0.50]
+    methods = ["LearnedSoftGate", "LearnedHardenedGate"]
+    bfs_methods = ["LearnedSoftGate+BFS", "LearnedHardenedGate+BFS"]
+    aggregate = local.groupby("method")["ood_balanced_accuracy"].agg(["mean", "std"])
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0))
+    positions = np.arange(len(methods))
+    axes[0].bar(
+        positions,
+        [aggregate.loc[m, "mean"] for m in methods],
+        yerr=[aggregate.loc[m, "std"] for m in methods],
+        capsize=2.5,
+        color=[COLORS[m] for m in methods],
+    )
+    axes[0].set_xticks(positions, ["soft gate", "hardened gate"])
+    axes[0].set_ylim(0, 1.06)
+    axes[0].set_ylabel("Local OOD balanced accuracy")
+    axes[0].set_xlabel("(a) fixed-wiring hardening")
+    axes[0].grid(axis="y", linestyle="--", alpha=0.25)
+    for method in bfs_methods:
+        subset = graph[graph["method"] == method].groupby("layers")["balanced_accuracy"].agg(["mean", "std"]).reset_index()
+        axes[1].plot(subset["layers"], subset["mean"], marker="o", label=method.replace("Learned", "").replace("+BFS", " + BFS"), color=COLORS[method])
+    axes[1].set_ylim(0.42, 1.05)
+    axes[1].set_xlabel("(b) path length")
+    axes[1].set_ylabel("Graph balanced accuracy")
+    axes[1].legend(loc="lower left")
+    axes[1].grid(axis="y", linestyle="--", alpha=0.25)
+    finish(fig, "learned_gate_integration.pdf")
+
+
 def main() -> None:
     setup_style()
     plot_predicate()
@@ -180,6 +218,7 @@ def main() -> None:
     plot_reachability()
     plot_noise()
     plot_relation_filter()
+    plot_learned_gate()
 
 
 if __name__ == "__main__":

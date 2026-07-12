@@ -356,6 +356,124 @@ class TinyMLP:
         return (self.predict_proba(x) >= 0.5).astype(np.uint8)
 
 
+class SoftGateCircuit:
+    """A small differentiable gate DAG used for the soft-to-hard audit.
+
+    The wiring is intentionally fixed so that the experiment isolates the
+    *operator learning and hardening* question rather than conflating it with
+    architecture search.  Each node is a softmax mixture of AND/OR/XOR/NAND
+    fuzzy operators.  ``predict_hardened`` compiles every mixture to its
+    highest-probability Boolean operator and evaluates the resulting DAG with
+    crisp inputs.
+
+    This is a controlled proxy for a learned soft-LGN, not a reproduction of a
+    published LGN implementation.  The explicit distinction is recorded in
+    the report and keeps the end-to-end result falsifiable.
+    """
+
+    OP_NAMES = ("AND", "OR", "XOR", "NAND")
+    # The final node implements the compositional rule when the target
+    # operators are AND, AND, XOR, OR, OR, NAND, AND respectively.
+    PAIRS = ((0, 1), (2, 3), (4, 5), (8, 9), (11, 10), (6, 7), (12, 13))
+
+    def __init__(self, seed: int = 0, lr: float = 0.08, steps: int = 1600) -> None:
+        self.seed = seed
+        self.lr = lr
+        self.steps = steps
+        self.logits = np.zeros((len(self.PAIRS), len(self.OP_NAMES)), dtype=np.float64)
+        self.fit_seconds = 0.0
+        self.loss = float("nan")
+
+    @staticmethod
+    def _softmax(logits: np.ndarray) -> np.ndarray:
+        shifted = logits - np.max(logits, axis=-1, keepdims=True)
+        exp = np.exp(shifted)
+        return exp / np.sum(exp, axis=-1, keepdims=True)
+
+    @staticmethod
+    def _operator_values(a: np.ndarray, b: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        values = np.stack((a * b, a + b - a * b, a + b - 2 * a * b, 1.0 - a * b), axis=-1)
+        da = np.stack((b, 1.0 - b, 1.0 - 2.0 * b, -b), axis=-1)
+        db = np.stack((a, 1.0 - a, 1.0 - 2.0 * a, -a), axis=-1)
+        return values, da, db
+
+    def _forward(self, x: np.ndarray, with_cache: bool = False):
+        values: list[np.ndarray] = [np.asarray(x, dtype=np.float64)[:, i] for i in range(8)]
+        caches: list[tuple[int, int, np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = []
+        probabilities = self._softmax(self.logits)
+        for node, (left_index, right_index) in enumerate(self.PAIRS):
+            a, b = values[left_index], values[right_index]
+            op_values, da, db = self._operator_values(a, b)
+            pi = probabilities[node]
+            output = op_values @ pi
+            values.append(output)
+            if with_cache:
+                caches.append((left_index, right_index, op_values, da, db, pi))
+        return (values[-1], values, caches) if with_cache else values[-1]
+
+    def fit(self, x: np.ndarray, y: np.ndarray) -> "SoftGateCircuit":
+        import time
+
+        started = time.perf_counter()
+        x = np.asarray(x, dtype=np.float64)
+        y = np.asarray(y, dtype=np.float64).reshape(-1)
+        rng = np.random.default_rng(self.seed)
+        self.logits = rng.normal(0.0, 0.04, size=self.logits.shape)
+        m = np.zeros_like(self.logits)
+        v = np.zeros_like(self.logits)
+        beta1, beta2 = 0.9, 0.999
+        n = max(1, len(x))
+        for step in range(1, self.steps + 1):
+            output, values, caches = self._forward(x, with_cache=True)
+            # MSE keeps the proxy stable when hard Boolean inputs make a
+            # fuzzy operator output exactly 0 or 1 at initialization.
+            grad_values = [np.zeros_like(item) for item in values]
+            grad_values[-1] = (output - y) / n
+            grad_logits = np.zeros_like(self.logits)
+            for node in range(len(self.PAIRS) - 1, -1, -1):
+                left_index, right_index, op_values, da, db, pi = caches[node]
+                g = grad_values[node + 8]
+                mixed = op_values @ pi
+                grad_logits[node] = np.sum(g[:, None] * pi[None, :] * (op_values - mixed[:, None]), axis=0)
+                grad_values[left_index] += g * (da @ pi)
+                grad_values[right_index] += g * (db @ pi)
+            m = beta1 * m + (1.0 - beta1) * grad_logits
+            v = beta2 * v + (1.0 - beta2) * (grad_logits * grad_logits)
+            m_hat = m / (1.0 - beta1**step)
+            v_hat = v / (1.0 - beta2**step)
+            self.logits -= self.lr * m_hat / (np.sqrt(v_hat) + 1e-8)
+        output = self.predict_proba(x)
+        self.loss = float(np.mean((output - y) ** 2))
+        self.fit_seconds = time.perf_counter() - started
+        return self
+
+    def predict_proba(self, x: np.ndarray) -> np.ndarray:
+        return np.clip(self._forward(np.asarray(x, dtype=np.float64)), 0.0, 1.0)
+
+    def selected_ops(self) -> tuple[str, ...]:
+        return tuple(self.OP_NAMES[int(index)] for index in np.argmax(self.logits, axis=1))
+
+    @staticmethod
+    def _apply_boolean(op: str, a: np.ndarray, b: np.ndarray) -> np.ndarray:
+        if op == "AND":
+            return a & b
+        if op == "OR":
+            return a | b
+        if op == "XOR":
+            return a ^ b
+        if op == "NAND":
+            return 1 - (a & b)
+        raise ValueError(op)
+
+    def predict_hardened(self, x: np.ndarray) -> np.ndarray:
+        """Evaluate the argmax-compiled Boolean DAG on thresholded inputs."""
+        source = (np.asarray(x, dtype=np.float64) >= 0.5).astype(np.uint8)
+        values: list[np.ndarray] = [source[:, i] for i in range(8)]
+        for op, (left_index, right_index) in zip(self.selected_ops(), self.PAIRS):
+            values.append(self._apply_boolean(op, values[left_index], values[right_index]))
+        return values[-1].astype(np.uint8)
+
+
 def soft_probability_rule(probabilities: np.ndarray) -> np.ndarray:
     """Exact Bernoulli probability for the compositional rule under independence."""
     p = np.asarray(probabilities, dtype=np.float64)
