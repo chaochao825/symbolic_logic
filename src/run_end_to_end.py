@@ -77,6 +77,7 @@ def run(mode: str) -> pd.DataFrame:
     for seed in seeds:
         train = make_dataset(n_train, 8, patch_size, 100_000 + seed, "clean")
         validation = make_dataset(n_validation, 8, patch_size, 110_000 + seed, "clean")
+        validation_corrupt = make_dataset(n_validation, 8, patch_size, 115_000 + seed, "correlated_occlusion")
         encoder = PatchMLPEncoder(patch_size * patch_size * 3, hidden=40, seed=200_000 + seed, lr=0.008)
         train_patches = extract_patches(train.images, 8, patch_size)
         validation_patches = extract_patches(validation.images, 8, patch_size)
@@ -85,7 +86,14 @@ def run(mode: str) -> pd.DataFrame:
         a, b, edge_labels = collect_edge_training_data(train, encoder)
         gate = LearnedBinaryGate(seed=300_000 + seed).fit(a, b, edge_labels, steps=700)
         validation_scores = infer_scores(validation, encoder, gate)
-        soft_threshold, confidence_threshold = tune_hybrid(validation.task_labels, validation_scores)
+        validation_corrupt_scores = infer_scores(validation_corrupt, encoder, gate)
+        tuning_scores = {
+            "hard": np.concatenate((np.asarray(validation_scores["hard"]), np.asarray(validation_corrupt_scores["hard"]))),
+            "soft": np.concatenate((np.asarray(validation_scores["soft"]), np.asarray(validation_corrupt_scores["soft"]))),
+            "confidence": np.concatenate((np.asarray(validation_scores["confidence"]), np.asarray(validation_corrupt_scores["confidence"]))),
+        }
+        tuning_labels = np.concatenate((validation.task_labels, validation_corrupt.task_labels))
+        soft_threshold, confidence_threshold = tune_hybrid(tuning_labels, tuning_scores)
         save_model(seed, encoder, gate, soft_threshold, confidence_threshold)
         test_sets = [
             make_dataset(n_test, 8, patch_size, 120_000 + seed, "clean"),
@@ -109,6 +117,8 @@ def main() -> None:
     started = time.perf_counter()
     frame = run(args.mode)
     source_hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in (ROOT / "src").glob("*.py")}
+    artifact_paths = [RESULTS / "end_to_end_gridworld_results.csv", *sorted(MODEL_DIR.glob("seed_*"))]
+    artifact_hashes = {str(path.relative_to(ROOT)).replace("\\", "/"): hashlib.sha256(path.read_bytes()).hexdigest() for path in artifact_paths}
     metadata = {
         "mode": args.mode,
         "python": sys.version,
@@ -125,9 +135,11 @@ def main() -> None:
             "patch_size": 4,
             "full_train_samples_per_seed": 1200,
             "full_validation_samples_per_seed": 300,
+            "validation_conditions": ["clean", "correlated_occlusion"],
             "full_test_samples_per_condition_per_seed": 400,
         },
         "source_sha256": source_hashes,
+        "artifact_sha256": artifact_hashes,
     }
     (RESULTS / "end_to_end_gridworld_metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     print(json.dumps(metadata, indent=2))

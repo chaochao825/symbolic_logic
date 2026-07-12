@@ -13,7 +13,9 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from neurosymbolic_gridworld import (  # noqa: E402
     LearnedBinaryGate,
+    _adjacent_edges,
     _grid_reachable,
+    _soft_path_score,
     extract_patches,
     make_dataset,
 )
@@ -44,7 +46,14 @@ class EndToEndGridworldTests(unittest.TestCase):
         self.assertEqual(gate.selected_op(), "AND")
         self.assertTrue(np.array_equal(gate.predict_hard(a, b).astype(np.uint8), y))
 
+    def test_soft_solver_is_max_product_path_score(self) -> None:
+        edge_source, edge_target = _adjacent_edges(2)
+        probability = np.zeros(len(edge_source), dtype=float)
+        for index, (left, right) in enumerate(zip(edge_source, edge_target)):
+            if (int(left), int(right)) in {(0, 1), (1, 3)}:
+                probability[index] = 0.8
+        self.assertAlmostEqual(_soft_path_score(2, edge_source, edge_target, probability, 0, 3), 0.64)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
-

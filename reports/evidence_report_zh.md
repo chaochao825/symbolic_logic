@@ -195,8 +195,8 @@ rendered RGB grid image
 
 ![端到端 gridworld](../figures/end_to_end_gridworld.png)
 
-相关遮挡下，hard pipeline 的 Brier 为 `0.0717 ± 0.0243`，soft pipeline 为 `0.0528 ± 0.0183`，hybrid 为 `0.0639 ± 0.0189`。Hybrid 的任务准确率最高，但 soft 的概率校准更好，说明“低置信回退”需要分别优化分类效用和概率质量。相关遮挡下 source localization 为 `0.989 ± 0.009`、target localization 为 `1.000`；任务错误主要来自局部 wall/free grounding 和路径连通性放大。
+相关遮挡下，hard pipeline 的 Brier 为 `0.0717 ± 0.0243`，soft pipeline 为 `0.0528 ± 0.0183`，hybrid 为 `0.0639 ± 0.0189`。Hybrid 的任务准确率最高，而 soft 的 max-product path score 在该测试集上的 Brier 更低；该 score 不是精确 reachability probability，不能据此宣称一般概率校准成立。相关遮挡下 source localization 为 `0.989 ± 0.009`、target localization 为 `1.000`；任务错误与局部 wall/free grounding 和路径连通性放大一致。
 
-8×8 条件下，批量 encoder 时间约 `0.031 ms/image`，Python solver 中位数约 `0.15 ms/query`；10×10 分别约 `0.049 ms/image` 和 `0.20 ms/query`。这些是 NumPy 原型测量，不是神经网络加速器或硬件 PPA。
+8×8 clean 条件下，批量 encoder 时间约 `0.030 ms/image`，Python solver 中位数约 `0.14 ms/query`；10×10 分别约 `0.047 ms/image` 和 `0.19 ms/query`。这些是 NumPy 原型测量，不是神经网络加速器或硬件 PPA。
 
 这项实验完成了**原始像素输入到符号任务输出的推理闭环**，但仍有三条明确边界：encoder 与 gate 使用中间标签监督，而不是只用最终任务损失训练；四邻接候选拓扑由程序给出；learned gate 只导出 NumPy hard operator，尚未自动生成 packed C、AIG 或 RTL。模型权重与 gate IR 保存在 `results/gridworld_models/`，运行元数据包含源码哈希和运行开始时的 Git 状态。

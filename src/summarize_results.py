@@ -111,6 +111,7 @@ def main() -> None:
             "balanced_accuracy",
             "brier",
             "cell_grounding_accuracy",
+            "cell_grounding_ece",
             "source_localization_accuracy",
             "target_localization_accuracy",
             "fallback_rate",

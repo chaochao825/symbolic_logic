@@ -224,7 +224,8 @@ class PatchMLPEncoder:
         logits = self.predict_logits(x)
         y = np.asarray(y, dtype=np.int64)
         best = (float("inf"), 1.0)
-        for temperature in np.linspace(0.55, 3.0, 50):
+        temperatures = np.unique(np.concatenate((np.geomspace(0.08, 1.0, 40), np.linspace(1.1, 5.0, 40))))
+        for temperature in temperatures:
             probability = self._softmax(logits / temperature)
             nll = float(-np.log(np.clip(probability[np.arange(len(y)), y], 1e-12, 1.0)).mean())
             if nll < best[0]:
@@ -342,6 +343,19 @@ def _decode_dataset(dataset: GridDataset, encoder: PatchMLPEncoder) -> tuple[np.
     return probabilities, source.astype(np.int32), target.astype(np.int32), milliseconds_per_image
 
 
+def _multiclass_ece(probabilities: np.ndarray, labels: np.ndarray, bins: int = 10) -> float:
+    flat_probability = probabilities.reshape(-1, probabilities.shape[-1])
+    flat_labels = labels.reshape(-1)
+    confidence = flat_probability.max(axis=1)
+    correct = flat_probability.argmax(axis=1) == flat_labels
+    error = 0.0
+    for lower, upper in zip(np.linspace(0.0, 1.0, bins + 1)[:-1], np.linspace(0.0, 1.0, bins + 1)[1:]):
+        selected = (confidence > lower) & (confidence <= upper)
+        if selected.any():
+            error += float(selected.mean()) * abs(float(correct[selected].mean()) - float(confidence[selected].mean()))
+    return error
+
+
 def collect_edge_training_data(dataset: GridDataset, encoder: PatchMLPEncoder, max_pairs: int = 100_000) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     probabilities, _, _, _ = _decode_dataset(dataset, encoder)
     edge_source, edge_target = _adjacent_edges(dataset.grid_size)
@@ -370,18 +384,24 @@ def infer_scores(dataset: GridDataset, encoder: PatchMLPEncoder, gate: LearnedBi
     soft = []
     oracle = []
     confidence = []
-    solver_ms = []
+    hard_solver_ms = []
+    soft_solver_ms = []
+    oracle_solver_ms = []
     for index in range(len(dataset.images)):
         passable = 1.0 - probabilities[index, :, WALL]
         edge_probability = gate.predict_proba(passable[edge_source], passable[edge_target])
         hard_edges = gate.predict_hard(passable[edge_source], passable[edge_target])
         started = time.perf_counter_ns()
         hard.append(_bfs_from_edges(dataset.grid_size, edge_source, edge_target, hard_edges, predicted_source[index], predicted_target[index]))
+        hard_solver_ms.append((time.perf_counter_ns() - started) / 1_000_000)
+        started = time.perf_counter_ns()
         soft.append(_soft_path_score(dataset.grid_size, edge_source, edge_target, edge_probability, predicted_source[index], predicted_target[index]))
-        solver_ms.append((time.perf_counter_ns() - started) / 1_000_000)
+        soft_solver_ms.append((time.perf_counter_ns() - started) / 1_000_000)
         truth = dataset.cell_labels[index].reshape(-1) != WALL
         oracle_edges = truth[edge_source] & truth[edge_target]
+        started = time.perf_counter_ns()
         oracle.append(_bfs_from_edges(dataset.grid_size, edge_source, edge_target, oracle_edges, dataset.source_indices[index], dataset.target_indices[index]))
+        oracle_solver_ms.append((time.perf_counter_ns() - started) / 1_000_000)
         cell_confidence = probabilities[index].max(axis=1).mean()
         confidence.append(
             min(
@@ -397,16 +417,20 @@ def infer_scores(dataset: GridDataset, encoder: PatchMLPEncoder, gate: LearnedBi
         "oracle": np.asarray(oracle, dtype=np.uint8),
         "confidence": np.asarray(confidence, dtype=np.float64),
         "cell_accuracy": float(np.mean(cell_prediction == dataset.cell_labels)),
+        "cell_ece": _multiclass_ece(probabilities, dataset.cell_labels),
         "source_accuracy": float(np.mean(predicted_source == dataset.source_indices)),
         "target_accuracy": float(np.mean(predicted_target == dataset.target_indices)),
         "encoder_ms_per_image": encoder_ms,
-        "median_solver_ms": float(np.median(solver_ms)),
+        "hard_solver_ms": np.asarray(hard_solver_ms, dtype=np.float64),
+        "soft_solver_ms": np.asarray(soft_solver_ms, dtype=np.float64),
+        "oracle_solver_ms": np.asarray(oracle_solver_ms, dtype=np.float64),
     }
 
 
 def _best_threshold(labels: np.ndarray, score: np.ndarray) -> float:
     best = (-1.0, 0.5)
-    for threshold in np.linspace(0.05, 0.95, 37):
+    thresholds = np.unique(np.concatenate((np.geomspace(1e-4, 0.1, 30), np.linspace(0.12, 0.95, 34))))
+    for threshold in thresholds:
         value = balanced_accuracy(labels, score >= threshold)
         if value > best[0]:
             best = (value, float(threshold))
@@ -419,7 +443,7 @@ def tune_hybrid(labels: np.ndarray, scores: dict[str, np.ndarray | float]) -> tu
     confidence = np.asarray(scores["confidence"])
     soft_threshold = _best_threshold(labels, soft)
     best = (-1.0, 0.75)
-    for threshold in np.linspace(0.45, 0.95, 21):
+    for threshold in np.linspace(0.10, 0.99, 46):
         prediction = np.where(confidence >= threshold, hard, soft >= soft_threshold)
         value = balanced_accuracy(labels, prediction)
         if value > best[0]:
@@ -446,11 +470,15 @@ def evaluate_methods(
     hybrid = (hybrid_probability >= soft_threshold).astype(np.uint8)
     oracle = np.asarray(scores["oracle"], dtype=np.uint8)
     rows = []
-    for method, prediction, probability in (
-        ("OracleBFS", oracle, oracle.astype(float)),
-        ("HardNeuroSymbolic", hard, hard.astype(float)),
-        ("SoftNeuroSymbolic", soft, soft_probability),
-        ("HybridFallback", hybrid, hybrid_probability),
+    hard_solver_ms = np.asarray(scores["hard_solver_ms"], dtype=np.float64)
+    soft_solver_ms = np.asarray(scores["soft_solver_ms"], dtype=np.float64)
+    oracle_solver_ms = np.asarray(scores["oracle_solver_ms"], dtype=np.float64)
+    hybrid_solver_ms = np.where(fallback, soft_solver_ms, hard_solver_ms)
+    for method, prediction, probability, solver_ms in (
+        ("OracleBFS", oracle, oracle.astype(float), oracle_solver_ms),
+        ("HardNeuroSymbolic", hard, hard.astype(float), hard_solver_ms),
+        ("SoftNeuroSymbolic", soft, soft_probability, soft_solver_ms),
+        ("HybridFallback", hybrid, hybrid_probability, hybrid_solver_ms),
     ):
         rows.append(
             {
@@ -463,13 +491,14 @@ def evaluate_methods(
                 "balanced_accuracy": balanced_accuracy(labels, prediction),
                 "brier": brier_score(labels, probability),
                 "cell_grounding_accuracy": scores["cell_accuracy"],
+                "cell_grounding_ece": scores["cell_ece"],
                 "source_localization_accuracy": scores["source_accuracy"],
                 "target_localization_accuracy": scores["target_accuracy"],
                 "fallback_rate": float(fallback.mean()) if method == "HybridFallback" else 0.0,
                 "soft_threshold": soft_threshold,
                 "confidence_threshold": confidence_threshold,
                 "encoder_ms_per_image": scores["encoder_ms_per_image"],
-                "median_solver_ms": scores["median_solver_ms"],
+                "median_solver_ms": float(np.median(solver_ms)),
                 "selected_gate": gate.selected_op(),
                 "encoder_temperature": encoder.temperature,
                 "encoder_fit_seconds": encoder.fit_seconds,
