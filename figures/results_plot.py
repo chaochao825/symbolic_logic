@@ -46,6 +46,15 @@ COLORS = {
     "HardNeuroSymbolic": "#d62728",
     "SoftNeuroSymbolic": "#1f77b4",
     "HybridFallback": "#2ca02c",
+    "FixedAND": "#7f7f7f",
+    "DifferentiableGateSelector": "#1f77b4",
+    "RateGuidedGateSelector": "#9467bd",
+    "TinyMLP": "#ff7f0e",
+    "TaskOnlyRuleTopologySearch": "#2ca02c",
+    "FixedANDDenseTopology": "#d62728",
+    "Raw": "#7f7f7f",
+    "MCR2Flow": "#1f77b4",
+    "MCR2Flow+ISTA": "#2ca02c",
 }
 
 
@@ -325,6 +334,66 @@ def plot_end_to_end_gridworld() -> None:
     finish(fig, "end_to_end_gridworld.pdf")
 
 
+def plot_logic_discovery() -> None:
+    data = pd.read_csv(RESULTS / "logic_discovery_results.csv")
+    multi = data[data["suite"] == "multi_rule_distractors"]
+    graph = data[data["suite"] == "task_only_reachability"]
+    negative = data[(data["suite"] == "hardening_negative_control") & data["test_balanced_accuracy"].notna()]
+    fig, axes = plt.subplots(1, 3, figsize=(11.0, 3.1))
+    methods = ["FixedAND", "RateGuidedGateSelector", "DifferentiableGateSelector", "TinyMLP"]
+    aggregate = multi.groupby("method")["test_balanced_accuracy"].agg(["mean", "std"])
+    positions = np.arange(len(methods))
+    axes[0].bar(positions, [aggregate.loc[m, "mean"] for m in methods], yerr=[aggregate.loc[m, "std"] for m in methods], capsize=2.5, color=[COLORS[m] for m in methods])
+    axes[0].set_xticks(positions, ["fixed\nAND", "MCR2\nrank", "soft gate\nselector", "MLP"])
+    axes[0].set_ylim(0.4, 1.06)
+    axes[0].set_ylabel("Balanced accuracy")
+    axes[0].set_xlabel("(a) four rules + distractors")
+    graph_methods = ["FixedANDDenseTopology", "TaskOnlyRuleTopologySearch"]
+    graph_agg = graph.groupby("method")["test_balanced_accuracy"].agg(["mean", "std"])
+    axes[1].bar(np.arange(2), [graph_agg.loc[m, "mean"] for m in graph_methods], yerr=[graph_agg.loc[m, "std"] for m in graph_methods], capsize=2.5, color=[COLORS[m] for m in graph_methods])
+    axes[1].set_xticks(np.arange(2), ["fixed gate +\ndense topology", "task-only rule +\ntopology search"])
+    axes[1].set_ylim(0.4, 1.06)
+    axes[1].set_xlabel("(b) graph-level supervision")
+    neg_agg = negative.groupby("task")["test_balanced_accuracy"].agg(["mean", "std"]).sort_index()
+    axes[2].bar(np.arange(len(neg_agg)), neg_agg["mean"], yerr=neg_agg["std"], capsize=2.5, color="#d62728")
+    axes[2].axhline(0.9, color="black", linestyle="--", linewidth=0.8, label="accept threshold")
+    axes[2].set_xticks(np.arange(len(neg_agg)), [name.replace("continuous_", "continuous\n").replace("random_", "random\n") for name in neg_agg.index])
+    axes[2].set_ylim(0.35, 1.06)
+    axes[2].set_xlabel("(c) one-gate negative controls")
+    axes[2].legend(loc="upper right")
+    for axis in axes:
+        axis.grid(axis="y", linestyle="--", alpha=0.25)
+    finish(fig, "logic_discovery.pdf")
+
+
+def plot_rate_reduction() -> None:
+    data = pd.read_csv(RESULTS / "rate_reduction_results.csv")
+    subspaces = data[data["suite"] == "union_subspaces"]
+    boolean = data[data["suite"] == "booleanization"]
+    fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.2))
+    methods = ["Raw", "MCR2Flow", "MCR2Flow+ISTA"]
+    aggregate = subspaces.groupby("method")[["rate_reduction_bits", "zero_fraction"]].agg(["mean", "std"])
+    positions = np.arange(len(methods))
+    axes[0].bar(positions, [aggregate.loc[m, ("rate_reduction_bits", "mean")] for m in methods], yerr=[aggregate.loc[m, ("rate_reduction_bits", "std")] for m in methods], capsize=2.5, color=[COLORS[m] for m in methods])
+    axes[0].set_xticks(positions, ["raw", "MCR2 flow", "MCR2 + ISTA"])
+    axes[0].set_ylabel("Rate reduction proxy (bits)")
+    axes[0].set_xlabel("(a) union of subspaces")
+    symbols = {"RawBits": "o", "RateReducedSign": "s"}
+    colors = {"and2": "#1f77b4", "majority3": "#2ca02c", "parity4": "#ff7f0e", "random_lut": "#d62728"}
+    bool_agg = boolean.groupby(["task", "method"])[["rate_reduction_bits", "gate_count"]].mean().reset_index()
+    for task, group in bool_agg.groupby("task"):
+        for _, row in group.iterrows():
+            axes[1].scatter(row["rate_reduction_bits"], row["gate_count"], marker=symbols[row["method"]], color=colors[task], s=48)
+        last = group.iloc[-1]
+        axes[1].annotate(task.replace("_", " "), (last["rate_reduction_bits"], last["gate_count"]), xytext=(4, 3), textcoords="offset points", fontsize=8)
+    axes[1].set_xlabel("Rate reduction proxy (bits)")
+    axes[1].set_ylabel("Synthesized gate count")
+    axes[1].set_title("(b) sign codes unchanged", fontsize=10)
+    axes[0].grid(axis="y", linestyle="--", alpha=0.25)
+    axes[1].grid(linestyle="--", alpha=0.25)
+    finish(fig, "rate_reduction_booleanization.pdf")
+
+
 def main() -> None:
     setup_style()
     plot_predicate()
@@ -338,6 +407,8 @@ def main() -> None:
     plot_probability_marginalization()
     plot_planning_frontier()
     plot_end_to_end_gridworld()
+    plot_logic_discovery()
+    plot_rate_reduction()
 
 
 if __name__ == "__main__":

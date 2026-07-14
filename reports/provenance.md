@@ -18,6 +18,8 @@ The supplied documents were read as UTF-8. They were not copied into this reposi
 - New hardening artifacts: `results/learned_gate_results.csv` and `results/learned_gate_bfs_results.csv` (full run: 40 local rows and 360 graph rows).
 - New state/complexity artifacts: `results/state_transition_results.csv` (26 rows), `results/planning_frontier_results.csv` (22 rows), `results/noncompressible_scaling_results.csv` (60 rows), and `results/probability_marginalization_results.csv` (100 rows).
 - End-to-end visual artifacts: `results/end_to_end_gridworld_results.csv` (36 rows), `results/end_to_end_gridworld_metadata.json`, and three encoder/gate model pairs under `results/gridworld_models/`.
+- Logic-discovery artifacts: `results/logic_discovery_results.csv` (125 rows), covering five seeds, four primitive rules, distractors, composition transfer, task-only topology search, and hardening negative controls.
+- Rate-reduction artifacts: `results/rate_reduction_results.csv` (60 rows) and `results/rate_logic_metadata.json`; the final run started from clean commit `c68277e` on Python 3.8.10/NumPy 1.24.4 through SSH profile 210.
 - Figure source: `figures/results_plot.py`; it reads only the raw CSV files, including `figures/learned_gate_integration.pdf`.
 - Core exactness tests: `tests/test_core.py`.
 - The previous mojibake-encoded report is preserved at `trash/20260712_evidence_report_revision/evidence_report_zh_legacy.md`; the current report is UTF-8.

@@ -202,3 +202,69 @@ rendered RGB grid image
 这些延迟是 NumPy 原型的组件核心计时，不含 patch 提取、source/target argmax、gate 推理及接口成本，不能相加冒充完整端到端延迟，也不是神经网络加速器或硬件 PPA。
 
 这项实验完成了**原始像素输入到符号任务输出的推理闭环**，但仍有三条明确边界：encoder 与 gate 使用中间标签监督，而不是只用最终任务损失训练；四邻接候选拓扑由程序给出；learned gate 只导出 NumPy hard operator，尚未自动生成 packed C、AIG 或 RTL。模型权重与 gate IR 保存在 `results/gridworld_models/`，运行元数据包含源码哈希和运行开始时的 Git 状态。
+
+## 13. 从“恢复 AND”到逻辑发现
+
+为避免把预设 AND 的恢复误写成一般逻辑学习，`logic_discovery_results.csv` 加入了五种子受控实验。可微选择器在 8 个输入中的 28 个无序 pair 与 AND/OR/XOR/NAND 四个算子上建立 softmax，共 112 个候选；训练后只 harden 一个候选。
+
+| 方法 | 四规则+distractor 平衡准确率 | 算子恢复 | 输入 pair 恢复 | 描述成本 |
+|---|---:|---:|---:|---:|
+| Fixed AND | 0.556 ± 0.100 | 不适用 | 不适用 | 2 bits（仅算子） |
+| 仅 MCR² 排序 | 0.556 ± 0.100 | 0.25 | 0.05 | 7 bits |
+| Differentiable gate selector | **1.000 ± 0.000** | **1.00** | **1.00** | 7 bits |
+| TinyMLP | **1.000 ± 0.000** | 不可直接抽取 | 不可直接抽取 | 5,152 parameter bits |
+
+这里的 7 bits 是固定长索引成本：从 28 个 pair 中选一个，再从 4 个算子中选一个；MLP 的 5,152 bits 包含 161 个 32-bit 权重和 bias，只是显式存储量对照，不是熵编码或硬件面积。选择器平均拟合时间为 `0.0489 s`，MLP 为 `0.0920 s`。在 210 服务器的 1,000-row NumPy batch 上，固定 AND、已 harden 的可微选择器和 MLP 的 per-run median 均值分别为 `1.60/4.67/121.86 μs`；这些是 Python/NumPy 原型 kernel timing，不含数据搬运，也不能外推 ASIC/FPGA PPA。
+
+只在 depth-1 上学习四个算子的身份，再无训练地组合到 depth-2/3，真值表准确率均为 1.0。这说明已学会的 primitive 可以系统组合，但组合树仍由程序给出，因此不是未见结构发现。更强的 task-only 测试不给 edge label，只给图级 reachability；有限搜索同时选择输入 pair、算子和四类候选关系的 topology mask，五个种子在测试集上均为 1.0，并全部恢复隐藏规则与 mask；固定 AND+dense topology 只有 `0.583 ± 0.052`。这里学习的是有限关系类型 mask，不是任意对象图或连续 sparse router。
+
+负例的拒绝只看独立 validation split，不读取 test 指标；当 validation 平衡准确率低于 `0.90` 时 abstain。五个种子均拒绝了 majority-3、parity-4、random LUT 和连续阈值的一门近似；四者 test 平衡准确率分别为 `0.726/0.448/0.554/0.747`。概率乘积是另一种语义负例：soft AND 的 MSE 为 0，hardened AND 为 `0.0825`，说明“同一个算子名称”不保证 hard 输出保留概率值。
+
+![逻辑发现与拒绝控制](../figures/logic_discovery.png)
+
+这些结果把结论推进到“在有限候选库内能学习变量绑定、算子和关系类型”，但仍没有覆盖任意 learned wiring、从自然图像只靠任务损失发现谓词、或自动综合深层最小电路。
+
+## 14. MCR²、ReduNet/CRATE 代理与 Booleanization
+
+MCR² 对有限样本矩阵 $Z\in\mathbb{R}^{d\times m}$ 使用带精度参数的高斯 log-det 代理：
+
+\[
+R_\epsilon(Z)=\frac{1}{2}\log_2\det\left(I+\frac{d}{m\epsilon^2}ZZ^\top\right),\qquad
+\Delta R=R_\epsilon(Z)-\sum_j\frac{m_j}{m}R_\epsilon(Z_j).
+\]
+
+`rate_logic_experiments.py` 实现了这个目标、解析梯度、有限差分回归测试以及重复梯度层；每层可选接一个 ISTA soft-threshold。它复现的是 MCR²/ReduNet 的核心目标与展开思想，不是官方 ReduNet 或 CRATE 训练栈。MCR² 原论文、ReduNet、MCR² 变分加速与 CRATE 的一手来源列在 `reports/references.md` 的 19–23 项。
+
+三类合成子空间上的五种子结果为：
+
+| 表示 | ΔR proxy (bits) | 零元素比例 | 子空间相干性 | 经验码字熵 | 线性重建 MSE |
+|---|---:|---:|---:|---:|---:|
+| Raw | 3.838 ± 0.308 | 0.000 | 0.862 | 7.119 | 0.0148 |
+| MCR² flow | **4.916 ± 0.173** | 0.000 | **0.670** | 7.074 | 0.0145 |
+| MCR² flow + ISTA | 4.051 ± 0.209 | **0.465** | 0.755 | **6.631** | 0.0219 |
+
+纯 MCR² 更新提高了 rate reduction 并降低类子空间相干性；ISTA 获得 46.5% 精确零和更低经验码字熵，但牺牲了部分 ΔR 并增加重建误差。这支持“压缩/线性化与稀疏化可由迭代目标组织”的受控版本，也直接显示多个目标之间存在 Pareto trade-off，并非一个项自动同时最优。
+
+CRATE-style 共享投影代理把每个子空间基 $U_k$ 同时用于 $U_k^\top Z$ 的分析投影与 $U_k(\cdot)$ 的合成映射。在 `d=12`、3 heads、每 head 4 维的记账中，共享基有 144 个参数，独立 Q/K/V 投影为 432 个，比例为 1/3；这不含标准 attention 的输出投影、bias、归一化或任务精度，也不能推出任意 Transformer 都能无损共享 Q/K/V。
+
+### 14.1 为什么不能直接从 ΔR 推到 bit 数或门数
+
+公式使用 `log2`，所以数值单位可写为 bits；但它是给定高斯/子空间近似、有限样本与失真尺度 $\epsilon$ 的**码率代理**，不是某个实际 codec 生成的 prefix-code 长度。真实 bit 成本还依赖量化器、码本、概率模型、有限精度、解码器和元数据。一般率失真求解困难，也不能因为这个近似可计算就把它解释为任意分布的精确率失真函数。
+
+Boolean 对照给出更直接的反例：MCR² flow 后四类任务的 sign-flip rate 全为 0，经验码字熵保持 8 bits，GateBeam 表达式与门数也逐任务完全不变；AND-2 的 ΔR 却从 0.224 增到 0.288，random LUT 从 0.0528 增到 0.1025。也就是说，连续代理改善时，二值码与门电路可以一位不变。
+
+更强的失败来自“仅用 MCR² 选一门”。对于本实验的标量行向量 $z\in\{-1,+1\}^{1\times m}$，未中心化二阶项满足 $zz^\top=m$，等价地 $(1/m)zz^\top=1$，因此丢掉符号；所有候选单门的 ΔR 均为 0。不允许用准确率偷偷打破平局时，它退化为固定选择，结果与 Fixed AND 同为 0.556。原始 MCR² 因而不能单独识别 AND/OR/XOR/NAND 的 Boolean 真值语义。
+
+![率缩减与 Boolean 门数](../figures/rate_reduction_booleanization.png)
+
+### 14.2 可检验的 Boolean-aware 扩展
+
+若要让率缩减真正引导门化，目标中必须显式加入 Boolean 语义和实现成本，而不是把 ΔR 当门数替身。例如可测试：
+
+\[
+\mathcal{J}=\mathcal{L}_{task}-\lambda\Delta R_\epsilon(Z;\Pi)
++\beta\lVert Z\rVert_1+\tau H(q)
++\gamma\sum_h q_h C_{gate}(h)+\eta D(X,\hat X),
+\]
+
+其中 $q_h$ 是候选 wiring/operator 的分布，$H(q)$ 推动可硬化选择，$C_{gate}$ 是按目标库定义的门/LUT/线网成本，$D$ 约束有限精度解码失真。对于 Boolean 表示，还需要能区分符号、联合赋值和高阶相关性的统计量，例如离散码字交叉熵、可学习 Bernoulli/Ising codec、truth-table MDL 或直接的 AIG/LUT 综合成本。当前实验验证了原始 MCR² 的几何作用及其符号盲区；上式是下一阶段设计，不是已验证结果。

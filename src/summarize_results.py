@@ -121,6 +121,45 @@ def main() -> None:
         "end_to_end_gridworld",
         rng,
     )
+    logic_discovery = pd.read_csv(RESULTS / "logic_discovery_results.csv")
+    summary += emit_grouped(
+        logic_discovery,
+        ["suite", "task", "method"],
+        [
+            "test_balanced_accuracy",
+            "operator_recovered",
+            "inputs_recovered",
+            "topology_recovered",
+            "rejected_hardening",
+            "description_bits",
+            "gate_count",
+            "fit_seconds",
+            "margin",
+            "inference_us_per_1000",
+            "validation_balanced_accuracy",
+        ],
+        "logic_discovery",
+        rng,
+    )
+    rate_reduction = pd.read_csv(RESULTS / "rate_reduction_results.csv")
+    summary += emit_grouped(
+        rate_reduction,
+        ["suite", "task", "method"],
+        [
+            "global_rate_bits",
+            "within_rate_bits",
+            "rate_reduction_bits",
+            "zero_fraction",
+            "subspace_coherence",
+            "empirical_code_entropy_bits",
+            "fixed_code_bits",
+            "reconstruction_mse",
+            "gate_count",
+            "boolean_accuracy",
+        ],
+        "rate_reduction",
+        rng,
+    )
     pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False)
     print(f"wrote {len(summary)} aggregate rows to {RESULTS / 'summary_metrics.csv'}")
 
