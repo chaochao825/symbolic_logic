@@ -34,3 +34,11 @@ The report uses sources for field context; they are not used to manufacture any 
 16. [Cook, *The Complexity of Theorem-Proving Procedures* (1971)](https://doi.org/10.1145/800157.805047). SAT NP-completeness.
 17. [Valiant, *The Complexity of Enumeration and Reliability Problems* (1979)](https://doi.org/10.1137/0208032). #P complexity, relevant to weighted model counting.
 18. [Shannon, *The Synthesis of Two-Terminal Switching Circuits* (1949)](https://doi.org/10.1002/j.1538-7305.1949.tb03624.x). Counting arguments behind the fact that most Boolean functions do not admit small circuits.
+
+## Coding rate reduction and white-box networks
+
+19. [Yu et al., *Learning Diverse and Discriminative Representations via the Principle of Maximal Coding Rate Reduction* (2020)](https://arxiv.org/abs/2006.08558). Defines the finite-sample log-det MCR² objective used in the controlled reproduction.
+20. [Chan et al., *ReduNet: A White-box Deep Network from the Principle of Maximizing Rate Reduction* (2021)](https://arxiv.org/abs/2105.10446). Unrolls rate-reduction optimization and derives linear/nonlinear and shift-invariant convolutional operators.
+21. [Baek et al., *Efficient Maximal Coding Rate Reduction by Variational Forms* (CVPR 2022)](https://openaccess.thecvf.com/content/CVPR2022/html/Baek_Efficient_Maximal_Coding_Rate_Reduction_by_Variational_Forms_CVPR_2022_paper.html). Shows that direct log-det MCR² has material computational cost and gives scalable variational forms.
+22. [Yu et al., *White-Box Transformers via Sparse Rate Reduction: Compression Is All There Is?* (2023)](https://arxiv.org/abs/2311.13110). Derives CRATE-style subspace attention and an ISTA sparsification block from a sparse rate-reduction objective.
+23. [Wang et al., *A Global Geometric Analysis of Maximal Coding Rate Reduction* (2024)](https://arxiv.org/abs/2406.01909). Characterizes the controlled objective landscape while also noting that earlier theory did not provide a complete global justification.

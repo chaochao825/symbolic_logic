@@ -8,6 +8,8 @@ Can logic-gate circuits serve as a useful, efficient component of symbolic AI?
 
 This project tests a deliberately narrow claim: a gate circuit is a plausible **learnable and compilable local predicate layer** for neuro-symbolic systems, especially for finite Boolean composition, local constraint checks, and repeated bit-level evaluation. The extension now includes a component-supervised pixel-to-predicate gridworld encoder, but the gate layer is not evaluated as a replacement for a general theorem prover, Datalog engine, planner, or perception encoder.
 
+The rate-reduction extension asks a separate question: whether finite-precision Gaussian coding-rate reduction can guide Booleanization or predict literal code length and Boolean circuit size. It reproduces the MCR² log-det objective and its gradient flow on controlled subspace data, then measures empirical code entropy, reconstruction distortion, hardening error, and synthesized gate count. A correlation is not assumed in advance; failure to order gate counts is a valid negative result.
+
 ## Audience and deliverable
 
 The deliverable is a reproducible Python experiment suite and a Chinese evidence report. It uses synthetic, fully enumerable Boolean predicates and layered reachability graphs so that both successes and failure modes can be checked exactly.
