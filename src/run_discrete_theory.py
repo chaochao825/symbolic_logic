@@ -19,6 +19,7 @@ from boolean_mdl import (
     discrete_rate_reduction,
     exact_formula_library,
     joint_dirichlet_code_bits,
+    kt_binary_prefix_bits,
     kt_independent_matrix_bits,
     mask_to_values,
     occam_error_bound,
@@ -264,6 +265,8 @@ def run_representation_codes() -> pd.DataFrame:
                     "routed_reduction_side_info_bits": side.routed_reduction_bits,
                     "conditional_bits_labels_encoded": no_side.conditional_bits,
                     "signed_reduction_labels_encoded_bits": no_side.raw_reduction_bits,
+                    "label_code_bits": no_side.label_bits,
+                    "incorrect_asymmetric_partition_reduction_bits": side.global_bits - side.conditional_bits - kt_binary_prefix_bits(labels),
                     "direct_global_bits": joint_dirichlet_code_bits(codes) if joint else kt_independent_matrix_bits(codes),
                 }
             )

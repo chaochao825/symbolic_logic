@@ -123,6 +123,7 @@ class DiscreteRateReduction:
     raw_reduction_bits: int
     routed_reduction_bits: int
     labels_are_side_information: bool
+    label_bits: int
 
 
 def discrete_rate_reduction(
@@ -135,8 +136,9 @@ def discrete_rate_reduction(
     """Compare one global universal code against class-conditional codes.
 
     If labels are side information, their cost is zero on both sides.  If they
-    are not, the label sequence is explicitly coded with KT.  ``routed`` is
-    nonnegative because the global code remains an available route.
+    are not, the same KT label length is added to both competing joint codes
+    and therefore cancels in the reduction.  ``routed`` is nonnegative because
+    the global code remains an available route.
     """
     codes = np.asarray(binary_codes, dtype=np.uint8)
     labels = np.asarray(labels, dtype=np.uint8).reshape(-1)
@@ -145,10 +147,11 @@ def discrete_rate_reduction(
     encoder = joint_dirichlet_code_bits if joint else kt_independent_matrix_bits
     global_bits = encoder(codes)
     conditional = sum(encoder(codes[labels == label]) for label in np.unique(labels))
-    if not labels_are_side_information:
-        conditional += kt_binary_prefix_bits(labels)
-    raw = global_bits - conditional
-    return DiscreteRateReduction(global_bits, conditional, raw, max(0, raw), labels_are_side_information)
+    label_bits = 0 if labels_are_side_information else kt_binary_prefix_bits(labels)
+    global_total = global_bits + label_bits
+    conditional_total = conditional + label_bits
+    raw = global_total - conditional_total
+    return DiscreteRateReduction(global_total, conditional_total, raw, max(0, raw), labels_are_side_information, label_bits)
 
 
 def residual_code_bits(y_true: np.ndarray, y_pred: np.ndarray) -> int:

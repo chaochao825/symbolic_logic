@@ -67,6 +67,15 @@ class BooleanMDLTests(unittest.TestCase):
         self.assertLess(result.raw_reduction_bits, 0)
         self.assertEqual(result.routed_reduction_bits, 0)
 
+    def test_label_cost_is_symmetric_when_labels_are_not_side_information(self) -> None:
+        codes = np.tile(np.asarray([[0], [1]], dtype=np.uint8), (32, 1))
+        labels = np.tile(np.asarray([0, 1], dtype=np.uint8), 32)
+        side = discrete_rate_reduction(codes, labels, joint=True, labels_are_side_information=True)
+        joint = discrete_rate_reduction(codes, labels, joint=True, labels_are_side_information=False)
+        self.assertEqual(side.raw_reduction_bits, joint.raw_reduction_bits)
+        self.assertEqual(joint.global_bits - side.global_bits, joint.label_bits)
+        self.assertEqual(joint.conditional_bits - side.conditional_bits, joint.label_bits)
+
     def test_exact_formula_library_covers_every_three_input_function(self) -> None:
         library = exact_formula_library(3, max_gates=4)
         self.assertEqual(len(library), 256)
