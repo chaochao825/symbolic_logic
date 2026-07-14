@@ -167,7 +167,10 @@ def _vector_to_mask(values: Iterable[int]) -> int:
 
 
 def _mask_accuracy(mask: int, label_mask: int, n_examples: int) -> float:
-    incorrect = (mask ^ label_mask).bit_count()
+    difference = mask ^ label_mask
+    # ``int.bit_count`` is unavailable on the lab server's Python 3.8.10;
+    # explicit binary counting keeps old and new interpreters consistent.
+    incorrect = bin(difference).count("1")
     return 1.0 - incorrect / n_examples
 
 
