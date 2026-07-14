@@ -501,7 +501,7 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
                 "inputs_recovered": np.nan,
                 "topology_recovered": np.nan,
                 "rejected_hardening": np.nan,
-                "description_bits": depth * 2,
+                "description_bits": (2**depth - 1) * 2,
                 "gate_count": 2**depth - 1,
                 "fit_seconds": 0.0,
                 "margin": np.nan,
@@ -546,8 +546,11 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
     }
     for name, y in negative_tasks.items():
         order = rng.permutation(len(x))
-        train, test = order[: len(x) // 2], order[len(x) // 2 :]
+        train = order[: len(x) // 2]
+        validation = order[len(x) // 2 : 3 * len(x) // 4]
+        test = order[3 * len(x) // 4 :]
         learned = DifferentiableGateSelector(n_bits, seed=seed * 1000 + len(name)).fit(x[train], y[train])
+        validation_score = balanced_accuracy(y[validation], learned.predict(x[validation]))
         score = balanced_accuracy(y[test], learned.predict(x[test]))
         rows.append(
             {
@@ -559,19 +562,22 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
                 "operator_recovered": np.nan,
                 "inputs_recovered": np.nan,
                 "topology_recovered": np.nan,
-                "rejected_hardening": float(score < 0.90),
+                "rejected_hardening": float(validation_score < 0.90),
                 "description_bits": gate_description_bits(n_bits),
                 "gate_count": 1,
                 "fit_seconds": learned.fit_seconds,
                 "margin": float(np.sort(learned.weights())[-1] - np.sort(learned.weights())[-2]),
+                "validation_balanced_accuracy": validation_score,
             }
         )
     continuous = rng.uniform(0.0, 1.0, size=(1024, n_bits))
     continuous_y = (continuous[:, 0] + 0.7 * continuous[:, 1] > 0.85).astype(np.uint8)
     thresholded = (continuous >= 0.5).astype(np.uint8)
     train = np.arange(0, 512)
-    test = np.arange(512, 1024)
+    validation = np.arange(512, 768)
+    test = np.arange(768, 1024)
     learned = DifferentiableGateSelector(n_bits, seed=seed + 55_000).fit(thresholded[train], continuous_y[train])
+    validation_score = balanced_accuracy(continuous_y[validation], learned.predict(thresholded[validation]))
     score = balanced_accuracy(continuous_y[test], learned.predict(thresholded[test]))
     rows.append(
         {
@@ -583,11 +589,12 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
             "operator_recovered": np.nan,
             "inputs_recovered": np.nan,
             "topology_recovered": np.nan,
-            "rejected_hardening": float(score < 0.90),
+            "rejected_hardening": float(validation_score < 0.90),
             "description_bits": gate_description_bits(n_bits),
             "gate_count": 1,
             "fit_seconds": learned.fit_seconds,
             "margin": float(np.sort(learned.weights())[-1] - np.sort(learned.weights())[-2]),
+            "validation_balanced_accuracy": validation_score,
         }
     )
     probabilities = rng.uniform(0.02, 0.98, size=(512, n_bits))
