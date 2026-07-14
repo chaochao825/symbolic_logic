@@ -160,6 +160,21 @@ def gate_description_bits(n_inputs: int) -> int:
     return ceil(log2(max(1, n_inputs * (n_inputs - 1) // 2))) + 2
 
 
+def median_inference_us_per_1000(function, x: np.ndarray, repeats: int = 40) -> float:
+    """Median batch latency normalized to 1,000 rows (NumPy prototype)."""
+    import time
+
+    copies = max(1, ceil(1000 / len(x)))
+    batch = np.tile(np.asarray(x), (copies, 1))[:1000]
+    function(batch)
+    samples = []
+    for _ in range(repeats):
+        started = time.perf_counter()
+        function(batch)
+        samples.append((time.perf_counter() - started) * 1e6)
+    return float(np.median(samples))
+
+
 def fit_rate_guided_gate(x: np.ndarray, y: np.ndarray, epsilon: float = 0.5) -> tuple[GateHypothesis, float]:
     """Select a finite Boolean hypothesis by label-conditioned MCR2 score.
 
@@ -429,11 +444,17 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
         rate_guided, rate_score = fit_rate_guided_gate(x[train], y[train])
         fixed = x[:, 0] & x[:, 1]
         mlp = TinyMLP(n_bits, hidden=(16,), seed=seed * 10 + task_index, steps=700).fit(x[train], y[train])
+        inference_latency = {
+            "FixedAND": median_inference_us_per_1000(lambda values: values[:, 0] & values[:, 1], x[test]),
+            "DifferentiableGateSelector": median_inference_us_per_1000(learned.predict, x[test]),
+            "RateGuidedGateSelector": median_inference_us_per_1000(rate_guided.predict, x[test]),
+            "TinyMLP": median_inference_us_per_1000(mlp.predict, x[test]),
+        }
         for method, prediction, fit_seconds, description_bits in (
             ("FixedAND", fixed[test], 0.0, 2),
             ("DifferentiableGateSelector", learned.predict(x[test]), learned.fit_seconds, gate_description_bits(n_bits)),
             ("RateGuidedGateSelector", rate_guided.predict(x[test]), 0.0, gate_description_bits(n_bits)),
-            ("TinyMLP", mlp.predict(x[test]), mlp.fit_seconds, sum(w.size for w in mlp.weights) * 32),
+            ("TinyMLP", mlp.predict(x[test]), mlp.fit_seconds, (sum(w.size for w in mlp.weights) + sum(b.size for b in mlp.biases)) * 32),
         ):
             rows.append(
                 {
@@ -451,6 +472,7 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
                     "fit_seconds": fit_seconds,
                     "margin": float(np.sort(learned.weights())[-1] - np.sort(learned.weights())[-2]) if method == "DifferentiableGateSelector" else np.nan,
                     "rate_score": rate_score if method == "RateGuidedGateSelector" else np.nan,
+                    "inference_us_per_1000": inference_latency[method],
                 }
             )
 
