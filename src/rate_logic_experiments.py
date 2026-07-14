@@ -160,6 +160,27 @@ def gate_description_bits(n_inputs: int) -> int:
     return ceil(log2(max(1, n_inputs * (n_inputs - 1) // 2))) + 2
 
 
+def fit_rate_guided_gate(x: np.ndarray, y: np.ndarray, epsilon: float = 0.5) -> tuple[GateHypothesis, float]:
+    """Select a finite Boolean hypothesis by label-conditioned MCR2 score.
+
+    This deliberately does *not* use accuracy to break score ties.  For scalar
+    {-1,+1} outputs the uncentered log-det rate is sign-blind, so the experiment
+    exposes whether the original objective provides any Boolean ranking signal.
+    """
+    x = np.asarray(x, dtype=np.uint8)
+    y = np.asarray(y, dtype=np.uint8)
+    scored: list[tuple[float, float, int, int, str]] = []
+    for left, right in combinations(range(x.shape[1]), 2):
+        for op in OPS:
+            prediction = apply_gate(op, x[:, left], x[:, right])
+            representation = (2.0 * prediction - 1.0).reshape(1, -1)
+            score = mcr2(representation, y, epsilon)[2]
+            scored.append((score, balanced_accuracy(y, prediction), left, right, op))
+    scored.sort(key=lambda item: (-item[0], item[2], item[3], OPS.index(item[4])))
+    best = scored[0]
+    return GateHypothesis(best[2], best[3], best[4], best[1], best[0] - scored[1][0]), best[0]
+
+
 def _bfs(n_nodes: int, edges: np.ndarray, valid: np.ndarray, source: int = 0, target: int | None = None) -> bool:
     target = n_nodes - 1 if target is None else target
     adjacency = [[] for _ in range(n_nodes)]
@@ -405,11 +426,13 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
         learned = DifferentiableGateSelector(n_bits, seed=seed * 100 + task_index).fit(x[train], y[train])
         selected_left, selected_right, selected_op = learned.selected()
         learned_ops[op] = selected_op
+        rate_guided, rate_score = fit_rate_guided_gate(x[train], y[train])
         fixed = x[:, 0] & x[:, 1]
         mlp = TinyMLP(n_bits, hidden=(16,), seed=seed * 10 + task_index, steps=700).fit(x[train], y[train])
         for method, prediction, fit_seconds, description_bits in (
             ("FixedAND", fixed[test], 0.0, 2),
             ("DifferentiableGateSelector", learned.predict(x[test]), learned.fit_seconds, gate_description_bits(n_bits)),
+            ("RateGuidedGateSelector", rate_guided.predict(x[test]), 0.0, gate_description_bits(n_bits)),
             ("TinyMLP", mlp.predict(x[test]), mlp.fit_seconds, sum(w.size for w in mlp.weights) * 32),
         ):
             rows.append(
@@ -419,14 +442,15 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
                     "task": op,
                     "method": method,
                     "test_balanced_accuracy": balanced_accuracy(y[test], prediction),
-                    "operator_recovered": float(selected_op == op) if method == "DifferentiableGateSelector" else np.nan,
-                    "inputs_recovered": float((selected_left, selected_right) == pair) if method == "DifferentiableGateSelector" else np.nan,
+                    "operator_recovered": float(selected_op == op) if method == "DifferentiableGateSelector" else (float(rate_guided.op == op) if method == "RateGuidedGateSelector" else np.nan),
+                    "inputs_recovered": float((selected_left, selected_right) == pair) if method == "DifferentiableGateSelector" else (float((rate_guided.left, rate_guided.right) == pair) if method == "RateGuidedGateSelector" else np.nan),
                     "topology_recovered": np.nan,
                     "rejected_hardening": np.nan,
                     "description_bits": description_bits,
                     "gate_count": 1 if method != "TinyMLP" else np.nan,
                     "fit_seconds": fit_seconds,
                     "margin": float(np.sort(learned.weights())[-1] - np.sort(learned.weights())[-2]) if method == "DifferentiableGateSelector" else np.nan,
+                    "rate_score": rate_score if method == "RateGuidedGateSelector" else np.nan,
                 }
             )
 
@@ -572,9 +596,6 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
 def run_rate_reduction(seed: int, epsilon: float = 0.5) -> list[dict]:
     rng = np.random.default_rng(121_000 + seed)
     train_z, train_y = make_union_of_subspaces(rng, samples_per_class=128)
-    test_z, test_y = make_union_of_subspaces(rng, samples_per_class=96)
-    # The test distribution uses new bases, so nearest-subspace accuracy is an
-    # intentionally harsh negative control rather than a standard IID split.
     representations = {
         "Raw": train_z,
         "MCR2Flow": run_rate_flow(train_z, train_y, sparse_lambda=0.0, epsilon=epsilon),
@@ -673,6 +694,7 @@ def run_rate_reduction(seed: int, epsilon: float = 0.5) -> list[dict]:
                     "gate_count": synthesizer.expression.gates if synthesizer.expression else np.nan,
                     "boolean_accuracy": accuracy(y, prediction),
                     "expression": synthesizer.expression.text if synthesizer.expression else "",
+                    "sign_flip_rate": float(np.mean(codes != x)),
                 }
             )
     return rows

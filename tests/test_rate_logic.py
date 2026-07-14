@@ -14,6 +14,7 @@ from rate_logic_experiments import (
     coding_rate,
     empirical_code_entropy,
     fit_gate_hypothesis,
+    fit_rate_guided_gate,
     mcr2,
     mcr2_gradient,
     run_rate_flow,
@@ -33,6 +34,13 @@ class RateLogicTests(unittest.TestCase):
         model = DifferentiableGateSelector(6, seed=9, steps=700).fit(x, y)
         self.assertEqual(model.selected(), (1, 4, "NAND"))
         self.assertGreater(model.weights().max(), 0.95)
+
+    def test_scalar_mcr2_is_sign_blind_for_boolean_gate_selection(self) -> None:
+        x = all_assignments(6)
+        y = apply_gate("OR", x[:, 0], x[:, 3])
+        model, score = fit_rate_guided_gate(x, y)
+        self.assertEqual(score, 0.0)
+        self.assertNotEqual((model.left, model.right, model.op), (0, 3, "OR"))
 
     def test_coding_rate_is_measured_in_base_two(self) -> None:
         z = np.asarray([[1.0, -1.0]])
