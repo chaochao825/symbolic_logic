@@ -43,3 +43,14 @@ The report uses sources for field context; they are not used to manufacture any 
 22. [Yu et al., *White-Box Transformers via Sparse Rate Reduction: Compression Is All There Is?* (2023)](https://arxiv.org/abs/2311.13110). Derives CRATE-style subspace attention and an ISTA sparsification block from a sparse rate-reduction objective.
 23. [Wang et al., *A Global Geometric Analysis of Maximal Coding Rate Reduction* (2024)](https://arxiv.org/abs/2406.01909). Characterizes the controlled objective landscape while also noting that earlier theory did not provide a complete global justification.
 24. [Shannon, *Coding Theorems for a Discrete Source With a Fidelity Criterion* (1959)](https://ieeexplore.ieee.org/document/5311476). Primary source for lossy source coding under an explicit distortion/fidelity constraint.
+
+## Discrete universal coding, MDL, and exact logic synthesis
+
+25. [Krichevsky and Trofimov, *The Performance of Universal Encoding* (1981)](https://ieeexplore.ieee.org/document/1056331). Original add-one-half universal mixture used for operational Boolean sequence lengths.
+26. [Rissanen, *Modeling by Shortest Data Description* (1978)](https://doi.org/10.1016/0005-1098(78)90005-5). Primary two-part minimum-description-length formulation.
+27. [Blumer et al., *Occam's Razor* (1987)](https://doi.org/10.1016/0020-0190(87)90114-1). Classic connection between short consistent hypotheses and PAC learnability.
+28. [McAllester, *Some PAC-Bayesian Theorems* (1998)](https://doi.org/10.1145/279943.279989). Establishes generalization control through a prior/posterior description term.
+29. [Bryant, *Graph-Based Algorithms for Boolean Function Manipulation* (1986)](https://people.eecs.berkeley.edu/~russell/classes/cs289/f04/readings/Bryant%3A1986.pdf). Canonical reduced ordered BDDs under a fixed variable order.
+30. [Bollig and Wegener, *Improving the Variable Ordering of OBDDs Is NP-Complete* (1996)](https://doi.org/10.1109/12.537122). Limits claims that optimized ROBDD size is a general circuit optimum.
+31. [Haaswijk et al., *SAT-Based Exact Synthesis* (2020)](https://si2.epfl.ch/demichel/publications/archive/2020/winston-exact.pdf). Exact minimum-size chain synthesis under a fixed topology and basis.
+32. [Kojevnikov et al., *Finding Efficient Circuits Using SAT-Solvers* (2009)](https://doi.org/10.1007/978-3-642-02777-2_5). SAT-based circuit search and exact small-circuit reasoning.

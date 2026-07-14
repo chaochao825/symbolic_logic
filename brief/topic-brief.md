@@ -10,6 +10,8 @@ This project tests a deliberately narrow claim: a gate circuit is a plausible **
 
 The rate-reduction extension asks a separate question: whether finite-precision Gaussian coding-rate reduction can guide Booleanization or predict literal code length and Boolean circuit size. It reproduces the MCR² log-det objective and its gradient flow on controlled subspace data, then measures empirical code entropy, reconstruction distortion, hardening error, and synthesized gate count. A correlation is not assumed in advance; failure to order gate counts is a valid negative result.
 
+The discrete-theory extension replaces that failed identification with an executable Boolean/Circuit-MDL framework. Every reported bit count is conditional on a public, decodable prefix language. The framework separately codes Boolean representations, function structure, task residuals, and language routing; exact claims are limited to minimum formula-tree size for at most four inputs and unique ANF/ROBDD properties within their declared representation classes.
+
 ## Audience and deliverable
 
 The deliverable is a reproducible Python experiment suite and a Chinese evidence report. It uses synthetic, fully enumerable Boolean predicates and layered reachability graphs so that both successes and failure modes can be checked exactly.
