@@ -253,7 +253,7 @@ def main() -> None:
         "cellular_automata_complexity",
         rng,
     )
-    pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False)
+    pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False, lineterminator="\n")
     print(f"wrote {len(summary)} aggregate rows to {RESULTS / 'summary_metrics.csv'}")
 
 
