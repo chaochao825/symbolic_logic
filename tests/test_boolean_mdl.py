@@ -1,3 +1,6 @@
+import csv
+import hashlib
+import json
 import sys
 import unittest
 from itertools import product
@@ -60,12 +63,35 @@ class BooleanMDLTests(unittest.TestCase):
         self.assertLess(kt_independent_matrix_bits(transformed), kt_independent_matrix_bits(redundant))
         self.assertEqual(joint_dirichlet_code_bits(transformed), joint_dirichlet_code_bits(redundant))
 
+    def test_binary_codecs_reject_values_before_uint8_cast(self) -> None:
+        with self.assertRaises(ValueError):
+            joint_dirichlet_code_bits(np.asarray([[0, 256]]))
+        with self.assertRaises(ValueError):
+            kt_independent_matrix_bits(np.asarray([[0.0, np.nan]]))
+        with self.assertRaises(ValueError):
+            discrete_rate_reduction(np.asarray([[0], [1]]), np.asarray([0, 2]))
+
     def test_conditional_codec_can_lose_but_router_is_nonnegative(self) -> None:
         codes = np.zeros((128, 1), dtype=np.uint8)
         labels = np.tile(np.asarray([0, 1], dtype=np.uint8), 64)
         result = discrete_rate_reduction(codes, labels, joint=False)
         self.assertLess(result.raw_reduction_bits, 0)
-        self.assertEqual(result.routed_reduction_bits, 0)
+        self.assertEqual(result.gain_vs_global_route_bits, 0)
+        self.assertEqual(result.route_tag_bits, 1)
+        self.assertEqual(result.routed_global_baseline_bits, result.global_bits + 1)
+        self.assertEqual(result.routed_best_bits, result.routed_global_baseline_bits)
+
+    def test_two_route_representation_code_satisfies_kraft(self) -> None:
+        labels = np.asarray([0, 0, 1, 1], dtype=np.uint8)
+        union_kraft = 0.0
+        selected_kraft = 0.0
+        for sequence in product((0, 1), repeat=4):
+            result = discrete_rate_reduction(np.asarray(sequence, dtype=np.uint8)[:, None], labels, joint=True)
+            union_kraft += 2.0 ** (-result.routed_global_baseline_bits)
+            union_kraft += 2.0 ** (-(result.route_tag_bits + result.conditional_bits))
+            selected_kraft += 2.0 ** (-result.routed_best_bits)
+        self.assertLessEqual(union_kraft, 1.0)
+        self.assertLessEqual(selected_kraft, 1.0)
 
     def test_label_cost_is_symmetric_when_labels_are_not_side_information(self) -> None:
         codes = np.tile(np.asarray([[0], [1]], dtype=np.uint8), (32, 1))
@@ -75,6 +101,8 @@ class BooleanMDLTests(unittest.TestCase):
         self.assertEqual(side.raw_reduction_bits, joint.raw_reduction_bits)
         self.assertEqual(joint.global_bits - side.global_bits, joint.label_bits)
         self.assertEqual(joint.conditional_bits - side.conditional_bits, joint.label_bits)
+        self.assertEqual(side.routed_global_baseline_bits - side.routed_best_bits, side.gain_vs_global_route_bits)
+        self.assertEqual(joint.routed_global_baseline_bits - joint.routed_best_bits, joint.gain_vs_global_route_bits)
 
     def test_exact_formula_library_covers_every_three_input_function(self) -> None:
         library = exact_formula_library(3, max_gates=4)
@@ -126,6 +154,34 @@ class BooleanMDLTests(unittest.TestCase):
         short = occam_error_bound(0.1, 8, 1000)
         long = occam_error_bound(0.1, 128, 1000)
         self.assertLess(short, long)
+
+    def test_committed_full_catalog_and_artifact_hashes(self) -> None:
+        results = ROOT / "results"
+        with (results / "discrete_theory_checks.json").open(encoding="utf-8") as handle:
+            checks = json.load(handle)
+        self.assertEqual(checks["formula4_coverage"], 65_536)
+        self.assertTrue(checks["formula4_complete"])
+        self.assertEqual(
+            checks["formula4_all_histogram"],
+            {"0": 6, "1": 28, "2": 196, "3": 1162, "4": 5452, "5": 17250, "6": 28404, "7": 12798, "8": 240},
+        )
+        self.assertEqual(checks["balanced4_functions"], 12_870)
+        self.assertEqual(checks["minimum_safe_task_gain_bits"], 0)
+
+        histogram = {}
+        with (results / "exact_formula_balanced4_results.csv").open(encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle):
+                gates = int(row["minimum_formula_gates"])
+                histogram[gates] = histogram.get(gates, 0) + 1
+        self.assertEqual(histogram, {0: 4, 1: 10, 2: 46, 3: 299, 4: 1235, 5: 3424, 6: 4928, 7: 2756, 8: 168})
+
+        with (results / "discrete_theory_metadata.json").open(encoding="utf-8") as handle:
+            metadata = json.load(handle)
+        self.assertFalse(metadata["git_at_start"]["dirty"])
+        for manifest in (metadata["source_sha256"], metadata["artifact_sha256"]):
+            for relative, expected in manifest.items():
+                digest = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+                self.assertEqual(digest, expected)
 
 
 if __name__ == "__main__":

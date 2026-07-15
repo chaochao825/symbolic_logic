@@ -268,3 +268,7 @@ Boolean 对照给出更直接的反例：MCR² flow 后四类任务的 sign-flip
 \]
 
 其中 $q_h$ 是候选 wiring/operator 的分布，$H(q)$ 推动可硬化选择，$C_{gate}$ 是按目标库定义的门/LUT/线网成本，$D$ 约束有限精度解码失真。对于 Boolean 表示，还需要能区分符号、联合赋值和高阶相关性的统计量，例如离散码字交叉熵、可学习 Bernoulli/Ising codec、truth-table MDL 或直接的 AIG/LUT 综合成本。当前实验验证了原始 MCR² 的几何作用及其符号盲区；上式是下一阶段设计，不是已验证结果。
+
+### 14.3 已执行的离散扩展
+
+上述设计中的 Boolean-aware 部分现已落实为一套独立的 Boolean/Circuit-MDL 实验：KT 与 joint Dirichlet 表示码、对称的标签 side-information 记账、带 escape 的非负路由、可译码的模型与组合残差码，以及固定门基下四输入全部函数的精确最小公式树 catalog。完整定义、证明、12,870 个平衡函数的分布、六输入结构化规则与 random-LUT 路由结果见 [`reports/discrete_theory_zh.md`](discrete_theory_zh.md)。这项扩展建立的是**相对于公开元语言的离散描述长度**，仍不把码长解释成语言无关熵，也不把最小公式树解释成最小 DAG 或硬件 PPA。

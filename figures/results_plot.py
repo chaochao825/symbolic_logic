@@ -14,6 +14,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.patches import Patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -394,6 +395,214 @@ def plot_rate_reduction() -> None:
     finish(fig, "rate_reduction_booleanization.pdf")
 
 
+def plot_exact_formula_population() -> None:
+    """Plot the exact n=4 formula complexity of every balanced function."""
+    data = pd.read_csv(RESULTS / "exact_formula_balanced4_results.csv")
+    required = {
+        "minimum_formula_gates",
+        "parity4_minimum_formula_gates",
+        "no_more_complex_than_parity",
+    }
+    missing = required.difference(data.columns)
+    if missing:
+        raise ValueError(f"exact formula results are missing columns: {sorted(missing)}")
+
+    parity_values = data["parity4_minimum_formula_gates"].dropna().unique()
+    if len(parity_values) != 1:
+        raise ValueError("parity-4 must have one catalog-wide minimum gate count")
+    parity_gates = int(parity_values[0])
+    histogram = data.groupby("minimum_formula_gates").size().sort_index()
+    total = int(histogram.sum())
+    no_more_complex = int(data["no_more_complex_than_parity"].sum())
+    fraction = no_more_complex / total
+
+    positions = histogram.index.to_numpy(dtype=int)
+    counts = histogram.to_numpy(dtype=int)
+    colors = np.where(positions <= parity_gates, "#4C78A8", "#B8B8B8")
+    fig, axis = plt.subplots(figsize=(6.8, 3.35))
+    bars = axis.bar(positions, counts, width=0.78, color=colors, edgecolor="white", linewidth=0.6)
+    axis.axvline(parity_gates, color="#E45756", linestyle="--", linewidth=1.4)
+    axis.axvspan(positions.min() - 0.5, parity_gates + 0.5, color="#4C78A8", alpha=0.07, zorder=0)
+    for bar, count in zip(bars, counts):
+        axis.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + max(counts) * 0.015,
+            f"{count:,}",
+            ha="center",
+            va="bottom",
+            fontsize=8,
+        )
+    axis.annotate(
+        f"Parity-4 = {parity_gates} gates\n"
+        f"at most parity: {no_more_complex:,}/{total:,} = {100 * fraction:.2f}%",
+        xy=(parity_gates, histogram.loc[parity_gates] + max(counts) * 0.075),
+        xytext=(0.04, 0.93),
+        textcoords="axes fraction",
+        ha="left",
+        va="top",
+        fontsize=9,
+        color="#8F2D2D",
+        arrowprops={"arrowstyle": "->", "color": "#E45756", "linewidth": 0.9},
+    )
+    axis.set_xticks(positions)
+    axis.set_xlabel("Minimum formula-tree gates (AND/OR/XOR/NAND)")
+    axis.set_ylabel("Balanced 4-input functions")
+    axis.set_ylim(0, max(counts) * 1.18)
+    axis.grid(axis="y", linestyle="--", alpha=0.25)
+    finish(fig, "exact_formula_population.pdf")
+
+
+def plot_discrete_mdl_routing() -> None:
+    """Plot safe task routing and the codec-dependent basis-change audit."""
+    task = pd.read_csv(RESULTS / "discrete_task_mdl_results.csv")
+    representation = pd.read_csv(RESULTS / "discrete_representation_code_results.csv")
+    task_required = {
+        "case",
+        "family",
+        "n_inputs",
+        "language",
+        "selected",
+        "raw_label_baseline_bits",
+        "safe_compression_gain_bits",
+    }
+    representation_required = {"case", "code_family", "global_bits"}
+    task_missing = task_required.difference(task.columns)
+    representation_missing = representation_required.difference(representation.columns)
+    if task_missing or representation_missing:
+        raise ValueError(
+            "discrete MDL results are missing columns: "
+            f"task={sorted(task_missing)}, representation={sorted(representation_missing)}"
+        )
+
+    selected = task[(task["n_inputs"] == 6) & (task["selected"] == 1.0)].copy()
+    structured_order = [
+        "and2_of_6",
+        "parity6",
+        "majority6",
+        "sparse_dnf6",
+        "permuted_local6",
+        "reused_subexpr6",
+    ]
+    structured = selected.set_index("case").loc[structured_order].reset_index()
+    random_rows = selected[selected["family"] == "random_balanced"]
+    if random_rows.empty:
+        raise ValueError("n=6 routed results contain no balanced-random controls")
+    random_summary = pd.DataFrame(
+        {
+            "case": ["random_balanced6"],
+            "language": [random_rows["language"].mode().iloc[0]],
+            "safe_compression_gain_bits": [random_rows["safe_compression_gain_bits"].mean()],
+        }
+    )
+    routed = pd.concat(
+        [structured[["case", "language", "safe_compression_gain_bits"]], random_summary],
+        ignore_index=True,
+    )
+    if (routed["safe_compression_gain_bits"] < 0).any():
+        raise ValueError("safe routing gain must be non-negative because RawLabels is an escape route")
+
+    fig, axes = plt.subplots(1, 2, figsize=(10.8, 3.45))
+    route_colors = {
+        "SingleGate": "#4C78A8",
+        "ANF": "#F58518",
+        "Threshold": "#54A24B",
+        "RawLabels": "#9D9D9D",
+    }
+    route_labels = [
+        "AND-2\nof 6",
+        "Parity-6",
+        "Majority-6",
+        "Sparse\nDNF",
+        "Permuted\nlocal",
+        "Reuse\nproxy",
+        f"Random LUT\n({len(random_rows)} seeds)",
+    ]
+    route_positions = np.arange(len(routed))
+    route_values = routed["safe_compression_gain_bits"].to_numpy(dtype=float)
+    route_bars = axes[0].bar(
+        route_positions,
+        route_values,
+        width=0.72,
+        color=[route_colors[language] for language in routed["language"]],
+    )
+    for bar, value in zip(route_bars, route_values):
+        axes[0].text(
+            bar.get_x() + bar.get_width() / 2,
+            value + 1.1,
+            f"{value:.0f}",
+            ha="center",
+            va="bottom",
+            fontsize=8,
+        )
+    axes[0].set_xticks(route_positions, route_labels)
+    axes[0].set_ylim(0, max(route_values) * 1.18)
+    axes[0].set_ylabel("Safe compression gain (bits)")
+    axes[0].set_xlabel("(a) routed task MDL, n=6")
+    axes[0].grid(axis="y", linestyle="--", alpha=0.25)
+    language_order = ["SingleGate", "ANF", "Threshold", "RawLabels"]
+    axes[0].legend(
+        handles=[Patch(facecolor=route_colors[name], label=name) for name in language_order],
+        loc="upper right",
+        ncol=2,
+        columnspacing=0.9,
+        handlelength=1.4,
+    )
+
+    basis_order = ["redundant_basis", "invertible_xor_basis"]
+    family_order = ["IndependentKT", "JointDirichletKT"]
+    basis = representation.set_index(["case", "code_family"])["global_bits"]
+    basis_positions = np.arange(len(basis_order))
+    width = 0.36
+    family_colors = {"IndependentKT": "#4C78A8", "JointDirichletKT": "#F58518"}
+    family_hatches = {"IndependentKT": "", "JointDirichletKT": "//"}
+    family_labels = {"IndependentKT": "Independent KT (per bit)", "JointDirichletKT": "Joint codeword KT"}
+    plotted_values: dict[str, list[float]] = {}
+    for index, family in enumerate(family_order):
+        values = [float(basis.loc[(case, family)]) for case in basis_order]
+        plotted_values[family] = values
+        offset = (index - 0.5) * width
+        bars = axes[1].bar(
+            basis_positions + offset,
+            values,
+            width=width,
+            color=family_colors[family],
+            hatch=family_hatches[family],
+            edgecolor="white" if not family_hatches[family] else "#8A4B08",
+            linewidth=0.7,
+            label=family_labels[family],
+        )
+        for bar, value in zip(bars, values):
+            axes[1].text(
+                bar.get_x() + bar.get_width() / 2,
+                value + 8,
+                f"{value:.0f}",
+                ha="center",
+                va="bottom",
+                fontsize=8,
+            )
+    independent_delta = plotted_values["IndependentKT"][1] - plotted_values["IndependentKT"][0]
+    joint_delta = plotted_values["JointDirichletKT"][1] - plotted_values["JointDirichletKT"][0]
+    axes[1].text(
+        0.98,
+        0.96,
+        f"Independent: {independent_delta:+.0f} bits\nJoint: {joint_delta:+.0f} bits",
+        transform=axes[1].transAxes,
+        ha="right",
+        va="top",
+        fontsize=9,
+    )
+    axes[1].set_xticks(
+        basis_positions,
+        ["$(X,X)$\nredundant basis", "$(X,0)$\ninvertible XOR basis"],
+    )
+    axes[1].set_ylim(0, max(max(values) for values in plotted_values.values()) * 1.18)
+    axes[1].set_ylabel("Global representation code (bits)")
+    axes[1].set_xlabel("(b) invertible change of basis")
+    axes[1].grid(axis="y", linestyle="--", alpha=0.25)
+    axes[1].legend(loc="lower center", bbox_to_anchor=(0.5, 1.01), ncol=2)
+    finish(fig, "discrete_mdl_routing.pdf")
+
+
 def main() -> None:
     setup_style()
     plot_predicate()
@@ -409,6 +618,8 @@ def main() -> None:
     plot_end_to_end_gridworld()
     plot_logic_discovery()
     plot_rate_reduction()
+    plot_exact_formula_population()
+    plot_discrete_mdl_routing()
 
 
 if __name__ == "__main__":

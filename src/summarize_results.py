@@ -160,6 +160,57 @@ def main() -> None:
         "rate_reduction",
         rng,
     )
+    discrete_function = pd.read_csv(RESULTS / "discrete_function_mdl_results.csv")
+    discrete_function = discrete_function[discrete_function["selected"] == 1]
+    summary += emit_grouped(
+        discrete_function,
+        ["family", "n_inputs", "best_function_language"],
+        ["best_function_bits", "saving_vs_truth_table_bits", "anf_terms", "anf_degree", "best_robdd_nodes"],
+        "discrete_function_mdl",
+        rng,
+    )
+    discrete_task = pd.read_csv(RESULTS / "discrete_task_mdl_results.csv")
+    discrete_task = discrete_task[discrete_task["selected"] == 1]
+    summary += emit_grouped(
+        discrete_task,
+        ["family", "n_inputs", "language"],
+        ["model_bits", "residual_bits", "total_bits", "errors", "safe_compression_gain_bits"],
+        "discrete_task_mdl",
+        rng,
+    )
+    discrete_representation = pd.read_csv(RESULTS / "discrete_representation_code_results.csv")
+    summary += emit_grouped(
+        discrete_representation,
+        ["case", "code_family"],
+        [
+            "global_bits",
+            "conditional_bits_side_info",
+            "signed_reduction_side_info_bits",
+            "gain_vs_global_route_side_info_bits",
+            "routed_global_baseline_bits",
+            "routed_best_bits",
+            "signed_reduction_labels_encoded_bits",
+            "asymmetric_helper_control_bits",
+        ],
+        "discrete_representation_code",
+        rng,
+    )
+    exact_balanced = pd.read_csv(RESULTS / "exact_formula_balanced4_results.csv")
+    exact_histogram = (
+        exact_balanced.groupby("minimum_formula_gates", as_index=False)
+        .size()
+        .rename(columns={"size": "function_count"})
+        .sort_values("minimum_formula_gates")
+    )
+    exact_histogram["population_fraction"] = exact_histogram["function_count"] / len(exact_balanced)
+    exact_histogram["cumulative_fraction"] = exact_histogram["population_fraction"].cumsum()
+    summary += emit_grouped(
+        exact_histogram,
+        ["minimum_formula_gates"],
+        ["function_count", "population_fraction", "cumulative_fraction"],
+        "exact_formula_balanced4",
+        rng,
+    )
     pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False)
     print(f"wrote {len(summary)} aggregate rows to {RESULTS / 'summary_metrics.csv'}")
 
