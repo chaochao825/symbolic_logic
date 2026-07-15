@@ -17,7 +17,7 @@ L_{total}
 
 硬件面积、深度、线网和切换活动可以作为带单位的外部约束或 Lagrangian 项，但不能未经换算直接冒充 Shannon bits。
 
-本报告的可执行实现位于 `src/boolean_mdl.py`。完整运行覆盖 4 输入全部 65,536 个 Boolean 函数，并在 210 服务器的 clean commit `9d482e8` 上生成结果。
+本报告的可执行实现位于 `src/boolean_mdl.py`。最新完整运行覆盖 4 输入全部 65,536 个 Boolean 函数，并在 210 服务器的 clean commit `5cddc7f4bd4df878359e1e60a765cd0f4db22aa2` 上生成结果；主机、工作目录、命令、时间、锁定环境、线程设置及规范化哈希见 `results/discrete_theory_metadata.json`。
 
 ## 2. 公共条件与记账边界
 

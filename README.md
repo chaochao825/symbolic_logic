@@ -2,7 +2,7 @@
 
 This repository tests a bounded proposition: a logic-gate circuit can be a **local, trainable/compilable predicate layer** in a neuro-symbolic system. It does not claim that a gate circuit replaces general symbolic search, recursion, planning, perception, or first-order reasoning.
 
-The main empirical result is in [reports/evidence_report_zh.md](reports/evidence_report_zh.md); the operational discrete theory is in [reports/discrete_theory_zh.md](reports/discrete_theory_zh.md). Raw measurements live in `results/`; every figure, including `figures/learned_gate_integration.pdf`, is regenerated from those CSV files by `figures/results_plot.py`.
+The main empirical result is in [reports/evidence_report_zh.md](reports/evidence_report_zh.md); the operational discrete theory is in [reports/discrete_theory_zh.md](reports/discrete_theory_zh.md); the current basis-aware inductive-bias conclusion is in [reports/inductive_bias_update_zh.md](reports/inductive_bias_update_zh.md). Raw measurements live in `results/`; every figure, including `figures/learned_gate_integration.pdf`, is regenerated from those CSV files by `figures/results_plot.py`.
 
 ## What is included
 

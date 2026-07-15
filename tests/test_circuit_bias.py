@@ -1,3 +1,5 @@
+import hashlib
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -5,6 +7,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
+FORMAL_RUN = ROOT / "results" / "runs" / "circuit_bias_v0_full_210_5cddc7f"
 sys.path.insert(0, str(ROOT / "src"))
 
 from circuit_bias_experiments import (  # noqa: E402
@@ -119,6 +122,21 @@ class CircuitBiasTests(unittest.TestCase):
         smoke_rows, smoke_diagnostics = benchmark_exact_bases("smoke")
         summaries, _, _ = summarize_bases(smoke_rows, smoke_diagnostics)
         self.assertTrue(all("complete 3-input function space" not in row["scope"] for row in summaries))
+
+    def test_committed_formal_run_has_clean_provenance_and_matching_hashes(self) -> None:
+        metadata = json.loads((FORMAL_RUN / "metadata.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["git_at_start"]["commit"], "5cddc7f4bd4df878359e1e60a765cd0f4db22aa2")
+        self.assertFalse(metadata["git_at_start"]["dirty"])
+        self.assertLessEqual(metadata["code_accounting"]["selected_witness_kraft_sum"], 1.0)
+        manifests = (
+            (ROOT, metadata["source_normalized_sha256"]),
+            (ROOT, metadata["input_normalized_sha256"]),
+            (FORMAL_RUN, metadata["artifact_normalized_sha256"]),
+        )
+        for base, manifest in manifests:
+            for relative, expected in manifest.items():
+                payload = (base / relative).read_bytes().replace(b"\r\n", b"\n")
+                self.assertEqual(hashlib.sha256(payload).hexdigest(), expected)
 
 
 if __name__ == "__main__":

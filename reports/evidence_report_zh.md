@@ -214,9 +214,9 @@ rendered RGB grid image
 | Differentiable gate selector | **1.000 ± 0.000** | **1.00** | **1.00** | 7 bits |
 | TinyMLP | **1.000 ± 0.000** | 不可直接抽取 | 不可直接抽取 | 10,304 parameter bits |
 
-这里的 7 bits 是固定长索引成本：从 28 个 pair 中选一个，再从 4 个算子中选一个；MLP 的 10,304 bits 是 161 个 NumPy `float64` 权重和 bias 的实际数组 payload，只是显式存储量对照，不是熵编码或硬件面积。选择器平均拟合时间为 `0.0489 s`，MLP 为 `0.0920 s`。在 210 服务器的 1,000-row NumPy batch 上，固定 AND、已 harden 的可微选择器和 MLP 的 per-run median 均值分别为 `1.60/4.67/121.86 μs`；这些是 Python/NumPy 原型 kernel timing，不含数据搬运，也不能外推 ASIC/FPGA PPA。
+这里的 7 bits 是固定长索引成本：从 28 个 pair 中选一个，再从 4 个算子中选一个；MLP 的 10,304 bits 是 161 个 NumPy `float64` 权重和 bias 的实际数组 payload，只是显式存储量对照，不是熵编码或硬件面积。最新 clean full run 中，可微选择器、仅 MCR² 排序和 MLP 的平均拟合/搜索时间分别为 `0.0261/0.0104/0.0662 s`。在 210 服务器的 1,000-row NumPy batch 上，固定 AND、已 harden 的可微选择器和 MLP 的 per-run median 均值分别为 `1.70/4.37/70.68 μs`；这些是固定单线程环境下的 Python/NumPy 原型 kernel timing，不含数据搬运，也不能外推 ASIC/FPGA PPA。
 
-只在 depth-1 上学习四个算子的身份，再无训练地组合到 depth-2/3，真值表准确率均为 1.0。这说明已学会的 primitive 可以系统组合，但组合树仍由程序给出，因此不是未见结构发现。更强的 task-only 测试不给 edge label，只给图级 reachability；有限搜索同时选择输入 pair、算子和四类候选关系的 topology mask，五个种子在测试集上均为 1.0，并全部恢复隐藏规则与 mask；固定 AND+dense topology 只有 `0.583 ± 0.052`。这里学习的是有限关系类型 mask，不是任意对象图或连续 sparse router。
+只在 depth-1 上学习四个算子的身份，再无训练地组合到 depth-2/3，真值表准确率均为 1.0。这说明已学会的 primitive 可以系统组合，但组合树仍由程序给出，因此不是未见结构发现。更强的 task-only 测试不给 edge label，只给图级 reachability；有限搜索同时选择输入 pair、算子和四类候选关系的 topology mask，五个种子在测试集上均为 1.0，并全部恢复隐藏规则与 mask；固定 AND+dense topology 只有 `0.583 ± 0.052`。该有限枚举搜索平均用时 `7.04 s`，这里学习的是有限关系类型 mask，不是任意对象图或连续 sparse router。
 
 负例的拒绝只看独立 validation split，不读取 test 指标；当 validation 平衡准确率低于 `0.90` 时 abstain。五个种子均拒绝了 majority-3、parity-4、random LUT 和连续阈值的一门近似；四者 test 平衡准确率分别为 `0.726/0.448/0.554/0.747`。概率乘积是另一种语义负例：soft AND 的 MSE 为 0，hardened AND 为 `0.0825`，说明“同一个算子名称”不保证 hard 输出保留概率值。
 
@@ -272,3 +272,7 @@ Boolean 对照给出更直接的反例：MCR² flow 后四类任务的 sign-flip
 ### 14.3 已执行的离散扩展
 
 上述设计中的 Boolean-aware 部分现已落实为一套独立的 Boolean/Circuit-MDL 实验：KT 与 joint Dirichlet 表示码、对称的标签 side-information 记账、带 escape 的非负路由、可译码的模型与组合残差码，以及固定门基下四输入全部函数的精确最小公式树 catalog。完整定义、证明、12,870 个平衡函数的分布、六输入结构化规则与 random-LUT 路由结果见 [`reports/discrete_theory_zh.md`](discrete_theory_zh.md)。这项扩展建立的是**相对于公开元语言的离散描述长度**，仍不把码长解释成语言无关熵，也不把最小公式树解释成最小 DAG 或硬件 PPA。
+
+## 15. Basis-aware 归纳偏置更新
+
+最新三输入 256×4 exact formula oracle、AIG/XAG/MIG-style 任务分化、付费 witness-code、parity 表示/搜索分离，以及外部 Hard-LGN hardening/ABC 审计，统一整理在 [`reports/inductive_bias_update_zh.md`](inductive_bias_update_zh.md)。当前最有证据支持的下一步不是固定一种门基，而是预先声明并付费的层级 representation/basis mixture；这仍是 proposed design，尚未成为部分样本上的联合 learner。

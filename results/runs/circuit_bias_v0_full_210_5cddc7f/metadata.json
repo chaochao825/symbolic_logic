@@ -1,0 +1,97 @@
+{
+  "benchmark": "Circuit Bias Benchmark v0",
+  "mode": "full",
+  "max_gates": 12,
+  "elapsed_seconds": 1.0870620419736952,
+  "started_utc": "2026-07-15T11:19:59.612424+00:00",
+  "finished_utc": "2026-07-15T11:20:00.699495+00:00",
+  "hostname": "hi-X640-G40",
+  "working_directory": "/home/spco/sow_linear/symbolic_logic_runs/5cddc7f_basis",
+  "invocation": [
+    "/home/spco/sow_linear/.venvs/symbolic_logic_310/bin/python",
+    "src/run_circuit_bias.py",
+    "--mode",
+    "full",
+    "--output-dir",
+    "results/runs/circuit_bias_v0_full_210_5cddc7f"
+  ],
+  "python_executable": "/home/spco/sow_linear/.venvs/symbolic_logic_310/bin/python",
+  "python_prefix": "/home/spco/sow_linear/.venvs/symbolic_logic_310",
+  "python": "3.10.20",
+  "numpy": "1.25.2",
+  "pandas": "2.3.3",
+  "matplotlib": "3.10.9",
+  "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+  "hash_mode": "sha256 after CRLF-to-LF normalization for tracked text",
+  "requirements_lock_normalized_sha256": "bf7a4c9bef204d22eae3c67d565d29dda3e710bfa4edbeaa386101ff22eec528",
+  "cpu_count": 96,
+  "thread_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "git_at_start": {
+    "commit": "5cddc7f4bd4df878359e1e60a765cd0f4db22aa2",
+    "dirty": false
+  },
+  "scope": "Exact minimum Boolean formula size for the complete three-input function space under AIG/XAG/MIG-style and MIXED formula bases; hash-consed DAG metrics are derived from the retained minimum-formula witness and are neither an exact DAG optimum nor an exact minimum-code search",
+  "basis_semantics": {
+    "AIG": {
+      "operations": [
+        "AND"
+      ],
+      "free_complemented_edges": true,
+      "free_constants": true
+    },
+    "XAG": {
+      "operations": [
+        "AND",
+        "XOR"
+      ],
+      "free_complemented_edges": true,
+      "free_constants": true
+    },
+    "MIG": {
+      "operations": [
+        "MAJ"
+      ],
+      "free_complemented_edges": true,
+      "free_constants": true
+    },
+    "MIXED": {
+      "operations": [
+        "AND",
+        "XOR",
+        "MAJ"
+      ],
+      "free_complemented_edges": true,
+      "free_constants": true
+    }
+  },
+  "code_accounting": {
+    "public_n_inputs": 3,
+    "basis_routes": 4,
+    "basis_route_tag_bits": 2,
+    "selected_witness_kraft_sum": 0.25035236104482406,
+    "kraft_check_scope": "sanity check over retained witnesses only; the field grammar supplies the prefix-code argument",
+    "residual_semantics": "enumerative error-mask code; exact witnesses still pay the zero-error count header",
+    "not_included": "no RawLabels/ANF/threshold/ROBDD global route and no runtime confidence fallback in this runner"
+  },
+  "source_normalized_sha256": {
+    "src/boolean_mdl.py": "ca504a9ce5d9f614e8f9b31b32c56e07ee351cd1911a3ce3ad3dd28458065c2f",
+    "src/circuit_bias_experiments.py": "cf5db10f3ac16b1bda760d1b333fa6141ab38a5e7521e843e2e861a1463a3e9f",
+    "src/run_circuit_bias.py": "56f5e0ae9d5458bcddfa426caed5e61ec94d6e9f724a27986a6451ec0f40a074"
+  },
+  "input_normalized_sha256": {
+    "results/noncompressible_scaling_results.csv": "856500d97b8a4d111562162796e0dc345e85aa3e0e7684df933ab6fc493b0a1f"
+  },
+  "artifact_normalized_sha256": {
+    "basis_oracle_results.csv": "958f46cfaaa2a04f098131c90a4d8cbf806f2e9240df10324a7b1b058976e11f",
+    "boolean_diagnostics.csv": "71e69c7d3ea7beb76b1bc14f8e70d1d0993c937cc998bcd4a1fa048dfbc0debb",
+    "basis_summary.csv": "14d3703eb44607c4aa42e3b0205bab9a482698bd12fdc82813488e1e23a517f0",
+    "basis_family_summary.csv": "2f5ffbe515e924cc69193672b10caa722bb11ee5ac1c9bdca3cada2e13b1ac67",
+    "named_task_basis_results.csv": "1ca7a08f677d1598b4563a2621fe6c8c9c3308dd56f5716b4d268633d5a24990",
+    "search_vs_representation_results.csv": "3445a382605d6eb52875f2b51bf48445a7de74125f69552cbc8cd0603259f9f4"
+  }
+}
