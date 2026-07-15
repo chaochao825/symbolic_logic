@@ -70,11 +70,19 @@ def truth_table_bits(n_inputs: int, n_outputs: int = 1) -> int:
     return n_outputs * (1 << n_inputs)
 
 
+def _binary_array(values: object, name: str) -> np.ndarray:
+    """Validate binary values before uint8 conversion so integers cannot wrap."""
+    raw = np.asarray(values)
+    if raw.dtype.kind not in "buifc" or not np.all(np.isfinite(raw)):
+        raise ValueError(f"{name} expects finite zeros and ones")
+    if np.any((raw != 0) & (raw != 1)):
+        raise ValueError(f"{name} expects zeros and ones")
+    return raw.astype(np.uint8, copy=False)
+
+
 def kt_binary_ideal_bits(values: Iterable[int]) -> float:
     """Krichevsky-Trofimov mixture codelength for one binary sequence."""
-    array = np.asarray(list(values), dtype=np.uint8).reshape(-1)
-    if np.any(array > 1):
-        raise ValueError("KT binary code expects zeros and ones")
+    array = _binary_array(list(values), "KT binary code").reshape(-1)
     ones = int(array.sum())
     zeros = len(array) - ones
     log_probability = (
@@ -88,21 +96,21 @@ def kt_binary_ideal_bits(values: Iterable[int]) -> float:
 
 def kt_binary_prefix_bits(values: Iterable[int]) -> int:
     """Shannon-Fano integer length induced by the KT mixture probability."""
-    return int(ceil(kt_binary_ideal_bits(values) - 1e-12))
+    return int(ceil(kt_binary_ideal_bits(values)))
 
 
 def kt_independent_matrix_bits(binary_codes: np.ndarray) -> int:
     """Product KT code across public bit positions; captures marginal bias."""
-    codes = np.asarray(binary_codes, dtype=np.uint8)
+    codes = _binary_array(binary_codes, "independent KT code")
     if codes.ndim == 1:
         codes = codes[:, None]
     ideal = sum(kt_binary_ideal_bits(codes[:, column]) for column in range(codes.shape[1]))
-    return int(ceil(ideal - 1e-12))
+    return int(ceil(ideal))
 
 
 def joint_dirichlet_code_bits(binary_codes: np.ndarray, alpha: float = 0.5) -> int:
     """Joint codeword KT/Dirichlet-mixture length for a finite binary alphabet."""
-    codes = np.asarray(binary_codes, dtype=np.uint8)
+    codes = _binary_array(binary_codes, "joint Dirichlet code")
     if codes.ndim == 1:
         codes = codes[:, None]
     if codes.shape[1] > 20:
@@ -113,7 +121,7 @@ def joint_dirichlet_code_bits(binary_codes: np.ndarray, alpha: float = 0.5) -> i
     n = len(codes)
     log_probability = lgamma(alphabet * alpha) - lgamma(n + alphabet * alpha)
     log_probability += sum(lgamma(int(count) + alpha) - lgamma(alpha) for count in counts)
-    return int(ceil(-log_probability / log(2.0) - 1e-12))
+    return int(ceil(-log_probability / log(2.0)))
 
 
 @dataclass(frozen=True)
@@ -121,9 +129,17 @@ class DiscreteRateReduction:
     global_bits: int
     conditional_bits: int
     raw_reduction_bits: int
-    routed_reduction_bits: int
+    gain_vs_global_route_bits: int
     labels_are_side_information: bool
     label_bits: int
+    route_tag_bits: int
+    routed_global_baseline_bits: int
+    routed_best_bits: int
+
+    @property
+    def routed_reduction_bits(self) -> int:
+        """Compatibility alias; prefer ``gain_vs_global_route_bits``."""
+        return self.gain_vs_global_route_bits
 
 
 def discrete_rate_reduction(
@@ -137,11 +153,14 @@ def discrete_rate_reduction(
 
     If labels are side information, their cost is zero on both sides.  If they
     are not, the same KT label length is added to both competing joint codes
-    and therefore cancels in the reduction.  ``routed`` is nonnegative because
-    the global code remains an available route.
+    and therefore cancels in the reduction.  The safe comparison is a real
+    two-route prefix code: both its global baseline and selected best route pay
+    one route-tag bit.  The common tag cancels in
+    ``gain_vs_global_route_bits``; this is not a gain against the standalone,
+    untagged global code.
     """
-    codes = np.asarray(binary_codes, dtype=np.uint8)
-    labels = np.asarray(labels, dtype=np.uint8).reshape(-1)
+    codes = _binary_array(binary_codes, "binary representation")
+    labels = _binary_array(labels, "binary labels").reshape(-1)
     if len(codes) != len(labels):
         raise ValueError("codes and labels must contain the same samples")
     encoder = joint_dirichlet_code_bits if joint else kt_independent_matrix_bits
@@ -151,13 +170,26 @@ def discrete_rate_reduction(
     global_total = global_bits + label_bits
     conditional_total = conditional + label_bits
     raw = global_total - conditional_total
-    return DiscreteRateReduction(global_total, conditional_total, raw, max(0, raw), labels_are_side_information, label_bits)
+    route_tag = 1
+    routed_global = route_tag + global_total
+    routed_best = route_tag + min(global_total, conditional_total)
+    return DiscreteRateReduction(
+        global_bits=global_total,
+        conditional_bits=conditional_total,
+        raw_reduction_bits=raw,
+        gain_vs_global_route_bits=routed_global - routed_best,
+        labels_are_side_information=labels_are_side_information,
+        label_bits=label_bits,
+        route_tag_bits=route_tag,
+        routed_global_baseline_bits=routed_global,
+        routed_best_bits=routed_best,
+    )
 
 
 def residual_code_bits(y_true: np.ndarray, y_pred: np.ndarray) -> int:
     """Prefix-code a binary error mask by its count and subset rank."""
-    truth = np.asarray(y_true, dtype=np.uint8).reshape(-1)
-    prediction = np.asarray(y_pred, dtype=np.uint8).reshape(-1)
+    truth = _binary_array(y_true, "residual truth").reshape(-1)
+    prediction = _binary_array(y_pred, "residual prediction").reshape(-1)
     if len(truth) != len(prediction):
         raise ValueError("truth and prediction must have equal length")
     errors = int(np.sum(truth != prediction))
@@ -186,7 +218,7 @@ def apply_gate_mask(op: str, left: int, right: int, universe: int) -> int:
 
 def values_to_mask(values: Iterable[int]) -> int:
     result = 0
-    for index, value in enumerate(values):
+    for index, value in enumerate(_binary_array(list(values), "truth values").reshape(-1)):
         if int(value):
             result |= 1 << index
     return result
@@ -337,7 +369,7 @@ def circuit_description_bits(circuit: CircuitIR, gate_ops: Sequence[str] = GATE_
 
 
 def anf_coefficients(values: np.ndarray) -> np.ndarray:
-    values = np.asarray(values, dtype=np.uint8).reshape(-1).copy()
+    values = _binary_array(values, "ANF truth table").reshape(-1).copy()
     n_inputs = int(round(log2(len(values))))
     if len(values) != 1 << n_inputs:
         raise ValueError("ANF expects a complete power-of-two truth table")
@@ -391,7 +423,7 @@ class ROBDD:
 
 
 def build_robdd(values: np.ndarray, order: Sequence[int]) -> ROBDD:
-    values = np.asarray(values, dtype=np.uint8).reshape(-1)
+    values = _binary_array(values, "ROBDD truth table").reshape(-1)
     n_inputs = int(round(log2(len(values))))
     if len(values) != 1 << n_inputs or sorted(order) != list(range(n_inputs)):
         raise ValueError("invalid truth table or BDD order")
@@ -537,7 +569,7 @@ def task_mdl_candidates(
     thresholds: dict[int, ThresholdModel] | None = None,
 ) -> list[MDLCandidate]:
     """Build a decodable multi-language two-part MDL comparison."""
-    values = np.asarray(values, dtype=np.uint8).reshape(-1)
+    values = _binary_array(values, "task truth table").reshape(-1)
     if len(values) != 1 << n_inputs:
         raise ValueError("values must be a complete truth table")
     target_mask = values_to_mask(values)
@@ -591,7 +623,7 @@ def exact_function_language_lengths(
     thresholds: dict[int, ThresholdModel] | None = None,
 ) -> dict[str, int]:
     """Prefix lengths for exact function descriptions under several languages."""
-    values = np.asarray(values, dtype=np.uint8).reshape(-1)
+    values = _binary_array(values, "function truth table").reshape(-1)
     target = values_to_mask(values)
     language_count = 6
     header = ceil_log2_count(language_count)

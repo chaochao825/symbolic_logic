@@ -184,7 +184,7 @@ def run_function_and_task_mdl(mode: str) -> tuple[pd.DataFrame, pd.DataFrame, di
                     "selected": float(candidate == best_task),
                     "raw_label_baseline_bits": baseline_bits,
                     "safe_compression_gain_bits": safe_gain,
-                    "occam_bound_delta05": occam_error_bound(empirical_error, model_code, len(values)) if candidate.language not in ("RawLabels", "KTLabels") else np.nan,
+                    "occam_bound_iid_illustration_delta05": occam_error_bound(empirical_error, model_code, len(values)) if candidate.language not in ("RawLabels", "KTLabels") else np.nan,
                 }
             )
     checks = {
@@ -192,6 +192,10 @@ def run_function_and_task_mdl(mode: str) -> tuple[pd.DataFrame, pd.DataFrame, di
         "formula4_coverage": len(formulae[4]),
         "formula4_complete": len(formulae[4]) == 65536,
         "formula4_maximum_min_gates": max(item.gates for item in formulae[4].values()),
+        "formula4_all_histogram": {
+            str(gates): sum(item.gates == gates for item in formulae[4].values())
+            for gates in sorted({item.gates for item in formulae[4].values()})
+        },
     }
     return pd.DataFrame(function_rows), pd.DataFrame(task_rows), checks, formulae, thresholds
 
@@ -262,11 +266,14 @@ def run_representation_codes() -> pd.DataFrame:
                     "global_bits": side.global_bits,
                     "conditional_bits_side_info": side.conditional_bits,
                     "signed_reduction_side_info_bits": side.raw_reduction_bits,
-                    "routed_reduction_side_info_bits": side.routed_reduction_bits,
+                    "gain_vs_global_route_side_info_bits": side.gain_vs_global_route_bits,
+                    "route_tag_bits": side.route_tag_bits,
+                    "routed_global_baseline_bits": side.routed_global_baseline_bits,
+                    "routed_best_bits": side.routed_best_bits,
                     "conditional_bits_labels_encoded": no_side.conditional_bits,
                     "signed_reduction_labels_encoded_bits": no_side.raw_reduction_bits,
                     "label_code_bits": no_side.label_bits,
-                    "incorrect_asymmetric_partition_reduction_bits": side.global_bits - side.conditional_bits - kt_binary_prefix_bits(labels),
+                    "asymmetric_helper_control_bits": side.global_bits - side.conditional_bits - kt_binary_prefix_bits(labels),
                     "direct_global_bits": joint_dirichlet_code_bits(codes) if joint else kt_independent_matrix_bits(codes),
                 }
             )
@@ -312,7 +319,12 @@ def main() -> None:
             "gate_library": ["AND", "OR", "XOR", "NAND"],
             "constants_free_sources": [0, 1],
             "formula_exactness": "minimum formula-tree gate count, not minimum DAG",
+            "formula_max_gates": {"3": 4, "4": 4 if args.mode == "smoke" else 8},
+            "threshold_max_abs_weight": {"3": 2, "4": 2, "6": 1},
+            "joint_code_max_dimensions": 20,
+            "route_tag_bits": {"representation": 1, "exact_function": 3, "task": 4},
             "labels_side_information": "reported both as known side information and explicitly encoded",
+            "occam_bound_usage": "theorem implementation only; complete truth tables are not IID generalization experiments",
         },
         "source_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in source_paths},
         "artifact_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in paths.values()},
