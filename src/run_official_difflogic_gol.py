@@ -173,7 +173,10 @@ def main() -> None:
     train_step = namespace["train_step"]
     opt = namespace["opt"]
     train_state, wires = init_state(hyperparams, opt, hyperparams["seed"])
-    key = random.PRNGKey(hyperparams["seed"])
+    # Cell 15 has already split the seeded global key once.  The official
+    # training cell continues from that key, so reinitializing it here would
+    # change the first sample batch and every later batch in the PRNG stream.
+    key = namespace["key"]
     history = []
     for epoch in range(args.epochs):
         key, sample_key = random.split(key, 2)
@@ -257,6 +260,7 @@ def main() -> None:
             "deterministic_gpu_ops": deterministic_gpu_ops,
         },
         "config": hyperparams,
+        "training_batch_prng_start": "namespace key after the official cell-15 seed split",
         "epochs": args.epochs,
         "all_512_boards_full_grid_accuracy": float(np.mean(prediction_np == target_np)),
         "all_512_center_transition_accuracy": float(np.mean(prediction_np[:, 1, 1, 0] == target_np[:, 1, 1, 0])),
