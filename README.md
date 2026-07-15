@@ -6,7 +6,7 @@ The main empirical result is in [reports/evidence_report_zh.md](reports/evidence
 
 ## What is included
 
-- Boolean rule induction with a transparent beam-searched gate DAG, an MLP, lookup memorization, and an oracle.
+- Boolean rule induction with a transparent beam-searched gate formula/expression, an MLP, lookup memorization, and an oracle; its recursive `Expr` counts formula references rather than shared DAG nodes.
 - CPU timing of float, unpacked Boolean, and bit-packed predicate evaluation.
 - Dense versus indexed relation filtering to separate Boolean logic from candidate generation.
 - A constructive counterexample: fixed-depth gate reachability fails beyond its unrolling depth; an `oracle local gate predicate + BFS` does not.

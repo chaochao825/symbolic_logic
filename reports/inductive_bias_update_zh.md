@@ -61,9 +61,11 @@ Parity 有明确的线性 XAG 构造：`n` 位 parity 使用 `n-1` 个 XOR，8/1
 
 外部 Hard-LGN v23 结果通过 `results/external/hard_lgn_v23/` 建立 provenance bridge；它来自独立项目 commit `39c73d099bdcd7068f99bdea7667ae54578c193c`，不是本仓库重跑，选定 artifact 也没有记录原环境。
 
+下述 90 行包含同一实验族中的相关配置，不能当作 90 个相互独立的任务或总体样本。
+
 - 90 个 validation-selected 评估行中，argmax-best-hard、best-of-32 Gumbel、truth-table refit 分别被选中 35、37、18 次；没有候选类覆盖所有已评估行。
 - 强制 truth-table refit 在 12 个 held-out 比较中仅 3 次胜过 validation-selected 方法、2 次胜过 strong baseline。
-- ABC 在 15/15 个已评估任务输入集合上完成综合并保持 hard accuracy；这是任务输入上的经验等价，不是 SAT 全域 equivalence proof。
+- ABC 在 15/15 个已评估综合行中成功，并在各行对应的任务输入上保持 hard accuracy；这些行来自 3 个 dataset/seed 输入集合与 5 种方法的组合，不是 15 个独立任务。这仍只是任务输入上的经验等价，不是 SAT 全域 equivalence proof。
 - 报告的 29.3%–71.5% 只比较 pre-BLIF node count 与 post-ABC AIG AND count，跨表示、跨单位，不能解释成严格 AIG reduction 或 PPA。
 
 这支持“生成多个 hardening 候选，再用独立 validation/verification 选择”，不支持单一 hardener。组合 residual mask、RawLabels 无损 escape、运行时 confidence fallback 是三个不同机制，必须分别记账和验证。
@@ -106,11 +108,14 @@ L_{proposed}
 
 ## 6. 已验证与待验证
 
-已验证：
+本仓库已验证：
 
 - 完整三输入空间上四个付费 formula-basis 候选的 exact minimum formula 结果与 witness 上界；
 - 原有多语言 MDL 的 route tag、residual 和 raw escape；
 - parity 的短 XAG 构造与 GateBeam search failure 的分离；
+
+外部已审计：
+
 - 外部 Hard-LGN hardening/ABC artifact 的受限审计结论。
 
 仍是 proposed/planned：
