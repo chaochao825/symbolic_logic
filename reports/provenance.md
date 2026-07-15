@@ -25,4 +25,5 @@ The supplied documents were read as UTF-8. They were not copied into this reposi
 - Figure source: `figures/results_plot.py`; it reads only the raw CSV files, including `figures/learned_gate_integration.pdf`.
 - Core exactness tests: `tests/test_core.py`.
 - Discrete-code and artifact-integrity tests: `tests/test_boolean_mdl.py`.
+- Final QA: a fresh bundle clone of artifact commit `892ec4a1d1a3348bec14c2e5da93054e9546f729` on SSH profile 210/Python 3.8.10 passed all 39 repository tests; regenerating the 1,974-row summary produced no diff. Independent mathematical and citation audits reported no remaining P0 or P1 finding.
 - The previous mojibake-encoded report is preserved at `trash/20260712_evidence_report_revision/evidence_report_zh_legacy.md`; the current report is UTF-8.
