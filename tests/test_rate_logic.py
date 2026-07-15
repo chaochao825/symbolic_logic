@@ -1,3 +1,5 @@
+import hashlib
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -17,6 +19,7 @@ from rate_logic_experiments import (
     fit_rate_guided_gate,
     mcr2,
     mcr2_gradient,
+    parameter_storage_bits,
     run_rate_flow,
 )
 
@@ -73,6 +76,19 @@ class RateLogicTests(unittest.TestCase):
     def test_empirical_entropy_uses_observed_codewords(self) -> None:
         codes = np.asarray([[0, 0, 1, 1], [0, 0, 1, 1]], dtype=np.uint8)
         self.assertAlmostEqual(empirical_code_entropy(codes), 1.0)
+
+    def test_parameter_storage_bits_uses_actual_dtype_width(self) -> None:
+        arrays = (np.zeros(3, dtype=np.float32), np.zeros(2, dtype=np.float64))
+        self.assertEqual(parameter_storage_bits(arrays), 3 * 32 + 2 * 64)
+
+    def test_committed_rate_run_has_clean_provenance_and_matching_hashes(self) -> None:
+        metadata = json.loads((ROOT / "results" / "rate_logic_metadata.json").read_text(encoding="utf-8"))
+        self.assertEqual(metadata["git_at_start"]["commit"], "5cddc7f4bd4df878359e1e60a765cd0f4db22aa2")
+        self.assertFalse(metadata["git_at_start"]["dirty"])
+        for manifest in (metadata["source_sha256"], metadata["artifact_sha256"]):
+            for relative, expected in manifest.items():
+                payload = (ROOT / relative).read_bytes().replace(b"\r\n", b"\n")
+                self.assertEqual(hashlib.sha256(payload).hexdigest(), expected)
 
 
 if __name__ == "__main__":

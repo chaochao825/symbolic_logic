@@ -5,9 +5,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import platform
 import subprocess
+import sys
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -21,11 +24,8 @@ RESULTS = ROOT / "results"
 
 
 def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    payload = path.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(payload).hexdigest()
 
 
 def git_state() -> dict:
@@ -44,6 +44,7 @@ def main() -> None:
     seeds = range(1 if args.mode == "smoke" else 5)
     RESULTS.mkdir(exist_ok=True)
     started = time.perf_counter()
+    started_utc = datetime.now(timezone.utc)
     start_state = git_state()
     logic_rows: list[dict] = []
     rate_rows: list[dict] = []
@@ -59,9 +60,24 @@ def main() -> None:
         "mode": args.mode,
         "seeds": list(seeds),
         "elapsed_seconds": time.perf_counter() - started,
+        "started_utc": started_utc.isoformat(),
+        "finished_utc": datetime.now(timezone.utc).isoformat(),
+        "hostname": platform.node(),
+        "working_directory": str(Path.cwd()),
+        "invocation": [sys.executable, *sys.argv],
+        "python_executable": sys.executable,
+        "python_prefix": sys.prefix,
         "python": platform.python_version(),
         "numpy": np.__version__,
+        "pandas": pd.__version__,
         "platform": platform.platform(),
+        "hash_mode": "sha256 after CRLF-to-LF normalization for tracked text",
+        "requirements_lock_sha256": sha256(ROOT / "requirements-lock.txt"),
+        "cpu_count": os.cpu_count(),
+        "thread_environment": {
+            name: os.environ.get(name)
+            for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS")
+        },
         "git_at_start": start_state,
         "scope": "NumPy controlled proxy for MCR2 objective/gradient flow, finite gate/topology search, and Booleanization accounting; not full ReduNet or CRATE reproduction",
         "source_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in source_paths},

@@ -13,6 +13,7 @@ CRATE training systems.
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass
 from itertools import combinations
 from math import ceil, log2
@@ -158,6 +159,12 @@ class DifferentiableGateSelector:
 def gate_description_bits(n_inputs: int) -> int:
     """Fixed-length index cost for one unordered input pair plus one of 4 ops."""
     return ceil(log2(max(1, n_inputs * (n_inputs - 1) // 2))) + 2
+
+
+def parameter_storage_bits(arrays: Iterable[np.ndarray]) -> int:
+    """Report the actual in-memory payload of NumPy parameter arrays."""
+
+    return int(sum(np.asarray(array).nbytes for array in arrays) * 8)
 
 
 def median_inference_us_per_1000(function, x: np.ndarray, repeats: int = 40) -> float:
@@ -441,7 +448,9 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
         learned = DifferentiableGateSelector(n_bits, seed=seed * 100 + task_index).fit(x[train], y[train])
         selected_left, selected_right, selected_op = learned.selected()
         learned_ops[op] = selected_op
+        rate_started = time.perf_counter()
         rate_guided, rate_score = fit_rate_guided_gate(x[train], y[train])
+        rate_fit_seconds = time.perf_counter() - rate_started
         fixed = x[:, 0] & x[:, 1]
         mlp = TinyMLP(n_bits, hidden=(16,), seed=seed * 10 + task_index, steps=700).fit(x[train], y[train])
         inference_latency = {
@@ -453,8 +462,8 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
         for method, prediction, fit_seconds, description_bits in (
             ("FixedAND", fixed[test], 0.0, 2),
             ("DifferentiableGateSelector", learned.predict(x[test]), learned.fit_seconds, gate_description_bits(n_bits)),
-            ("RateGuidedGateSelector", rate_guided.predict(x[test]), 0.0, gate_description_bits(n_bits)),
-            ("TinyMLP", mlp.predict(x[test]), mlp.fit_seconds, (sum(w.size for w in mlp.weights) + sum(b.size for b in mlp.biases)) * 32),
+            ("RateGuidedGateSelector", rate_guided.predict(x[test]), rate_fit_seconds, gate_description_bits(n_bits)),
+            ("TinyMLP", mlp.predict(x[test]), mlp.fit_seconds, parameter_storage_bits((*mlp.weights, *mlp.biases))),
         ):
             rows.append(
                 {
@@ -514,7 +523,9 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
     true_mask = (1 << (seed % 4)) | (1 << ((seed + 1) % 4))
     train_graphs = make_graph_dataset(rng, 160, n_bits, true_pair, true_op, true_mask)
     test_graphs = make_graph_dataset(rng, 240, n_bits, true_pair, true_op, true_mask)
+    graph_started = time.perf_counter()
     pair, op, relation_mask, train_score, margin = fit_task_supervised_graph_rule(train_graphs, n_bits)
+    graph_fit_seconds = time.perf_counter() - graph_started
     test_labels = np.asarray([item.label for item in test_graphs], dtype=np.uint8)
     learned_prediction = predict_graphs(test_graphs, pair, op, relation_mask)
     fixed_prediction = predict_graphs(test_graphs, (0, 1), "AND", (1 << 4) - 1)
@@ -532,7 +543,7 @@ def run_logic_discovery(seed: int, n_bits: int = 8) -> list[dict]:
                 "rejected_hardening": np.nan,
                 "description_bits": gate_description_bits(n_bits) + 4,
                 "gate_count": 1,
-                "fit_seconds": 0.0,
+                "fit_seconds": graph_fit_seconds if method.startswith("TaskOnly") else 0.0,
                 "margin": margin if method.startswith("TaskOnly") else np.nan,
                 "train_balanced_accuracy": train_score if method.startswith("TaskOnly") else np.nan,
             }

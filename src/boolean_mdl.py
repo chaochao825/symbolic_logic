@@ -95,8 +95,39 @@ def kt_binary_ideal_bits(values: Iterable[int]) -> float:
 
 
 def kt_binary_prefix_bits(values: Iterable[int]) -> int:
-    """Shannon-Fano integer length induced by the KT mixture probability."""
-    return int(ceil(kt_binary_ideal_bits(values)))
+    """Exact Shannon-Fano length induced by the binary KT probability.
+
+    For integer counts and Jeffreys' ``alpha=1/2``, the beta-binomial sequence
+    probability is rational.  Integer arithmetic avoids ``ceil`` turning an
+    exact 1-bit event into 2 bits because ``lgamma`` returned 1+epsilon.
+    """
+
+    numerator, denominator = _kt_binary_probability_rational(values)
+    return _ceil_negative_log2_rational(numerator, denominator)
+
+
+def _kt_binary_probability_rational(values: Iterable[int]) -> tuple[int, int]:
+    """Return the exact binary KT sequence probability as a rational pair."""
+
+    array = _binary_array(list(values), "KT binary code").reshape(-1)
+    ones = int(array.sum())
+    zeros = len(array) - ones
+    numerator = factorial(2 * ones) * factorial(2 * zeros)
+    denominator = (4 ** len(array)) * factorial(ones) * factorial(zeros) * factorial(len(array))
+    return numerator, denominator
+
+
+def _ceil_negative_log2_rational(numerator: int, denominator: int) -> int:
+    """Return ``ceil(-log2(numerator/denominator))`` exactly."""
+
+    if numerator <= 0 or denominator <= 0 or numerator > denominator:
+        raise ValueError("expected a probability in (0, 1]")
+    bits = max(0, denominator.bit_length() - numerator.bit_length())
+    while (numerator << bits) < denominator:
+        bits += 1
+    while bits > 0 and (numerator << (bits - 1)) >= denominator:
+        bits -= 1
+    return bits
 
 
 def kt_independent_matrix_bits(binary_codes: np.ndarray) -> int:
@@ -104,8 +135,13 @@ def kt_independent_matrix_bits(binary_codes: np.ndarray) -> int:
     codes = _binary_array(binary_codes, "independent KT code")
     if codes.ndim == 1:
         codes = codes[:, None]
-    ideal = sum(kt_binary_ideal_bits(codes[:, column]) for column in range(codes.shape[1]))
-    return int(ceil(ideal))
+    numerator = 1
+    denominator = 1
+    for column in range(codes.shape[1]):
+        column_numerator, column_denominator = _kt_binary_probability_rational(codes[:, column])
+        numerator *= column_numerator
+        denominator *= column_denominator
+    return _ceil_negative_log2_rational(numerator, denominator)
 
 
 def joint_dirichlet_code_bits(binary_codes: np.ndarray, alpha: float = 0.5) -> int:
@@ -115,10 +151,26 @@ def joint_dirichlet_code_bits(binary_codes: np.ndarray, alpha: float = 0.5) -> i
         codes = codes[:, None]
     if codes.shape[1] > 20:
         raise ValueError("joint code is bounded to at most 20 bits")
+    if codes.shape[1] == 0:
+        return 0
     alphabet = 1 << codes.shape[1]
     symbols = np.sum(codes.astype(np.uint64) << np.arange(codes.shape[1], dtype=np.uint64), axis=1)
     counts = np.bincount(symbols.astype(np.int64), minlength=alphabet)
     n = len(codes)
+    # For Jeffreys' alpha=1/2, cancel Gamma(K/2)/Gamma(n+K/2)
+    # into a rising factorial.  This keeps the default route exact even for a
+    # large public alphabet without constructing factorial(K/2).
+    if alpha == 0.5:
+        half_alphabet = alphabet // 2
+        numerator = 1
+        denominator = 4**n
+        for offset in range(n):
+            denominator *= half_alphabet + offset
+        for count in counts:
+            integer = int(count)
+            numerator *= factorial(2 * integer)
+            numerator //= factorial(integer)
+        return _ceil_negative_log2_rational(numerator, denominator)
     log_probability = lgamma(alphabet * alpha) - lgamma(n + alphabet * alpha)
     log_probability += sum(lgamma(int(count) + alpha) - lgamma(alpha) for count in counts)
     return int(ceil(-log_probability / log(2.0)))

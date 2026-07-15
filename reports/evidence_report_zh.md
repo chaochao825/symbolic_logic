@@ -22,16 +22,16 @@ encoder / LLM proposal
 
 ## 1. 局部规则学习与 soft→hard 闭环
 
-原有 GateBeam 是透明的 bit-packed 结构搜索代理，不是某个发表的 DLGN/Conv-DLGN 复现。在 8-bit 可组合规则、50% 训练覆盖、10 个划分上，GateBeam 的 OOD 平衡准确率为 `1.000 ± 0.000`，小 MLP 为 `0.823 ± 0.104`；随机 LUT 对照中 GateBeam 只有 `0.518 ± 0.170`。因此优势来自可压缩结构，而不是“门天然泛化”。GateBeam 的小真值表拟合约 `0.7–0.8 s`，高于小 MLP 的约 `0.20–0.22 s`，动态规则或频繁更新时这项编译成本可能抵消部署收益。
+原有 GateBeam 是透明的 bit-packed 结构搜索代理，不是某个发表的 DLGN/Conv-DLGN 复现。在 8-bit 可组合规则、50% 训练覆盖、10 个划分上，GateBeam 的 OOD 平衡准确率为 `1.000 ± 0.000`，小 MLP 为 `0.823 ± 0.104`；随机 LUT 对照中 GateBeam 只有 `0.518 ± 0.170`。该对照与“可压缩组合结构有助于跨未见组合泛化，而随机标签没有这种结构”的解释一致，但不是因果识别，也不是对某个 sampled LUT 的电路下界。GateBeam 的小真值表拟合约 `0.7–0.8 s`，高于小 MLP 的约 `0.20–0.22 s`，动态规则或频繁更新时这项编译成本可能抵消部署收益。
 
 新增的 learned soft-gate 结果（`results/learned_gate_results.csv`）如下：
 
 | 训练覆盖 | 方法 | 全表平衡准确率 | OOD 平衡准确率 | OOD Brier | soft→hard OOD 掉点 | 拟合时间 |
 |---:|---|---:|---:|---:|---:|---:|
-| 50% | LearnedSoftGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0.000015 ± 0.000003 | — | 0.425 ± 0.018 s |
-| 50% | LearnedHardenedGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0 | **0.000** | 0.425 ± 0.018 s |
-| 75% | LearnedSoftGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0.000017 ± 0.000002 | — | 0.494 ± 0.015 s |
-| 75% | LearnedHardenedGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0 | **0.000** | 0.494 ± 0.015 s |
+| 50% | LearnedSoftGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0.000015 ± 0.000003 | — | 0.440 ± 0.024 s |
+| 50% | LearnedHardenedGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0 | **0.000** | 0.440 ± 0.024 s |
+| 75% | LearnedSoftGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0.000017 ± 0.000002 | — | 0.498 ± 0.019 s |
+| 75% | LearnedHardenedGate | 1.000 ± 0.000 | 1.000 ± 0.000 | 0 | **0.000** | 0.498 ± 0.019 s |
 
 10 个 seed 中硬化电路都保持了 soft 输出的 OOD 分类结果；不同 seed 可能学到等价的门表达式，例如 `NAND NAND XOR NAND OR NAND AND`，所以不能把某一组门名当成唯一真值结构。这个实验是**固定 wiring 的 controlled proxy**：它验证 operator learning 和 argmax hardening 的接口，不等价于对任意 learned-LGN 结构搜索的证明。
 
@@ -39,12 +39,12 @@ encoder / LLM proposal
 
 每个图边仍以 8 个 named predicates 输入；gate 输出边有效性的概率/bit；BFS 只负责全局递归。图的宽度为 8、16、32，路径长度为 4、8、12，每个条件 60 个图、每个训练覆盖 10 个 seed。结果在 `results/learned_gate_bfs_results.csv`：
 
-| 训练覆盖 | 方法 | 平衡准确率 | 正例准确率 | 负例准确率 | 查询中位数 |
+| 训练覆盖 | 方法 | 平衡准确率 | 正例准确率 | 负例准确率 | 各条件查询中位数的均值 |
 |---:|---|---:|---:|---:|---:|
-| 50% | LearnedSoftGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.050 ms* |
-| 50% | LearnedHardenedGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.043 ms* |
-| 75% | LearnedSoftGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.049 ms* |
-| 75% | LearnedHardenedGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.042 ms* |
+| 50% | LearnedSoftGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.051 ms* |
+| 50% | LearnedHardenedGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.044 ms* |
+| 75% | LearnedSoftGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.051 ms* |
+| 75% | LearnedHardenedGate+BFS | 1.000 ± 0.000 | 1.000 | 1.000 | 0.043 ms* |
 
 `*` 只计时预计算边之后的 BFS 查询；门推理、输入布局和 pack/unpack 不在该列内。
 
@@ -60,18 +60,18 @@ encoder / LLM proposal
 
 | 路径 | 中位时间 | 显式输入/活动 buffer | 相对 float t-norm |
 |---|---:|---:|---:|
-| float t-norm | 33.38 ms | 33.55 / 34.60 MB | 1.0× |
-| NumPy bool | 7.04 ms | 8.39 / 9.44 MB | 4.74× |
-| 预打包门内核 | 0.430 ms | 1.05 / 1.18 MB | 77.6× |
-| pack + kernel + unpack | 10.02 ms | 8.39 / 10.62 MB | 3.33× |
+| float t-norm | 30.51 ms | 33.55 / 34.60 MB | 1.0× |
+| NumPy bool | 7.09 ms | 8.39 / 9.44 MB | 4.31× |
+| 预打包门内核 | 0.429 ms | 1.05 / 1.18 MB | 71.2× |
+| pack + kernel + unpack | 9.94 ms | 8.39 / 10.62 MB | 3.07× |
 
-因此“离散、稀疏、可编译”在重复查询内核上成立，但端到端优势只有约 3.33×；pack/unpack、缓存驻留和调用次数是接口成本。关系过滤也说明只把每个 pair 换成门并不会消除组合爆炸：`N=2048` 时索引候选只检查 `0.0373%` 的 pair，约比 dense 快 6.9×；小 `N` 时 Python 索引开销反而可能更慢。真正需要和门一起设计的是候选生成、数据布局和内存驻留。
+因此“离散、稀疏、可编译”在重复查询内核上成立，但端到端优势只有约 3.07×；pack/unpack、缓存驻留和调用次数是接口成本。关系过滤也说明只把每个 pair 换成门并不会消除组合爆炸：`N=2048` 时索引候选只检查 `0.0373%` 的 pair，dense/index 平均为 `21.64/3.06 ms`，约快 7.08×；小 `N` 时 Python 索引开销反而可能更慢。真正需要和门一起设计的是候选生成、数据布局和内存驻留。
 
-训练/编译与部署的瓶颈是不同的：GateBeam 在小表上的结构搜索约 0.7–0.8 s，learned soft-gate 代理约 0.42–0.49 s；部署后硬门只需微秒级局部查询。若规则频繁更新，编译时间可能成为主导；若规则固定且重复调用，编译摊销后 bit-pack 和候选生成才是主要接口成本；递归、proof search、规划和概率推理仍然是全局复杂度来源。
+训练/编译与部署的瓶颈是不同的：GateBeam 在小表上的结构搜索约 0.7–0.8 s，learned soft-gate 代理约 0.44–0.50 s；部署后硬门只需微秒级局部查询。若规则频繁更新，编译时间可能成为主导；若规则固定且重复调用，编译摊销后 bit-pack 和候选生成才是主要接口成本；递归、proof search、规划和概率推理仍然是全局复杂度来源。
 
 ## 4. grounding 风险与 hardening 条件
 
-独立 bit-flip 率为 0.20 时，原有局部实验的分类准确率 hard/soft 都约为 `0.694`，但 Brier score 分别为 `0.306 ± 0.002` 和 `0.204 ± 0.001`。硬门放大 grounding 错误并丢弃不确定性；soft 概率电路保留了后验信息。因而 hardening 只有在谓词已高置信二值化、误差代价可接受，或系统能把低置信输入回退给概率模块/solver 时才合适。
+独立 bit-flip 率为 0.20 时，原有局部实验的分类准确率 hard/soft 都约为 `0.694`，但 Brier score 分别为 `0.306 ± 0.002` 和 `0.204 ± 0.001`。局部 Boolean 组合会传播 grounding bit error；hardening 在该对照中没有进一步降低分类准确率，但会额外丢弃概率信息和校准，soft 概率电路保留了更多后验信息。因而 hardening 只有在谓词已高置信二值化、误差代价可接受，或系统能把低置信输入回退给概率模块/solver 时才合适。
 
 ## 5. 回答“兼容吗、能否近乎无损、是否是瓶颈”
 
@@ -114,12 +114,12 @@ visited[t+1] = visited[t] | frontier[t+1]
 
 | 方法 | 路径长度 ≤4 | 路径长度 >4 | 平均查询时间 |
 |---|---:|---:|---:|
-| FixedK=4StateUnroll | 1.0 | 0.5 | 0.029 ms |
-| LoopedStateTransition | 1.0 | **1.0** | 0.102 ms |
+| FixedK=4StateUnroll | 1.0 | 0.5 | 0.028 ms |
+| LoopedStateTransition | 1.0 | **1.0** | 0.101 ms |
 
 ![循环状态转换](../figures/state_transition.png)
 
-表中时间是跨可用 width 条件的简单均值；循环机制恢复了固定展开失去的表达能力，但查询时间约为固定展开的 3.6 倍。这不是失败，而是用动态迭代和状态存储换取了变长计算能力。对 proof search 和规划，循环状态机还需要分支、队列、回溯和启发式模块，不能只靠一个 `F` 门网络。
+表中时间是跨可用 width 条件的简单均值；循环机制恢复了固定展开失去的表达能力，但查询时间约为固定展开的 3.5 倍。这不是失败，而是用动态迭代和状态存储换取了变长计算能力。对 proof search 和规划，循环状态机还需要分支、队列、回溯和启发式模块，不能只靠一个 `F` 门网络。
 
 这里的两个查询时间是 Python/NumPy 原型中的状态遍历时间，不是固定组合门、FPGA LUT 或 ASIC PPA 的测量；每个 query 都重新执行闭包，适合比较控制流语义，不适合直接外推硬件吞吐。
 
@@ -129,13 +129,13 @@ visited[t+1] = visited[t] | frontier[t+1]
 
 这是单调状态空间的 planning/proof-search **代理**，不是完整 planner、SAT、SMT 或带启发式回溯的证明器；它验证的是控制流和状态存储的必要性，而不是某个求解器的硬件 PPA。
 
-## 9. 不可压缩性和概率边缘化的实验
+## 9. 表示困难、搜索困难和概率边缘化
 
-`noncompressible_scaling_results.csv` 测量了随机 LUT 与 parity 随位宽增加的行为。GateBeam 的随机 holdout 准确率在 8/10/12 位分别为 `0.495/0.516/0.508`；随机 LUT 没有组合泛化。Parity 也不是常数大小规则：在当前 `max_depth=4` 的 GateBeam 搜索下，准确率为 `0.445/0.405/0.440`，而 MLP 在 12 位达到 `0.989`，说明连续模型有时能表达受限门搜索深度无法覆盖的结构。这是 bounded-depth 的受控反例，不是一般电路下界证明。
+`noncompressible_scaling_results.csv` 测量了随机 LUT 与 parity 随位宽增加的行为。GateBeam 的随机 holdout 准确率在 8/10/12 位分别为 `0.495/0.516/0.508`；这些 sampled LUT 没有组合泛化，但这不是每个样本实例的电路下界。Parity 则有明确的 XAG 构造：`n` 位 parity 用 `n-1` 个 XOR，平衡树在 8/10/12 位的深度为 3/4/4。现有 GateBeam 已含 XOR 且 `max_depth=4` 足够，却仍只有 `0.445/0.405/0.440`；该结果与局部 accuracy 排序、`beam_width=192` 剪枝造成的 **search/objective bias** 一致，但当前没有保存 search trace，也没有做 beam-width/ranking ablation，因此不能把具体失败机制视为已定位。这至少排除了“basis 中没有 XOR”和“该构造必然超过深度上限”两种解释，也不能把失败解释为表示不可压缩。两类负结果必须分开。
 
 `probability_marginalization_results.csv` 进一步区分了三件事：
 
-- 对独立 Bernoulli parity，精确枚举与 closed-form soft semiring 的误差为 0；但枚举时间从 4 位的约 `0.022 ms` 增长到 16 位的约 `6.26 ms`。
+- 对独立 Bernoulli parity，精确枚举与 closed-form soft semiring 的误差为 0；但枚举时间从 4 位的约 `0.021 ms` 增长到 16 位的约 `6.153 ms`。
 - 对同一不确定输入的 `x AND x` 或 `x OR x`，把两条线当成独立变量会产生约 `0.201` 的平均概率误差，说明局部 soft gate 只有在独立性、可分解性或共享变量被显式处理时才保持精确。
 - 先把每个输入硬阈值化再计算 parity，和真实事件概率的绝对误差约为 `0.5`；hard 输出是一个类别，不是边缘概率。
 
@@ -212,11 +212,11 @@ rendered RGB grid image
 | Fixed AND | 0.556 ± 0.100 | 不适用 | 不适用 | 2 bits（仅算子） |
 | 仅 MCR² 排序 | 0.556 ± 0.100 | 0.25 | 0.05 | 7 bits |
 | Differentiable gate selector | **1.000 ± 0.000** | **1.00** | **1.00** | 7 bits |
-| TinyMLP | **1.000 ± 0.000** | 不可直接抽取 | 不可直接抽取 | 5,152 parameter bits |
+| TinyMLP | **1.000 ± 0.000** | 不可直接抽取 | 不可直接抽取 | 10,304 parameter bits |
 
-这里的 7 bits 是固定长索引成本：从 28 个 pair 中选一个，再从 4 个算子中选一个；MLP 的 5,152 bits 包含 161 个 32-bit 权重和 bias，只是显式存储量对照，不是熵编码或硬件面积。选择器平均拟合时间为 `0.0489 s`，MLP 为 `0.0920 s`。在 210 服务器的 1,000-row NumPy batch 上，固定 AND、已 harden 的可微选择器和 MLP 的 per-run median 均值分别为 `1.60/4.67/121.86 μs`；这些是 Python/NumPy 原型 kernel timing，不含数据搬运，也不能外推 ASIC/FPGA PPA。
+这里的 7 bits 是固定长索引成本：从 28 个 pair 中选一个，再从 4 个算子中选一个；MLP 的 10,304 bits 是 161 个 NumPy `float64` 权重和 bias 的实际数组 payload，只是显式存储量对照，不是熵编码或硬件面积。最新 clean full run 中，可微选择器、仅 MCR² 排序和 MLP 的平均拟合/搜索时间分别为 `0.0261/0.0104/0.0662 s`。在 210 服务器的 1,000-row NumPy batch 上，固定 AND、已 harden 的可微选择器和 MLP 的 per-run median 均值分别为 `1.70/4.37/70.68 μs`；这些是固定单线程环境下的 Python/NumPy 原型 kernel timing，不含数据搬运，也不能外推 ASIC/FPGA PPA。
 
-只在 depth-1 上学习四个算子的身份，再无训练地组合到 depth-2/3，真值表准确率均为 1.0。这说明已学会的 primitive 可以系统组合，但组合树仍由程序给出，因此不是未见结构发现。更强的 task-only 测试不给 edge label，只给图级 reachability；有限搜索同时选择输入 pair、算子和四类候选关系的 topology mask，五个种子在测试集上均为 1.0，并全部恢复隐藏规则与 mask；固定 AND+dense topology 只有 `0.583 ± 0.052`。这里学习的是有限关系类型 mask，不是任意对象图或连续 sparse router。
+只在 depth-1 上学习四个算子的身份，再无训练地组合到 depth-2/3，真值表准确率均为 1.0。这说明已学会的 primitive 可以系统组合，但组合树仍由程序给出，因此不是未见结构发现。更强的 task-only 测试不给 edge label，只给图级 reachability；有限搜索同时选择输入 pair、算子和四类候选关系的 topology mask，五个种子在测试集上均为 1.0，并全部恢复隐藏规则与 mask；固定 AND+dense topology 只有 `0.583 ± 0.052`。该有限枚举搜索平均用时 `7.04 s`，这里学习的是有限关系类型 mask，不是任意对象图或连续 sparse router。
 
 负例的拒绝只看独立 validation split，不读取 test 指标；当 validation 平衡准确率低于 `0.90` 时 abstain。五个种子均拒绝了 majority-3、parity-4、random LUT 和连续阈值的一门近似；四者 test 平衡准确率分别为 `0.726/0.448/0.554/0.747`。概率乘积是另一种语义负例：soft AND 的 MSE 为 0，hardened AND 为 `0.0825`，说明“同一个算子名称”不保证 hard 输出保留概率值。
 
@@ -272,3 +272,7 @@ Boolean 对照给出更直接的反例：MCR² flow 后四类任务的 sign-flip
 ### 14.3 已执行的离散扩展
 
 上述设计中的 Boolean-aware 部分现已落实为一套独立的 Boolean/Circuit-MDL 实验：KT 与 joint Dirichlet 表示码、对称的标签 side-information 记账、带 escape 的非负路由、可译码的模型与组合残差码，以及固定门基下四输入全部函数的精确最小公式树 catalog。完整定义、证明、12,870 个平衡函数的分布、六输入结构化规则与 random-LUT 路由结果见 [`reports/discrete_theory_zh.md`](discrete_theory_zh.md)。这项扩展建立的是**相对于公开元语言的离散描述长度**，仍不把码长解释成语言无关熵，也不把最小公式树解释成最小 DAG 或硬件 PPA。
+
+## 15. Basis-aware 归纳偏置更新
+
+最新三输入 256×4 exact formula oracle、AIG/XAG/MIG-style 任务分化、付费 witness-code、parity 表示/搜索分离，以及外部 Hard-LGN hardening/ABC 审计，统一整理在 [`reports/inductive_bias_update_zh.md`](inductive_bias_update_zh.md)。当前最有证据支持的下一步不是固定一种门基，而是预先声明并付费的层级 representation/basis mixture；这仍是 proposed design，尚未成为部分样本上的联合 learner。

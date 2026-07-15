@@ -1,0 +1,11 @@
+axis,metric,value,denominator,status,interpretation,source
+hardening_selection,selected_task_aware_rows,90,90,measured,"validation-selected candidates; scope is the evaluated rows, not a universal winner claim",hardening_method_comparison.csv
+hardening_selection,selected_argmax_best_hard,35,90,measured,no candidate class is selected on every evaluated row,hardening_method_comparison.csv
+hardening_selection,selected_best_of_32_gumbel,37,90,measured,no candidate class is selected on every evaluated row,hardening_method_comparison.csv
+hardening_selection,selected_truth_table_refit,18,90,measured,no candidate class is selected on every evaluated row,hardening_method_comparison.csv
+truth_table_refit,heldout_wins_vs_validation_selected,3,12,partial,wins=3; losses=9,truth_refit_final_test_comparison.csv
+truth_table_refit,heldout_wins_vs_strong_baseline,2,12,partial,wins=2; losses=10,truth_refit_final_test_comparison.csv
+abc,successful_synthesis_rows,15,15,pass,ABC/AIG structural optimization completed,abc_synthesis_comparison.csv
+abc,hard_accuracy_preserved_rows,15,15,pass,optimized BLIF was re-evaluated; equivalence is empirical over the task inputs,abc_synthesis_comparison.csv
+abc,minimum_reported_post_abc_and_vs_pre_blif_node_reduction,0.29296875,,measured,cross-representation statistic: pre-BLIF node count versus post-ABC AIG AND count; not like-for-like AIG reduction or hardware PPA,abc_synthesis_comparison.csv
+abc,maximum_reported_post_abc_and_vs_pre_blif_node_reduction,0.71484375,,measured,cross-representation statistic: pre-BLIF node count versus post-ABC AIG AND count; not like-for-like AIG reduction or hardware PPA,abc_synthesis_comparison.csv
