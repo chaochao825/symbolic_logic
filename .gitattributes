@@ -5,3 +5,10 @@
 *.yaml text eol=lf
 *.yml text eol=lf
 *.txt text eol=lf
+
+# These measured CSVs have raw-byte SHA-256/size entries in the CA metadata.
+# Preserve the exact generator bytes (including CRLF) in Git and every clone.
+results/cellular_automata_complexity_results.csv -text -diff
+results/cellular_automata_local_rule_results.csv -text -diff
+results/cellular_automata_official_results.csv -text -diff
+results/cellular_automata_task_results.csv -text -diff
