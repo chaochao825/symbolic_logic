@@ -501,7 +501,9 @@ def run_collective_tasks(mode: str) -> tuple[list[dict], list[dict]]:
                         "seed": seed,
                         "width": width,
                         "samples": samples,
-                        "steps": horizon,
+                        "steps": horizon + 1,
+                        "decision_horizon": horizon,
+                        "validation_steps": 1,
                         "horizon_policy": "exact_2N_plus_one_validation_step",
                         "accuracy": float(np.mean(success)),
                         "successes": int(success.sum()),
@@ -515,7 +517,13 @@ def run_collective_tasks(mode: str) -> tuple[list[dict], list[dict]]:
                         "local_semantics_source": "published_rule_replay",
                     }
                 )
-                wrapper = ca_wrapper_bits(dimension=1, radius=3, channels=1, boundary="periodic", steps=horizon)
+                wrapper = ca_wrapper_bits(
+                    dimension=1,
+                    radius=3,
+                    channels=1,
+                    boundary="periodic",
+                    steps=horizon + 1,
+                )
                 residual = residual_code_bits(np.ones(samples, dtype=np.uint8), success.astype(np.uint8))
                 append_complexity(
                     complexity_rows,
@@ -529,7 +537,7 @@ def run_collective_tasks(mode: str) -> tuple[list[dict], list[dict]]:
                     model_description_bits=3 + wrapper + 128,
                     residual_bits=residual,
                     seed=seed,
-                    note="Success requires two uniform complementary consecutive states; no partial credit.",
+                    note="Decision state is at M=2N; one charged update validates a uniform complementary successor; no partial credit.",
                 )
     return task_rows, complexity_rows
 

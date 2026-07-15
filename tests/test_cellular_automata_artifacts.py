@@ -119,6 +119,9 @@ class CellularAutomataArtifactTests(unittest.TestCase):
             by_method[method] = sum(values) / len(values)
         self.assertGreater(by_method["particle"], by_method["majority"])
         sync = [row for row in rows if row["task"] == "global_synchronization" and int(row["width"]) == 149]
+        self.assertTrue(all(int(row["steps"]) == 2 * int(row["width"]) + 1 for row in sync))
+        self.assertTrue(all(int(row["decision_horizon"]) == 2 * int(row["width"]) for row in sync))
+        self.assertTrue(all(int(row["validation_steps"]) == 1 for row in sync))
         sync_means = {
             method: sum(float(row["accuracy"]) for row in sync if row["method"] == method)
             / sum(row["method"] == method for row in sync)

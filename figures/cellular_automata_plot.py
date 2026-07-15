@@ -117,7 +117,14 @@ def plot_collective(axis: plt.Axes, tasks: pd.DataFrame, task: str) -> None:
     axis.legend(loc="best")
     panel_label(axis, "(b)" if task == "density_classification" else "(c)")
     if task == "global_synchronization":
-        axis.text(0.98, 0.06, "strict M=2N", transform=axis.transAxes, ha="right", color=COLORS["gray"])
+        axis.text(
+            0.98,
+            0.06,
+            "decision M=2N\n+1 validation step",
+            transform=axis.transAxes,
+            ha="right",
+            color=COLORS["gray"],
+        )
 
 
 def plot_cost(axis: plt.Axes, complexity: pd.DataFrame) -> None:
