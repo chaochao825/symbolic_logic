@@ -10,6 +10,8 @@ The supplied documents were read as UTF-8. They were not copied into this reposi
 | `D:\xwechat_files\wxid_zqxxbf2n217z22_a684\msg\file\2026-07\txt2.txt` | `8AE3E23F4E15251D81008D7F02E99B18546092856D59EEC52670368656A183DF` | Identifies soft/dense computation, relation enumeration, rule selection, and constraint verification as candidate gate-compilation targets. |
 | `C:\Users\chaochao\.codex\attachments\43faaf28-6b6a-4e22-b7a9-8ce3b478d1fb\pasted-text.txt` | `D65338FED98B4046B887F7B102E7A99457B308FB6898781437C97172111C82B2` | Independent review that identifies the missing raw-pixel end-to-end model, learned compilation loop, sparsity, and evidence-chain issues. |
 | `C:\Users\chaochao\.codex\attachments\e12f7bbf-fa93-43f5-b58a-989c57897c40\pasted-text-1.txt` | `4EEA2C8BEC3EE380BF4B65288226DC0CCE935B7202F055DF6CE341774F5677A0` | Requests an operational discrete theory based on Boolean representation codes, circuit/netlist descriptions, residual codes, exact small synthesis, and honest incompressibility controls. |
+| `C:\Users\chaochao\.codex\attachments\6b499159-ff3c-48cb-b541-178603224ce7\pasted-text-1.txt` | `88234A4DA6A6C09C41131648788B1717AD4E059BFAB5750E32C0B288F1F14C12` | Sharpens the target around paid Boolean description length, basis-aware circuit complexity, exact small-function synthesis, and the separation of representation hardness from search hardness. |
+| `C:\Users\chaochao\.codex\attachments\6b499159-ff3c-48cb-b541-178603224ce7\pasted-text-2.txt` | `1831682DE804858958F4BF8B81366A3F7B9AAC464908B1C21308AE0BCEC5A86E` | Emphasizes formula-versus-DAG accounting, decision-tree/BDD short-circuit structure, treewidth, exact-oracle validation, synthesis, and formal equivalence boundaries. |
 
 ## Result provenance
 

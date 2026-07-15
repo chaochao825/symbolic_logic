@@ -17,6 +17,7 @@ from rate_logic_experiments import (
     fit_rate_guided_gate,
     mcr2,
     mcr2_gradient,
+    parameter_storage_bits,
     run_rate_flow,
 )
 
@@ -73,6 +74,10 @@ class RateLogicTests(unittest.TestCase):
     def test_empirical_entropy_uses_observed_codewords(self) -> None:
         codes = np.asarray([[0, 0, 1, 1], [0, 0, 1, 1]], dtype=np.uint8)
         self.assertAlmostEqual(empirical_code_entropy(codes), 1.0)
+
+    def test_parameter_storage_bits_uses_actual_dtype_width(self) -> None:
+        arrays = (np.zeros(3, dtype=np.float32), np.zeros(2, dtype=np.float64))
+        self.assertEqual(parameter_storage_bits(arrays), 3 * 32 + 2 * 64)
 
 
 if __name__ == "__main__":

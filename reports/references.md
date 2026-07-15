@@ -1,6 +1,6 @@
 # Literature map and source links
 
-The report uses sources for field context; they are not used to manufacture any experimental number. “Current” below means checked through 2026-07-11. Preprints are marked as such.
+The report uses sources for field context; they are not used to manufacture any experimental number. “Current” below means checked through 2026-07-15. Preprints are marked as such.
 
 ## Knowledge compilation and tractable circuits
 
@@ -54,3 +54,7 @@ The report uses sources for field context; they are not used to manufacture any 
 30. [Bollig and Wegener, *Improving the Variable Ordering of OBDDs Is NP-Complete* (1996)](https://doi.org/10.1109/12.537122). Shows the computational difficulty of optimizing OBDD variable order; Bryant's restricted representation model remains essential when interpreting ROBDD size.
 31. [Haaswijk et al., *SAT-Based Exact Synthesis* (2020)](https://si2.epfl.ch/demichel/publications/archive/2020/winston-exact.pdf). Size-optimum Boolean-chain synthesis under a fixed computation model and operator basis; topology families constrain the SAT search.
 32. [Kojevnikov et al., *Finding Efficient Circuits Using SAT-Solvers* (2009)](https://doi.org/10.1007/978-3-642-02777-2_5). SAT-based circuit search and exact small-circuit reasoning.
+33. [Amarù, Gaillardon, and De Micheli, *Majority-Inverter Graph: A Novel Data-Structure and Algorithms for Efficient Logic Optimization* (DAC 2014)](https://infoscience.epfl.ch/entities/publication/10dae280-8d2c-42d6-8b6d-6eb51c7a0eb1). Defines MIGs as DAGs of three-input majority nodes with regular or complemented edges; this is the basis convention used by the bounded oracle.
+34. [Meuli, Soeken, and De Micheli, *Xor-And-Inverter Graphs for Quantum Compilation* (2022)](https://infoscience.epfl.ch/entities/publication/a4a09216-24cc-4535-b1a8-9e13632fd6df). Primary XAG reference; it motivates XOR/AND/inverter graphs and basis-specific cost rather than a language-independent gate count.
+35. [Soeken et al., *The EPFL Logic Synthesis Libraries* (2018)](https://arxiv.org/abs/1805.05121). Open modular implementations spanning classical and emerging logic-network representations; useful context for basis-aware synthesis and conversion.
+36. [Brayton and Mishchenko, *ABC: An Academic Industrial-Strength Verification Tool* (CAV 2010)](https://people.eecs.berkeley.edu/~alanmi/publications/2010/cav10_abc.pdf). Primary overview of AIG-based synthesis and SAT-backed verification in ABC; synthesis statistics and equivalence checks are separate obligations.

@@ -13,6 +13,8 @@ L_{total}
 =L_{route}+L_{representation}+L_{circuit}+L_{residual}.
 \]
 
+这是统一记账模板，不是当前代码已经序列化出的单一 end-to-end payload：`run_representation_codes` 与 function/task MDL 仍是分开验证的实验。真正的联合闭环还需要固定 representation decoder、circuit grammar、残差条件关系和统一 route，再对同一任务共同优化上述四项。
+
 硬件面积、深度、线网和切换活动可以作为带单位的外部约束或 Lagrangian 项，但不能未经换算直接冒充 Shannon bits。
 
 本报告的可执行实现位于 `src/boolean_mdl.py`。完整运行覆盖 4 输入全部 65,536 个 Boolean 函数，并在 210 服务器的 clean commit `9d482e8` 上生成结果。
@@ -248,10 +250,10 @@ G_{safe}=L_{raw}-\min_C L_{task}(C)\ge0.
 | Majority-6 | Threshold | 34 | 68 | 34 | 0 |
 | Sparse DNF | ANF | 26 | 68 | 42 | 0 |
 | Permuted local rule | ANF | 26 | 68 | 42 | 0 |
-| Reused-subexpression proxy | SingleGate + residual | 36 | 68 | 32 | 4 |
+| Shared-factor naming proxy | SingleGate + residual | 36 | 68 | 32 | 4 |
 | Balanced random LUT（10 个） | RawLabels | 68 | 68 | 0 | 0 |
 
-最后一行说明系统会诚实地拒绝“发现短规则”。Reuse proxy 则说明 MDL 不必追求零错误：短模型加 4 个残差位置仍比完整标签短。
+最后一行说明 6 输入的 10 个 sampled random controls 都诚实回退 RawLabels，但这不是“所有随机实例都 raw”的定理：4 输入 function route 有 `1/10` 偶然由 ANF 取得更短的**带 route-tag**长度，task route 也有 `1/10` 选择 `Literal + 2 residual errors`。这正是 almost-all counting 不能替代单实例分析的例外。Shared-factor naming proxy 仅说明 MDL 不必追求零错误：短模型加 4 个残差位置仍比完整标签短。该目标可由分配律改写，且这里实际选中的是 `SingleGate + 4 residual errors`；它**没有测量 DAG 共享收益**。真正的共享子表达式实验需要多输出目标，并分别统计独立 formula references 与共享后的 unique DAG nodes。
 
 3/4 输入时，truth table 只有 8/16 bits，language tag 和 wiring header 常使短公式也无法取得净 bit saving。因此小输入 catalog 的用途是校准结构排序和证明最优性；实际压缩收益应在更大 $n$ 或重复任务摊销下判断。
 
@@ -304,7 +306,7 @@ $\mathbb E_Q[-\log_2p(D\mid C)]+\operatorname{KL}_2(Q\Vert P)$ 对 Bayesian mixt
 当前证据支持：
 
 1. BCRR 可以作为**相对于声明语言的操作性净码长节省**；
-2. 多语言 Circuit-MDL 可以用有限 route regret 为 parity/sparse rule 选择 ANF、为 majority 选择 threshold、为近似局部规则选择 gate+residual，并让 random LUT 回退 raw；ROBDD 虽是付费候选，但未在这些 benchmark 中胜出；
+2. 多语言 Circuit-MDL 可以用有限 route regret 为 parity/sparse rule 选择 ANF、为 majority 选择 threshold、为近似局部规则选择 gate+residual，并让全部 6 输入及多数 4 输入 sampled random LUT 回退 raw；少数 4 输入实例存在偶然短 ANF 或 literal+residual 描述，ROBDD 虽是付费候选但未在这些 benchmark 中胜出；
 3. prefix circuit length 能导出 Occam/PAC-Bayes 型泛化界；
 4. 经完备性证明的分层 DP 能给出固定 basis 下的小函数 exact minimum formula values；当前 artifact 保存完整枚举的 coverage/aggregate histogram、12,870 个 balanced per-function rows 与哈希，不是 65,536 个逐函数 witness 或 UNSAT proof certificate；
 5. counting 能证明 random 函数族几乎都不可被短描述。

@@ -1,7 +1,7 @@
 primary_claim:
   text: "For finite, repeated local predicate computation, GateBeam can recover compact Boolean structure; an oracle local Boolean predicate plus a symbolic solver demonstrates the intended local-versus-global division of labor."
   status: verified
-  falsified_if: "Gate synthesis cannot recover a compact local rule, hardening changes its behavior materially, or oracle local-predicate plus BFS fails on the constructed long-path setting."
+  falsified_if: "Gate synthesis cannot recover a compact local rule, argmax hardening changes the controlled fixed-wiring proxy's clean/OOD decisions materially, or oracle local-predicate plus BFS fails on the constructed long-path setting."
 secondary_claims:
   - text: "For the controlled fixed-wiring soft-gate proxy, argmax hardening preserves local OOD accuracy and graph-level BFS accuracy; this does not establish end-to-end no-drop under perceptual grounding noise."
     status: verified
@@ -13,7 +13,7 @@ secondary_claims:
     status: verified
   - text: "A looped state-transition engine recovers variable-length cyclic reachability that fixed K-step unrolling misses, at a measured query-time cost."
     status: verified
-  - text: "Random-LUT and parity scaling expose when gate compilation lacks a compact representation; exact probability marginalization remains distinct from hard Boolean evaluation."
+  - text: "Random-LUT and parity scaling expose different failure modes: sampled random LUTs show no compositional holdout generalization, while parity has an O(n) XAG representation that is not recovered by the current bounded GateBeam search; exact probability marginalization remains distinct from hard Boolean evaluation."
     status: verified
   - text: "A component-supervised neural encoder, temperature-scaled named predicates with measured ECE, learned soft/hardened edge gate, and symbolic reachability solver form a measured pixel-to-task gridworld pipeline with clean, correlated-occlusion, and size-OOD evaluation."
     status: verified
@@ -21,7 +21,7 @@ secondary_claims:
     status: verified
   - text: "MCR2 log-det rate reduction can be measured alongside empirical code entropy and synthesized gate count, but the proxy is not assumed to equal literal codec bits or circuit complexity."
     status: verified
-  - text: "Boolean Coding Rate Reduction can be defined operationally as signed and escape-routed savings under explicit KT/Dirichlet, circuit, residual, and language-prefix codes."
+  - text: "Boolean Coding Rate Reduction and task/function Circuit-MDL have separately validated decodable accounting components: KT/Dirichlet representation codes, circuit/language codes, residual masks, and paid escape routes; this repository does not yet serialize them as one jointly optimized payload."
     status: verified
   - text: "An exhaustive formula catalog for all four-input Boolean functions can prove basis-relative minimum formula size and distinguish parity from the balanced-function population without relying on heuristic GateBeam counts."
     status: verified
@@ -36,6 +36,7 @@ non_claims:
   - "A larger MCR2 objective value necessarily means fewer stored bits, fewer Boolean gates, or lower hardware cost."
   - "Minimum formula-tree gate count is minimum DAG/AIG size, FPGA LUT count, ASIC area, or a language-independent property."
   - "A heuristic synthesis result or an almost-all counting theorem proves a lower bound for one particular random LUT."
+  - "Parity is representation-incompressible merely because the current GateBeam search fails to recover it."
 risks:
   - "Synthetic Boolean rules may favor Boolean methods; report a random-LUT negative control."
   - "A sparse filter that evaluates every pair remains O(N^2); separate logical filtering from candidate generation."

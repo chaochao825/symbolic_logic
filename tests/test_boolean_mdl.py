@@ -21,6 +21,7 @@ from boolean_mdl import (
     formula_to_circuit,
     joint_dirichlet_code_bits,
     kt_binary_ideal_bits,
+    kt_binary_prefix_bits,
     kt_independent_matrix_bits,
     mask_to_values,
     occam_error_bound,
@@ -47,6 +48,18 @@ class BooleanMDLTests(unittest.TestCase):
         for sequence in product((0, 1), repeat=5):
             total += 2.0 ** (-kt_binary_ideal_bits(sequence))
         self.assertAlmostEqual(total, 1.0, places=12)
+
+    def test_exact_prefix_lengths_do_not_overcount_power_of_two_probabilities(self) -> None:
+        self.assertEqual(kt_binary_prefix_bits([0]), 1)
+        self.assertEqual(kt_binary_prefix_bits([1]), 1)
+        self.assertEqual(kt_independent_matrix_bits(np.asarray([[0]], dtype=np.uint8)), 1)
+        codes = np.asarray([[0, 0]], dtype=np.uint8)
+        self.assertEqual(joint_dirichlet_code_bits(codes), 2)
+        empty_codes = np.empty((3, 0), dtype=np.uint8)
+        self.assertEqual(kt_independent_matrix_bits(empty_codes), 0)
+        self.assertEqual(joint_dirichlet_code_bits(empty_codes), 0)
+        one_of_512 = np.zeros((1, 9), dtype=np.uint8)
+        self.assertEqual(joint_dirichlet_code_bits(one_of_512), 9)
 
     def test_residual_code_satisfies_kraft_bound(self) -> None:
         truth = np.zeros(8, dtype=np.uint8)
@@ -180,7 +193,8 @@ class BooleanMDLTests(unittest.TestCase):
         self.assertFalse(metadata["git_at_start"]["dirty"])
         for manifest in (metadata["source_sha256"], metadata["artifact_sha256"]):
             for relative, expected in manifest.items():
-                digest = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest()
+                payload = (ROOT / relative).read_bytes().replace(b"\r\n", b"\n")
+                digest = hashlib.sha256(payload).hexdigest()
                 self.assertEqual(digest, expected)
 
 
