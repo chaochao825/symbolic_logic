@@ -27,6 +27,14 @@ secondary_claims:
     status: verified
   - text: "A route-coded multi-language MDL comparison can select ANF, threshold, approximate gates, or raw labels while paying for the selected language and residual errors; ROBDD is included as a costed candidate but does not win these benchmarks."
     status: verified
+  - text: "The official hard DiffLogic-CA artifacts can be replayed as fixed-topology Boolean recurrent programs and checked against task semantics without conflating replay with retraining."
+    status: verified
+  - text: "A shared local CA rule amortizes its model description over space-time, while dynamic work still scales with updated cells, recurrent steps, and active gates."
+    status: verified
+  - text: "Exact local-rule recovery does not by itself solve collective CA tasks: density classification and synchronization require long-range coordination, while Boolean wavefront pathfinding exchanges a compact local update for iteration and state memory."
+    status: verified
+  - text: "CA description length must account separately for local rule or wiring, initial/boundary state, decoder, recurrence horizon, and trajectory or terminal residual."
+    status: verified
 non_claims:
   - "Logic gates replace first-order reasoning, variable binding, recursion, or general planning."
   - "CPU NumPy timings imply FPGA/ASIC power or latency."
@@ -36,8 +44,13 @@ non_claims:
   - "A larger MCR2 objective value necessarily means fewer stored bits, fewer Boolean gates, or lower hardware cost."
   - "Minimum formula-tree gate count is minimum DAG/AIG size, FPGA LUT count, ASIC area, or a language-independent property."
   - "A heuristic synthesis result or an almost-all counting theorem proves a lower bound for one particular random LUT."
+  - "Official frozen-circuit replay is equivalent to reproducing the original optimization trajectory or multi-seed training success rate."
+  - "A small local CA rule guarantees small state, few recurrent steps, or low total task cost."
+  - "DiffLogic-CA learns the Moore neighborhood, wiring topology, or a minimum Boolean circuit."
 risks:
   - "Synthetic Boolean rules may favor Boolean methods; report a random-LUT negative control."
   - "A sparse filter that evaluates every pair remains O(N^2); separate logical filtering from candidate generation."
   - "An oracle circuit may outperform learned gates; distinguish learning cost from compiled execution."
   - "Training-data shortcut features can yield compact but semantically wrong circuits."
+  - "A local transition benchmark may hide compounding rollout error; report first divergence and full-trajectory accuracy."
+  - "Published active-gate counts omit architecture, wiring, pass-through, state, and control costs; keep them separate from MDL and hardware claims."

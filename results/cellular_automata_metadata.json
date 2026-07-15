@@ -1,0 +1,153 @@
+{
+  "artifacts": {
+    "cellular_automata_complexity_results.csv": {
+      "bytes": 67415,
+      "sha256": "4994e65c4acb8ee235efc2e5db7d856a70a189586cb3218c90a3fd424fb228c6"
+    },
+    "cellular_automata_local_rule_results.csv": {
+      "bytes": 31737,
+      "sha256": "bf5fe8803c68aec9913bb30b47e84672b9d33d2084c48269128c8609a7b9d26f"
+    },
+    "cellular_automata_official_results.csv": {
+      "bytes": 8838,
+      "sha256": "68e10fd4f012c4f697aa298dd331e4a0d6381c64db93a97f6a3f97fb18968011"
+    },
+    "cellular_automata_task_results.csv": {
+      "bytes": 64899,
+      "sha256": "b74f982f253bab411366e6bf65b632047312ca22c45988ee8bbf85e2956a5dc7"
+    },
+    "cellular_automata_trajectories.npz": {
+      "bytes": 1057837,
+      "sha256": "e1592e92d64a0437b320658f794d4aebd80826beef85029405f897a2824c6318"
+    },
+    "difflogic_ca_training_attempt.json": {
+      "bytes": 1517,
+      "sha256": "03826408f9e5be5d2038c0356581400bf07a5d81a00e6a048601356a51c1723a"
+    }
+  },
+  "claim_boundary": "Frozen hard-circuit replay is not optimization or multi-seed training reproduction; CPU and gate counts are not hardware PPA.",
+  "elapsed_seconds": 674.2523089000024,
+  "mode": "full",
+  "numpy": "1.25.2",
+  "official": {
+    "artifacts": {
+      "checkerboard.json": {
+        "bytes": 12651,
+        "circuit_stats": {
+          "critical_depth": 4,
+          "device_count": 25,
+          "device_type_counts": {
+            "AAndNotB": 1,
+            "And": 1,
+            "Button": 11,
+            "Not": 1,
+            "Or": 3,
+            "Output": 8
+          },
+          "input_count": 11,
+          "logic_node_count": 6,
+          "output_count": 8,
+          "raw_connector_count": 19,
+          "unique_connector_count": 19
+        },
+        "path": "C:\\Users\\chaochao\\AppData\\Local\\Temp\\symbolic_logic_difflogic_ca\\checkerboard.json",
+        "sha256": "8a22e6e1d4d2f4b284ea4d2818cfb87a939df82f1d318c101f42a8d18a134c58"
+      },
+      "gol_circuit.json": {
+        "bytes": 2149918,
+        "circuit_stats": {
+          "critical_depth": 19,
+          "device_count": 233,
+          "device_type_counts": {
+            "AAndNotB": 20,
+            "AOrNotB": 2,
+            "And": 82,
+            "Button": 9,
+            "False": 4,
+            "Nor": 3,
+            "Not": 4,
+            "NotAAndB": 3,
+            "Or": 89,
+            "Output": 1,
+            "Xnor": 1,
+            "Xor": 15
+          },
+          "input_count": 9,
+          "logic_node_count": 223,
+          "output_count": 1,
+          "raw_connector_count": 4215,
+          "unique_connector_count": 435
+        },
+        "path": "C:\\Users\\chaochao\\AppData\\Local\\Temp\\symbolic_logic_difflogic_ca\\gol_circuit.json",
+        "sha256": "82d59f04ca8164ba31fdb12314ee147dec3c8a073b632aeced0ef1581acfecba"
+      }
+    },
+    "notebook_reproduction_commit": "c4f07027a2e05dd8c0f8e0fcfb31d2dcbd644558",
+    "pages_commit": "4c0246d9f7a2912cb7201f6bfe5fcda0fe373904",
+    "training_attempt": {
+      "attempts": [
+        {
+          "outcome": "connection timeout before remote environment inspection",
+          "stage": "SSH connection",
+          "target": "ssh-dev profile 210"
+        },
+        {
+          "outcome": "connection timeout before remote environment inspection",
+          "stage": "SSH connection",
+          "target": "ssh-dev profile 236"
+        },
+        {
+          "outcome": "SSL EOF while resolving jax==0.4.33",
+          "stage": "install requirements-ca.txt from PyPI",
+          "target": "isolated local Python 3.10 virtual environment"
+        },
+        {
+          "outcome": "network proxy connection failure while resolving jax==0.4.33",
+          "stage": "install requirements-ca.txt from Tsinghua mirror",
+          "target": "isolated local Python 3.10 virtual environment"
+        }
+      ],
+      "claim_boundary": "No optimization epoch ran, so this artifact provides no evidence about training convergence, seed success rate, or learned active-gate count.",
+      "date": "2026-07-16",
+      "frozen_inference_reproduction": "completed separately in results/cellular_automata_official_results.csv",
+      "implemented_harness": "src/run_official_difflogic_gol.py",
+      "measured_training_result": null,
+      "official_notebook": {
+        "bytes": 204407,
+        "commit": "3d5547ca48b60ecac459834e2c05c9ff5df87991",
+        "git_blob": "85dd4c1272fc01acf4ef9a70e7a0e80cddbb07a6",
+        "sha256": "81542662af8e5338c7c6f2dcaa58e06252a481ac982d2c0ef6d51c81bce49315"
+      },
+      "reproduction_level": "official_notebook_definition_training_attempt",
+      "status": "blocked_before_training"
+    },
+    "training_reproduction_status": "not_part_of_frozen_replay; no upstream checkpoint or embedded notebook output"
+  },
+  "pandas": "2.3.3",
+  "python": "3.10.4",
+  "row_counts": {
+    "complexity": 307,
+    "local": 269,
+    "official": 19,
+    "task": 402
+  },
+  "schema_version": 1,
+  "seeds": {
+    "collective_formula": "94000 + width*10 + seed",
+    "eca_and_life": [
+      19110,
+      25006
+    ],
+    "official_checkerboard_formulas": [
+      "23000 + size*100 + seed",
+      "60000 + seed",
+      "80000 + seed"
+    ],
+    "pathfinding_formula": "21000 + size*100 + case"
+  },
+  "started_from_git": {
+    "commit": "7e6240585f1586c793e5ec46b944bfa8bc9e85d4",
+    "dirty": true
+  },
+  "suite": "all"
+}

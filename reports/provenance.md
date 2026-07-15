@@ -14,7 +14,7 @@ The supplied documents were read as UTF-8. They were not copied into this reposi
 ## Result provenance
 
 - Raw results: `results/*.csv`.
-- Aggregate bootstrap summaries: `results/summary_metrics.csv` (1,974 rows, including 241 discrete-theory aggregate rows).
+- Aggregate bootstrap summaries: `results/summary_metrics.csv` (2,500 rows after adding CA local, collective, pathfinding, official-replay, and complexity sections).
 - Runtime metadata: `results/run_metadata.json`.
 - New hardening artifacts: `results/learned_gate_results.csv` and `results/learned_gate_bfs_results.csv` (full run: 40 local rows and 360 graph rows).
 - New state/complexity artifacts: `results/state_transition_results.csv` (26 rows), `results/planning_frontier_results.csv` (22 rows), `results/noncompressible_scaling_results.csv` (60 rows), and `results/probability_marginalization_results.csv` (100 rows).
@@ -22,6 +22,10 @@ The supplied documents were read as UTF-8. They were not copied into this reposi
 - Logic-discovery artifacts: `results/logic_discovery_results.csv` (125 rows), covering five seeds, four primitive rules, distractors, composition transfer, task-only topology search, and hardening negative controls.
 - Rate-reduction artifacts: `results/rate_reduction_results.csv` (60 rows) and `results/rate_logic_metadata.json`; the final run started from clean commit `c68277e` on Python 3.8.10/NumPy 1.24.4 through SSH profile 210.
 - Discrete-theory artifacts: `results/discrete_function_mdl_results.csv` (147 rows), `results/discrete_task_mdl_results.csv` (307 rows), `results/exact_formula_balanced4_results.csv` (12,870 rows), `results/discrete_representation_code_results.csv` (8 rows), and `results/discrete_theory_checks.json`; the 35.47-second full run started from clean commit `9d482e8` on Python 3.8.10/NumPy 1.24.4 through SSH profile 210. Source and artifact SHA-256 values are recorded in `results/discrete_theory_metadata.json`.
+- Cellular-automata artifacts: `results/cellular_automata_local_rule_results.csv` (269 rows), `results/cellular_automata_task_results.csv` (402 rows), `results/cellular_automata_complexity_results.csv` (307 rows), `results/cellular_automata_official_results.csv` (19 rows), and `results/cellular_automata_trajectories.npz`. The 674.25-second full run used Python 3.10.4, NumPy 1.25.2, and pandas 2.3.3. It began from commit `7e62405` with the new implementation uncommitted, so the metadata honestly records `dirty=true`; a clean-clone regression is required before final handoff rather than rewriting this provenance.
+- Official DiffLogic-CA inference artifacts are downloaded unchanged from `pages@4c0246d9f7a2912cb7201f6bfe5fcda0fe373904`: GoL SHA-256 `82d59f04...ecba` and checkerboard SHA-256 `8a22e6e1...3458`. The committed manifest contains full digests, byte counts, Git blobs, source URLs, and the mixed Apache-2.0/CC-BY license notice.
+- The official JAX training attempt is separately recorded in `results/difflogic_ca_training_attempt.json`: no optimization epoch ran because SSH profiles 210/236 timed out and both local PyPI/mirror dependency fetches were blocked. No frozen-circuit result is relabeled as training reproduction.
+- CA figure source: `figures/cellular_automata_plot.py`; it reads only the four CA CSV tables and generates `figures/cellular_automata_results.pdf` and `.png`.
 - Figure source: `figures/results_plot.py`; it reads only the raw CSV files, including `figures/learned_gate_integration.pdf`.
 - Core exactness tests: `tests/test_core.py`.
 - Discrete-code and artifact-integrity tests: `tests/test_boolean_mdl.py`.

@@ -1,0 +1,10 @@
+# Optional upstream-training reproduction environment.
+# The dependency-light frozen-circuit replay does not require this file.
+# Requires Python >=3.10. Google reports JAX/JAXLIB 0.4.33 on a Colab T4;
+# the Linux CUDA extra additionally needs a CUDA-12-capable NVIDIA driver.
+jax[cuda12_pip]==0.4.33; sys_platform == "linux"
+jax==0.4.33; sys_platform != "linux"
+jaxlib==0.4.33
+flax==0.10.2
+optax==0.2.4
+einops==0.8.0

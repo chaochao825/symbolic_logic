@@ -12,6 +12,8 @@ The rate-reduction extension asks a separate question: whether finite-precision 
 
 The discrete-theory extension replaces that failed identification with an executable Boolean/Circuit-MDL framework. Every reported bit count is conditional on a public, decodable prefix language. The framework separately codes Boolean representations, function structure, task residuals, and language routing; exact claims are limited to minimum formula-tree size for at most four inputs and unique ANF/ROBDD properties within their declared representation classes.
 
+The cellular-automata extension asks when one compiled local Boolean program can be reused across space and time. It separates (i) semantic replay of the official hard DiffLogic-CA circuits, (ii) exact local-transition tasks such as elementary CA and Game of Life, and (iii) collective tasks such as density classification, synchronization, checkerboard repair, and Boolean wavefront pathfinding. Model description, trajectory residual, dynamic gate evaluations, state memory, and iteration count are reported separately; a short local rule is not assumed to imply an easy global computation.
+
 ## Audience and deliverable
 
 The deliverable is a reproducible Python experiment suite and a Chinese evidence report. It uses synthetic, fully enumerable Boolean predicates and layered reachability graphs so that both successes and failure modes can be checked exactly.
@@ -27,3 +29,6 @@ The two supplied documents agree on the architecture `encoder -> named predicate
 - No claim that an arbitrary Boolean network is human-interpretable.
 - No claim that a fixed-depth circuit replaces unbounded recursive search.
 - The extension includes finite cyclic traversal and monotone planning/proof-frontier proxies to test state-transition loops, while keeping full solver and perception hardware evaluation out of scope.
+- Replaying an official frozen circuit is not a retraining result. Any attempted DiffLogic-CA retraining is labeled separately from hard-circuit semantic validation.
+- The Google DiffLogic-CA topology is fixed; this extension does not call it learned topology or claim that active-gate counts are minimum circuits.
+- Cellular-automata CPU timings and gate-evaluation counts are implementation measurements, not FPGA/ASIC PPA evidence.

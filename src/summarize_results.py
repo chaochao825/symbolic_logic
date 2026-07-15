@@ -211,6 +211,48 @@ def main() -> None:
         "exact_formula_balanced4",
         rng,
     )
+    ca_local = pd.read_csv(RESULTS / "cellular_automata_local_rule_results.csv")
+    ca_life = ca_local[ca_local["task"] == "game_of_life"]
+    summary += emit_grouped(
+        ca_life,
+        ["task", "method"],
+        ["local_accuracy", "local_balanced_accuracy", "cell_accuracy", "exact_trajectory", "first_divergence_step", "gate_count", "fit_seconds"],
+        "cellular_automata_local",
+        rng,
+    )
+    ca_tasks = pd.read_csv(RESULTS / "cellular_automata_task_results.csv")
+    ca_collective = ca_tasks[ca_tasks["task"].isin(["density_classification", "global_synchronization"])]
+    summary += emit_grouped(
+        ca_collective,
+        ["task", "method", "width"],
+        ["accuracy", "unresolved_rate", "runtime_seconds", "published_accuracy", "anf_description_bits"],
+        "cellular_automata_collective",
+        rng,
+    )
+    ca_path = ca_tasks[ca_tasks["task"] == "boolean_pathfinding"]
+    summary += emit_grouped(
+        ca_path,
+        ["case", "method", "width"],
+        ["accuracy", "distance_exact", "unresolved_rate", "runtime_seconds", "steps"],
+        "cellular_automata_pathfinding",
+        rng,
+    )
+    ca_official = pd.read_csv(RESULTS / "cellular_automata_official_results.csv")
+    summary += emit_grouped(
+        ca_official,
+        ["task", "condition", "size"],
+        ["local_accuracy", "channel0_accuracy", "full_state_accuracy", "exact_final_state", "runtime_seconds", "logic_node_count", "critical_depth"],
+        "cellular_automata_official",
+        rng,
+    )
+    ca_complexity = pd.read_csv(RESULTS / "cellular_automata_complexity_results.csv")
+    summary += emit_grouped(
+        ca_complexity,
+        ["experiment", "task", "method"],
+        ["model_description_bits", "residual_bits", "single_state_storage_bits", "expected_cell_updates", "expected_gate_evaluations", "amortized_model_bits_per_cell_update"],
+        "cellular_automata_complexity",
+        rng,
+    )
     pd.DataFrame(summary).to_csv(RESULTS / "summary_metrics.csv", index=False)
     print(f"wrote {len(summary)} aggregate rows to {RESULTS / 'summary_metrics.csv'}")
 

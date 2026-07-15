@@ -1,0 +1,42 @@
+{
+  "status": "blocked_before_training",
+  "date": "2026-07-16",
+  "reproduction_level": "official_notebook_definition_training_attempt",
+  "official_notebook": {
+    "commit": "3d5547ca48b60ecac459834e2c05c9ff5df87991",
+    "git_blob": "85dd4c1272fc01acf4ef9a70e7a0e80cddbb07a6",
+    "bytes": 201717,
+    "sha256": "a9b3829db0d9fe0eb46148d516c18358aa648e3538aeaa682003b77cfbe757c8",
+    "gol_step_cell": 14,
+    "gol_step_cell_sha256": "6e13a2df48a7ead2db303097724680e543dd5988ade20ef33f79a3c53be86461"
+  },
+  "attempts": [
+    {
+      "target": "ssh-dev profile 210",
+      "stage": "SSH connection",
+      "outcome": "connection timeout before remote environment inspection"
+    },
+    {
+      "target": "ssh-dev profile 236",
+      "stage": "SSH connection",
+      "outcome": "connection timeout before remote environment inspection"
+    },
+    {
+      "target": "isolated local Python 3.10 virtual environment",
+      "stage": "install requirements-ca.txt from PyPI",
+      "outcome": "SSL EOF while resolving jax==0.4.33"
+    },
+    {
+      "target": "isolated local Python 3.10 virtual environment",
+      "stage": "install requirements-ca.txt from Tsinghua mirror",
+      "outcome": "network proxy connection failure while resolving jax==0.4.33"
+    }
+  ],
+  "implemented_harness": "src/run_official_difflogic_gol.py",
+  "environment_contract": "Python >=3.10 with the pinned requirements-ca.txt stack; Linux GPU runs require a CUDA-12-capable NVIDIA driver.",
+  "determinism_contract": "The harness records the effective XLA_FLAGS string and derives deterministic_gpu_ops from the actual flag rather than command-line intent.",
+  "snapshot_contract": "A successful run writes a hashed flat-leaf NPZ for diagnostics and does not claim it is a directly reloadable optimizer checkpoint.",
+  "frozen_inference_reproduction": "completed separately in results/cellular_automata_official_results.csv",
+  "measured_training_result": null,
+  "claim_boundary": "No optimization epoch ran, so this artifact provides no evidence about training convergence, seed success rate, or learned active-gate count."
+}

@@ -7,3 +7,4 @@
 5. **Results** — report all measured cells, including failures/negative controls.
 6. **Interpretation and boundaries** — explain what is supported and what is not.
 7. **Reproduction** — environment, command, result provenance, and source tree.
+8. **Cellular automata extension** — distinguish official frozen-circuit replay from retraining; compare local transition learning, recurrent rollout, collective computation, pathfinding, damage recovery, and explicit CA-MDL/dynamic-work accounting.

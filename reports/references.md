@@ -1,6 +1,6 @@
 # Literature map and source links
 
-The report uses sources for field context; they are not used to manufacture any experimental number. “Current” below means checked through 2026-07-11. Preprints are marked as such.
+The report uses sources for field context; they are not used to manufacture any experimental number. “Current” below means checked through 2026-07-16. Preprints are marked as such.
 
 ## Knowledge compilation and tractable circuits
 
@@ -54,3 +54,17 @@ The report uses sources for field context; they are not used to manufacture any 
 30. [Bollig and Wegener, *Improving the Variable Ordering of OBDDs Is NP-Complete* (1996)](https://doi.org/10.1109/12.537122). Shows the computational difficulty of optimizing OBDD variable order; Bryant's restricted representation model remains essential when interpreting ROBDD size.
 31. [Haaswijk et al., *SAT-Based Exact Synthesis* (2020)](https://si2.epfl.ch/demichel/publications/archive/2020/winston-exact.pdf). Size-optimum Boolean-chain synthesis under a fixed computation model and operator basis; topology families constrain the SAT search.
 32. [Kojevnikov et al., *Finding Efficient Circuits Using SAT-Solvers* (2009)](https://doi.org/10.1007/978-3-642-02777-2_5). SAT-based circuit search and exact small-circuit reasoning.
+
+## Cellular automata, recurrent logic, and distributed tasks
+
+33. [Miotti et al., *Differentiable Logic Cellular Automata: From Game of Life to Pattern Generation* (ALIFE 2025)](https://doi.org/10.1162/isal.a.882), with the [Google project page](https://google-research.github.io/self-organising-systems/difflogic-ca/). Trains soft mixtures over all 16 two-input Boolean functions on fixed wiring, then deploys hard recurrent circuits for Game of Life and pattern generation.
+34. [Google Research, official `diffLogic_CA.ipynb`](https://github.com/google-research/self-organising-systems/blob/master/notebooks/diffLogic_CA.ipynb). Apache-2.0 reference implementation tested by the authors with JAX/JAXLIB 0.4.33; the commit-pinned source and released DigitalJS artifact hashes are recorded in this repository.
+35. [Mitchell, Crutchfield, and Hraber, *Evolving Cellular Automata to Perform Computations: Mechanisms and Impediments* (1994)](https://doi.org/10.1016/0167-2789(94)90293-3). Primary density-classification study of evolved binary radius-3 cellular automata.
+36. [Das et al., *Evolving Globally Synchronized Cellular Automata* (1995), author PDF](https://melaniemitchell.me/PapersContent/EGSCA.pdf). Defines the no-partial-credit global synchronization task and publishes the `phi_sync` radius-3 rule used here.
+37. [Land and Belew, *No Perfect Two-State Cellular Automata for Density Classification Exists* (1995)](https://doi.org/10.1103/PhysRevLett.74.5148). Rules out a perfect fixed-radius two-state solution to the original density task over all lattice sizes.
+38. [Cook, *Universality in Elementary Cellular Automata* (2004)](https://www.complex-systems.com/abstracts/v15_i01_a01/). Proves Rule 110 universality via a cyclic-tag-system construction; reproducing its eight-entry LUT alone is not a universality reproduction.
+39. [Gilpin, *Cellular Automata as Convolutional Neural Networks* (2019)](https://arxiv.org/abs/1809.02942), with [author code](https://github.com/williamgilpin/convoca). Shows exact and learned convolutional representations of cellular-automaton transitions.
+40. [Mordvintsev et al., *Growing Neural Cellular Automata* (2020)](https://distill.pub/2020/growing-ca/). Continuous multi-channel NCA for growth, persistence, and regeneration from local updates.
+41. [Randazzo et al., *Self-Classifying MNIST Digits* (2020)](https://distill.pub/2020/selforg/mnist/). Uses locally communicating cells to reach a spatial classification consensus and documents disconnected-component limitations.
+42. [Earle et al., *Pathfinding Neural Cellular Automata* (2023 preprint)](https://arxiv.org/abs/2301.06820), with [author code](https://github.com/smearle/pathfinding-nca). Hand-codes and learns local recurrent BFS/DFS-style updates and evaluates grid-size generalization.
+43. [Sandler et al., *Image Segmentation via Cellular Automata* (2020 preprint)](https://arxiv.org/abs/2008.04965). Applies a learned local CA update repeatedly for image segmentation with a small shared parameter count.
