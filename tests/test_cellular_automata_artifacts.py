@@ -39,6 +39,11 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def csv_integer(value: str) -> int:
+    """Parse integer-valued CSV fields that pandas may emit with .0."""
+    return int(float(value))
+
+
 class CellularAutomataArtifactTests(unittest.TestCase):
     def test_local_official_step_matches_all_512_gol_transitions(self) -> None:
         class IdentityJax:
@@ -97,10 +102,10 @@ class CellularAutomataArtifactTests(unittest.TestCase):
         self.assertTrue(all(row["training_reproduction"] == "not_claimed" for row in rows))
         damage = [row for row in rows if row["condition"] == "persistent_damage_40_then_release_40"]
         self.assertEqual(len(damage), 3)
-        self.assertTrue(all(int(row["steps"]) == 80 for row in damage))
-        self.assertTrue(all(int(row["damage_steps"]) == 40 for row in damage))
-        self.assertTrue(all(int(row["release_steps"]) == 40 for row in damage))
-        self.assertTrue(all(int(row["damage_side"]) == 20 for row in damage))
+        self.assertTrue(all(csv_integer(row["steps"]) == 80 for row in damage))
+        self.assertTrue(all(csv_integer(row["damage_steps"]) == 40 for row in damage))
+        self.assertTrue(all(csv_integer(row["release_steps"]) == 40 for row in damage))
+        self.assertTrue(all(csv_integer(row["damage_side"]) == 20 for row in damage))
         attempt = json.loads((RESULTS / "difflogic_ca_training_attempt.json").read_text(encoding="utf-8"))
         self.assertEqual(attempt["status"], "blocked_before_training")
         self.assertIsNone(attempt["measured_training_result"])
@@ -119,9 +124,11 @@ class CellularAutomataArtifactTests(unittest.TestCase):
             by_method[method] = sum(values) / len(values)
         self.assertGreater(by_method["particle"], by_method["majority"])
         sync = [row for row in rows if row["task"] == "global_synchronization" and int(row["width"]) == 149]
-        self.assertTrue(all(int(row["steps"]) == 2 * int(row["width"]) + 1 for row in sync))
-        self.assertTrue(all(int(row["decision_horizon"]) == 2 * int(row["width"]) for row in sync))
-        self.assertTrue(all(int(row["validation_steps"]) == 1 for row in sync))
+        self.assertTrue(all(csv_integer(row["steps"]) == 2 * csv_integer(row["width"]) + 1 for row in sync))
+        self.assertTrue(
+            all(csv_integer(row["decision_horizon"]) == 2 * csv_integer(row["width"]) for row in sync)
+        )
+        self.assertTrue(all(csv_integer(row["validation_steps"]) == 1 for row in sync))
         sync_means = {
             method: sum(float(row["accuracy"]) for row in sync if row["method"] == method)
             / sum(row["method"] == method for row in sync)

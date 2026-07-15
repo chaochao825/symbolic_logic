@@ -1,32 +1,32 @@
 {
   "artifacts": {
     "cellular_automata_complexity_results.csv": {
-      "bytes": 67415,
-      "sha256": "4994e65c4acb8ee235efc2e5db7d856a70a189586cb3218c90a3fd424fb228c6"
+      "bytes": 67622,
+      "sha256": "ab8c7636f16e29510d2787a9b0159b11346f07cdba4e6751f19b62e14aa5dc9c"
     },
     "cellular_automata_local_rule_results.csv": {
-      "bytes": 31737,
-      "sha256": "bf5fe8803c68aec9913bb30b47e84672b9d33d2084c48269128c8609a7b9d26f"
+      "bytes": 31739,
+      "sha256": "a363562544017d65490cbb4ce82bd6ad0d0b45469479ae9da08858e10e9e460e"
     },
     "cellular_automata_official_results.csv": {
-      "bytes": 8838,
-      "sha256": "68e10fd4f012c4f697aa298dd331e4a0d6381c64db93a97f6a3f97fb18968011"
+      "bytes": 10038,
+      "sha256": "2433f269139c8a8f5514f5339c1fdf8aa42db64a66492a020bb6cb4c4140e2bf"
     },
     "cellular_automata_task_results.csv": {
-      "bytes": 64899,
-      "sha256": "b74f982f253bab411366e6bf65b632047312ca22c45988ee8bbf85e2956a5dc7"
+      "bytes": 75655,
+      "sha256": "284afd113ebe28816b9a159952d8724d7d7ac502297fed0ffe194e34106d77b9"
     },
     "cellular_automata_trajectories.npz": {
-      "bytes": 1057837,
-      "sha256": "e1592e92d64a0437b320658f794d4aebd80826beef85029405f897a2824c6318"
+      "bytes": 1258745,
+      "sha256": "de8db55c5d32377f7e45fb33b5b5a74bf132d3dc8df8b119617f7062107ea118"
     },
     "difflogic_ca_training_attempt.json": {
-      "bytes": 1517,
-      "sha256": "03826408f9e5be5d2038c0356581400bf07a5d81a00e6a048601356a51c1723a"
+      "bytes": 2106,
+      "sha256": "cb7bfae64c712c95f73b8fe52eda755d74ef831fcaf725f6d537683a2584926a"
     }
   },
   "claim_boundary": "Frozen hard-circuit replay is not optimization or multi-seed training reproduction; CPU and gate counts are not hardware PPA.",
-  "elapsed_seconds": 674.2523089000024,
+  "elapsed_seconds": 573.7956744998228,
   "mode": "full",
   "numpy": "1.25.2",
   "official": {
@@ -82,7 +82,7 @@
         "sha256": "82d59f04ca8164ba31fdb12314ee147dec3c8a073b632aeced0ef1581acfecba"
       }
     },
-    "notebook_reproduction_commit": "c4f07027a2e05dd8c0f8e0fcfb31d2dcbd644558",
+    "notebook_origin_reproduction_commit": "c4f07027a2e05dd8c0f8e0fcfb31d2dcbd644558",
     "pages_commit": "4c0246d9f7a2912cb7201f6bfe5fcda0fe373904",
     "training_attempt": {
       "attempts": [
@@ -109,16 +109,21 @@
       ],
       "claim_boundary": "No optimization epoch ran, so this artifact provides no evidence about training convergence, seed success rate, or learned active-gate count.",
       "date": "2026-07-16",
+      "determinism_contract": "The harness records the effective XLA_FLAGS string and derives deterministic_gpu_ops from the actual flag rather than command-line intent.",
+      "environment_contract": "Python >=3.10 with the pinned requirements-ca.txt stack; Linux GPU runs require a CUDA-12-capable NVIDIA driver.",
       "frozen_inference_reproduction": "completed separately in results/cellular_automata_official_results.csv",
       "implemented_harness": "src/run_official_difflogic_gol.py",
       "measured_training_result": null,
       "official_notebook": {
-        "bytes": 204407,
+        "bytes": 201717,
         "commit": "3d5547ca48b60ecac459834e2c05c9ff5df87991",
         "git_blob": "85dd4c1272fc01acf4ef9a70e7a0e80cddbb07a6",
-        "sha256": "81542662af8e5338c7c6f2dcaa58e06252a481ac982d2c0ef6d51c81bce49315"
+        "gol_step_cell": 14,
+        "gol_step_cell_sha256": "6e13a2df48a7ead2db303097724680e543dd5988ade20ef33f79a3c53be86461",
+        "sha256": "a9b3829db0d9fe0eb46148d516c18358aa648e3538aeaa682003b77cfbe757c8"
       },
       "reproduction_level": "official_notebook_definition_training_attempt",
+      "snapshot_contract": "A successful run writes a hashed flat-leaf NPZ for diagnostics and does not claim it is a directly reloadable optimizer checkpoint.",
       "status": "blocked_before_training"
     },
     "training_reproduction_status": "not_part_of_frozen_replay; no upstream checkpoint or embedded notebook output"
@@ -145,9 +150,39 @@
     ],
     "pathfinding_formula": "21000 + size*100 + case"
   },
+  "sources": {
+    "src/boolean_mdl.py": {
+      "bytes": 28631,
+      "sha256": "ca504a9ce5d9f614e8f9b31b32c56e07ee351cd1911a3ce3ad3dd28458065c2f"
+    },
+    "src/cellular_automata.py": {
+      "bytes": 24022,
+      "sha256": "a37bfa71c01b49b183e3a6d297758ecef5f8e8bce2da232dc79a62945b688ea0"
+    },
+    "src/difflogic_ca.py": {
+      "bytes": 26542,
+      "sha256": "bd6eaacd7d107a8b95e988c95d82a1edf1883c3ece3339b64a053b232fc3aea8"
+    },
+    "src/logic_core.py": {
+      "bytes": 21862,
+      "sha256": "cecf4edc1d7e82d22b52039cc9fa4c7b17d64cbe387fd983875d7c2fad2ee663"
+    },
+    "src/run_cellular_automata.py": {
+      "bytes": 55462,
+      "sha256": "6f4896e4bb2cfd70218835410cde5140209050a26efb14a6948b445c4f777bc4"
+    },
+    "src/run_official_difflogic_gol.py": {
+      "bytes": 11805,
+      "sha256": "d68e264628ac87b38bdba134f091e351ec8c4b2bb0e1a00ed24b3cbffa86f009"
+    },
+    "third_party/difflogic_ca_manifest.json": {
+      "bytes": 1759,
+      "sha256": "06856b490e0b7f1485dcc28f3b74d9aba8523007307e92a42253dd48bf3e66ce"
+    }
+  },
   "started_from_git": {
-    "commit": "7e6240585f1586c793e5ec46b944bfa8bc9e85d4",
-    "dirty": true
+    "commit": "a604e8745f3b19ade0c5a785c131d10c37d79a70",
+    "dirty": false
   },
   "suite": "all"
 }
