@@ -1,0 +1,42 @@
+{
+  "blind_tasks_sha256": "e80dacf901852e878d49bc2f2fe124792460a2bbfe4553adc10c2e36aea7f290",
+  "case_set_id": "93fe4870982313fb840d27bc4082e079f41d8b58d4f679cea15b5e5b1381b177",
+  "claim_boundary": "Repeated development smoke on pinned ARC-AGI-2 public training; not a holdout, public-evaluation, or release result.",
+  "command": [
+    "afts-arc",
+    "build-e01a-public-train-smoke-dataset",
+    "--task-dir",
+    "external/ARC-AGI-2/data/training",
+    "--dataset-name",
+    "ARC-AGI-2",
+    "--split-name",
+    "public_training",
+    "--repo-dir",
+    "external/ARC-AGI-2",
+    "--blind-output-dir",
+    "results/e01a_bbox_contact_v1/public_train_dev_blind",
+    "--oracle-output-dir",
+    "results/e01a_bbox_contact_v1/public_train_dev_oracle",
+    "--smoke-count",
+    "20",
+    "--selection-salt",
+    "afts-e01-public-train-development-smoke-v1"
+  ],
+  "completed_at": "2026-07-11T12:46:48.379512+00:00",
+  "dataset_descriptor": "ARC-AGI-2@f3283f727488ad98fe575ea6a5ac981e4a188e49/public_training/development-smoke-v1",
+  "dataset_kind": "arc_public_training_development_smoke",
+  "evidence_status": "arc_agi_2_public_training_development_smoke_blind",
+  "runtime_source_fingerprint_sha256": "3955ed3dedf1a34176e55dd38e85990337fed98512e5e626cd5edf4f45349c67",
+  "schema": "afts.e01a-blind-manifest/v1",
+  "source_loader": {
+    "bootstrap_import_run_source_match": true,
+    "cwd_removed_from_import_path": true,
+    "launcher_material": "scripts/afts_arc_evidence.py",
+    "policy": "fresh_nonexistent_pycache_prefix_with_bytecode_writes_disabled",
+    "project_source_after_standard_library": true,
+    "python_isolated_mode": true
+  },
+  "started_at": "2026-07-11T12:46:48.379512+00:00",
+  "task_count": 20,
+  "test_source_fingerprint_sha256": "3372e76503d01a8e66d4c37d9fe8205605d0e104b94b9d66f452a311f5e025dd"
+}

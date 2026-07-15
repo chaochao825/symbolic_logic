@@ -1,0 +1,121 @@
+project: arc_functional_transition_solver
+claim_status: hypothesis
+
+primary_claim:
+  id: C1
+  statement: >
+    On a pre-registered 150-task ARC-AGI-2 public-training holdout, under a
+    non-API budget of 180 wall-clock seconds per task on one fixed hardware
+    configuration, a preselected XGBoost execution-aware next-action controller,
+    using only demonstrations, test inputs, and deployable execution evidence,
+    will improve the official two-attempt pair-fraction score by at least 0.02
+    absolute over the strongest validation-tuned static weighted schedule using
+    identical generator checkpoints, action space, seed policy, and cost ledger;
+    the paired task-bootstrap 95% confidence interval for the score difference
+    must have a lower bound above zero.
+  matters: >
+    ARC systems already benefit from candidate generation and refinement, but a
+    heterogeneous system needs a falsifiable policy for allocating compute and
+    switching representations rather than an unstructured union of solvers.
+  falsified_if: >
+    The point improvement is below 0.02, the paired 95% confidence interval includes
+    zero, or the gain disappears when generators, actions, seeds, and end-to-end
+    wall time are matched.
+
+secondary_claims:
+  - id: C2
+    statement: >
+      Residual-directed local repair in grid space and program/trace space recovers
+      more near-miss tasks per unit compute than cold restart alone.
+    falsified_if: >
+      Matched-budget cold restarts equal or exceed repair success, or repair merely
+      increases duplicate candidates.
+
+  - id: C3
+    statement: >
+      A dynamically compiled type and precondition transition mask reduces search
+      expansions and timeouts while preserving high true-path and oracle-output
+      recall better than a fixed global transition matrix.
+    falsified_if: >
+      Dynamic masking has material false-negative pruning, fails to reduce cost, or
+      is dominated by an unmasked search at equal budget.
+
+  - id: C4
+    statement: >
+      Candidate-level execution and anti-overfit features support a lightweight
+      early-stage ranker that improves top-k recall and pass@2 over model confidence,
+      hand scoring, or source-specific ranking alone.
+    falsified_if: >
+      The ranker cannot improve held-out top-k recall or exact pass@2 on a frozen
+      candidate pool without exploiting task identity or evaluation leakage.
+
+  - id: C5
+    statement: >
+      DLGN is useful, if at all, as a low-cost candidate filter or repair-policy
+      controller; its value must be established on the recall-cost Pareto frontier
+      against XGBoost, MLP, decision-tree, and hand-policy baselines.
+    falsified_if: >
+      DLGN is Pareto-dominated in recall, pass@2, latency, energy proxy, and model
+      size, or its discretized policy diverges materially from its trained policy.
+
+non_goals:
+  - Claiming that the architecture is a faithful model of biological brain regions.
+  - Claiming that masked diffusion alone solves ARC.
+  - Claiming that a fixed DSL can cover all ARC tasks.
+  - Claiming that DLGN is more accurate than MLP or XGBoost before comparison.
+  - Claiming private-set or state-of-the-art performance from public development data.
+  - Treating train-pair consistency as proof that a query answer is identifiable.
+
+novelty_hypothesis:
+  core: >
+    The candidate novelty is residual-conditioned functional switching across
+    heterogeneous representations, coupled to typed legality and dual-space local
+    repair under an explicit compute budget.
+  prior_art_overlap:
+    - Blackboard systems already combine heterogeneous knowledge sources through a scheduler.
+    - Algorithm portfolios and dynamic algorithm configuration already allocate budget among solvers.
+    - CEGIS already implements counterexample-guided propose-verify-repair loops.
+    - Type-directed synthesis and invalid-action masking already constrain legal actions.
+    - ARC refinement loops already generate, execute, verify, and refine programs.
+    - ARChitects already use masked diffusion and recursive self-refinement.
+    - Neuro-symbolic ARC systems already combine object parsing, neural proposals,
+      fixed DSL execution, and cross-example filtering.
+    - Modular networks and options already model specialist selection and switching.
+  must_be_shown: >
+    The preselected controller must pass the primary registered test. Any stronger
+    claim about cross-representation residual compilation or controller-repair
+    coupling additionally requires the factorial interaction experiments and cannot
+    be inferred from component-wise gains.
+
+risk_factors:
+  - Correct outputs may be absent from every candidate source.
+  - Output-shape prediction may create a multiplicative ceiling.
+  - A unified feature schema may erase useful source-specific uncertainty.
+  - Hard filters may silently prune rare but correct solutions.
+  - Demonstration-consistent programs may disagree on test outputs.
+  - Public ARC tasks and pretrained models create contamination risk.
+  - The full system may be too expensive to compare fairly.
+  - Brain-inspired terminology may be viewed as decorative rather than technical.
+  - DLGN may remain less accurate than conventional tabular or neural rankers.
+
+likely_reviewer_objections:
+  - The work is an engineering ensemble rather than a new reasoning method.
+  - The contribution duplicates existing refinement-loop systems.
+  - The controller receives features that already solve most of the task.
+  - Reported gains arise from unequal compute or candidate budgets.
+  - Public-evaluation feedback leaks into method development.
+  - The state-transition or diffusion language is unnecessary rebranding.
+
+kill_decisions:
+  - framing: DLGN directly solves ARC from pixels
+    decision: rejected
+    reason: variable output structure, object binding, and open program space are a poor fit.
+  - framing: fixed brain-area transition matrix is the main reasoning mechanism
+    decision: rejected
+    reason: a false precondition gives zero recall; transitions must be state-dependent and escapable.
+  - framing: more sampled candidates is itself a contribution
+    decision: rejected
+    reason: candidate quantity is not novel without coverage, selection, and matched-budget evidence.
+  - framing: brain-like architecture establishes biological plausibility
+    decision: rejected
+    reason: no neural or behavioral evidence is planned for such a claim.
