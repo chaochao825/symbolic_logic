@@ -188,9 +188,22 @@ if nn is not None:
             *,
             wiring_seed: int,
             pass_bias: float = 0.35,
+            left_indices: np.ndarray | None = None,
+            right_indices: np.ndarray | None = None,
+            backbone_lanes: int = 0,
         ) -> None:
             super().__init__()
-            left, right = coverage_balanced_indices(in_features, out_features, wiring_seed)
+            if (left_indices is None) != (right_indices is None):
+                raise ValueError("custom wiring requires both left and right indices")
+            if left_indices is None:
+                left, right = coverage_balanced_indices(in_features, out_features, wiring_seed)
+            else:
+                left = np.asarray(left_indices, dtype=np.int64).copy()
+                right = np.asarray(right_indices, dtype=np.int64).copy()
+                if left.shape != (out_features,) or right.shape != (out_features,):
+                    raise ValueError("custom wiring shape mismatch")
+                if np.any(left < 0) or np.any(left >= in_features) or np.any(right < 0) or np.any(right >= in_features):
+                    raise ValueError("custom wiring index out of range")
             self.in_features = int(in_features)
             self.out_features = int(out_features)
             self.register_buffer("left_indices", torch.as_tensor(left, dtype=torch.long))
@@ -200,6 +213,10 @@ if nn is not None:
             initial = 0.01 * torch.randn(out_features, len(GATE_NAMES), generator=generator)
             initial[:, 3] += float(pass_bias)
             initial[:, 5] += float(pass_bias)
+            if backbone_lanes:
+                if not 0 <= int(backbone_lanes) <= out_features:
+                    raise ValueError("invalid backbone lane count")
+                initial[: int(backbone_lanes), 3] += 0.75
             self.logits = nn.Parameter(initial)
 
         def gate_probabilities(self, temperature: float) -> "torch.Tensor":
@@ -253,20 +270,37 @@ if nn is not None:
             *,
             wiring_seed: int,
             pass_bias: float = 0.35,
+            backbone_inputs: Sequence[int] = (),
         ) -> None:
             super().__init__()
             if not layer_widths or any(int(width) < 1 for width in layer_widths):
                 raise ValueError("layer_widths must be nonempty positive integers")
             widths = (int(in_features), *(int(width) for width in layer_widths))
-            self.layers = nn.ModuleList(
-                DifferentiableLogicLayer(
-                    widths[index],
-                    widths[index + 1],
-                    wiring_seed=int(wiring_seed) + 1_000_003 * index,
-                    pass_bias=pass_bias,
+            backbone = tuple(int(value) for value in backbone_inputs)
+            if any(value < 0 or value >= in_features for value in backbone):
+                raise ValueError("backbone input index out of range")
+            layers = []
+            for index in range(len(widths) - 1):
+                layer_seed = int(wiring_seed) + 1_000_003 * index
+                left, right = coverage_balanced_indices(widths[index], widths[index + 1], layer_seed)
+                lane_count = min(len(backbone), widths[index + 1])
+                if lane_count:
+                    lane_sources = np.asarray(backbone if index == 0 else tuple(range(len(backbone))), dtype=np.int64)
+                    left[:lane_count] = lane_sources[:lane_count]
+                    same = right[:lane_count] == left[:lane_count]
+                    right[:lane_count][same] = (right[:lane_count][same] + 1) % widths[index]
+                layers.append(
+                    DifferentiableLogicLayer(
+                        widths[index],
+                        widths[index + 1],
+                        wiring_seed=layer_seed,
+                        pass_bias=pass_bias,
+                        left_indices=left,
+                        right_indices=right,
+                        backbone_lanes=lane_count,
+                    )
                 )
-                for index in range(len(widths) - 1)
-            )
+            self.layers = nn.ModuleList(layers)
 
         def forward(self, x: "torch.Tensor", *, temperature: float = 1.0, mode: str = "soft") -> "torch.Tensor":
             for layer in self.layers:

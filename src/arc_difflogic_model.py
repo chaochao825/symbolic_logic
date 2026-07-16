@@ -31,6 +31,7 @@ class ArcDiffLogicConfig:
     max_steps: int = 1
     hidden_widths: tuple[int, ...] = (96, 48, 24)
     include_original: bool = False
+    include_masks: bool = False
     include_geometry: bool = False
     include_objects: bool = False
     include_context: bool = False
@@ -49,6 +50,39 @@ class ArcDiffLogicConfig:
 
 VARIANT_CONFIGS: dict[str, ArcDiffLogicConfig] = {
     "dl1": ArcDiffLogicConfig("dl1", hidden_bits=0, max_steps=1, hidden_widths=(96, 48, 16)),
+    "dl1_wide": ArcDiffLogicConfig("dl1_wide", hidden_bits=0, max_steps=1, hidden_widths=(256, 128, 64, 32)),
+    "dlr2": ArcDiffLogicConfig("dlr2", hidden_bits=8, max_steps=2, hidden_widths=(128, 64, 32, 24)),
+    "dlc1": ArcDiffLogicConfig(
+        "dlc1",
+        hidden_bits=0,
+        max_steps=1,
+        hidden_widths=(256, 128, 64, 32),
+        include_context=True,
+    ),
+    "dlo1": ArcDiffLogicConfig(
+        "dlo1",
+        hidden_bits=0,
+        max_steps=1,
+        hidden_widths=(256, 128, 64, 32),
+        include_original=True,
+        include_masks=True,
+        include_geometry=True,
+        include_objects=True,
+        include_context=True,
+    ),
+    "mlpo1": ArcDiffLogicConfig(
+        "mlpo1",
+        model_kind="mlp",
+        hidden_bits=0,
+        max_steps=1,
+        hidden_widths=(256, 128),
+        include_original=True,
+        include_masks=True,
+        include_geometry=True,
+        include_objects=True,
+        include_context=True,
+        pass_bias=0.0,
+    ),
     "dlr": ArcDiffLogicConfig("dlr", hidden_bits=8, max_steps=4, hidden_widths=(128, 64, 32, 24)),
     "dlo": ArcDiffLogicConfig(
         "dlo",
@@ -56,6 +90,7 @@ VARIANT_CONFIGS: dict[str, ArcDiffLogicConfig] = {
         max_steps=4,
         hidden_widths=(160, 96, 48, 24),
         include_original=True,
+        include_masks=True,
         include_geometry=True,
         include_objects=True,
         include_context=True,
@@ -66,6 +101,7 @@ VARIANT_CONFIGS: dict[str, ArcDiffLogicConfig] = {
         max_steps=8,
         hidden_widths=(192, 96, 48, 24),
         include_original=True,
+        include_masks=True,
         include_geometry=True,
         include_objects=True,
         include_context=True,
@@ -78,6 +114,7 @@ VARIANT_CONFIGS: dict[str, ArcDiffLogicConfig] = {
         max_steps=8,
         hidden_widths=(192, 96),
         include_original=True,
+        include_masks=True,
         include_geometry=True,
         include_objects=True,
         include_context=True,
@@ -108,6 +145,7 @@ if nn is not None:
                 widths,
                 wiring_seed=int(wiring_seed),
                 pass_bias=config.pass_bias,
+                backbone_inputs=tuple(channel * 9 + 4 for channel in range(config.state_bits)),
             )
 
         def step(
@@ -254,7 +292,9 @@ def invalid_color_probability(color_probabilities: "torch.Tensor") -> "torch.Ten
     _require_torch()
     if color_probabilities.shape[1] != 4:
         raise ValueError("color probabilities must be channel-first binary4")
-    probabilities = color_probabilities.clamp(1e-6, 1 - 1e-6)
+    # An affine epsilon map keeps straight-through gradients alive when the
+    # hard forward value is exactly zero or one; clamp would zero them.
+    probabilities = color_probabilities * (1 - 2e-6) + 1e-6
     invalid = probabilities.new_zeros(probabilities.shape[0], *probabilities.shape[2:])
     for code in range(10, 16):
         bits = torch.as_tensor([(code >> index) & 1 for index in range(4)], device=probabilities.device, dtype=probabilities.dtype)

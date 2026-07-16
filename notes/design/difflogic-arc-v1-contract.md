@@ -1,6 +1,17 @@
 # DiffLogic-ARC v1 Experimental Contract
 
-Status: frozen before any DiffLogic-ARC optimization result is read.
+Status: development protocol amended after `DEV-LOW-MDL`/synthetic debugging;
+`CONF-INDUCTION-HASH` remains unread and will be run only from an externally
+hashed, source-commit-bound configuration.
+
+The amendments made before confirmatory freeze are: preserving a visible-state
+backbone through fixed wiring after a reachability failure, keeping gradients
+alive at straight-through 0/1 values, making final-state loss the default,
+adding an explicitly charged modal-background padding probe, restricting
+adaptive horizons to the declared doubling schedule, and deferring every test
+label evaluation until all tasks/seeds/circuits have been selected.  These are
+development-informed fixes, not preregistered findings; all corresponding
+development numbers are rerun from the clean implementation commit.
 
 ## Question and evidence boundary
 
@@ -41,6 +52,7 @@ context at the center cell and directly emits the next state.
 The staged additions are:
 
 1. `DL1`: one step, no hidden state, same-shape canvas;
+   `DL1-wide` is a capacity control with the same state and horizon;
 2. `DLR`: shared recurrent rule, eight hidden bits, candidate horizons
    `1,2,4,8`, demo-selected smallest hard-exact horizon and fixed-point stop;
 3. `DLO`: immutable connected-component raster, color-role, coordinate, border,
@@ -77,11 +89,19 @@ All executed steps and gate evaluations are charged.
 
 ## Data augmentation and candidate selection
 
-`none` and dihedral `D4` augmentation are separate candidates.  Their selector
+`none` and dihedral `D4` augmentation are demo-selected candidates.  Explicit
+background-padding and `D4+background-padding` probes test whether an ARC grid
+edge should behave like the task's modal background rather than a distinct CA
+boundary symbol.  Padding is applied identically to demonstration and test
+inputs, predictions are cropped by the declared one-cell margin, and the
+candidate abstains unless the cropped rule is exact on every original
+demonstration.  These remain separately reported predictions.  The selector
 uses leave-one-demonstration-out exactness, then cell accuracy, then declared
 augmentation bits.  Neural seeds are ranked by hard demonstration exactness,
 hard cell accuracy, active non-pass-through gates, and seed.  No test output is
-used for routing.
+used for routing.  The runner produces and freezes predictions for every task,
+seed, horizon, and hard circuit before the evaluator receives any test-label
+object.
 
 ## Frozen cohorts
 

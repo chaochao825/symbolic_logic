@@ -142,15 +142,23 @@ def d4_arrays(array: object) -> tuple[np.ndarray, ...]:
 
 
 def augment_examples(examples: Sequence[ArcExample], policy: str) -> tuple[ArcExample, ...]:
-    if policy == "none":
-        return tuple(examples)
-    if policy != "d4":
-        raise ValueError("augmentation policy must be 'none' or 'd4'")
+    if policy not in ("none", "d4", "bgpad", "d4_bgpad"):
+        raise ValueError("unknown augmentation policy")
+    use_d4 = policy in ("d4", "d4_bgpad")
+    use_background_pad = policy in ("bgpad", "d4_bgpad")
     augmented: list[ArcExample] = []
     for example in examples:
-        inputs = d4_arrays(example.input_grid)
-        outputs = d4_arrays(example.output_grid)
-        augmented.extend(ArcExample(source, target) for source, target in zip(inputs, outputs))
+        pairs = (
+            zip(d4_arrays(example.input_grid), d4_arrays(example.output_grid))
+            if use_d4
+            else ((np.asarray(example.input_grid), np.asarray(example.output_grid)),)
+        )
+        for source, target in pairs:
+            if use_background_pad:
+                background = modal_color(source)
+                source = np.pad(source, 1, constant_values=background)
+                target = np.pad(target, 1, constant_values=background)
+            augmented.append(ArcExample(np.asarray(source, dtype=np.uint8), np.asarray(target, dtype=np.uint8)))
     return tuple(augmented)
 
 
@@ -237,7 +245,7 @@ def _component_features(grid: np.ndarray) -> np.ndarray:
                 features[1, row, column] = float(perimeter)
                 features[2, row, column] = float((row, column) == (top, left))
                 features[3, row, column] = float(size == 1)
-                features[4, row, column] = float(size <= 4)
+                features[4, row, column] = float(size <= 2)
                 features[5, row, column] = float(row == top)
                 features[6, row, column] = float(row == bottom)
                 features[7, row, column] = float(column == left)
@@ -288,6 +296,7 @@ class CanvasExample:
     update_mask: np.ndarray
     fallback_colors: np.ndarray
     output_shape: tuple[int, int]
+    crop_margin: int
     changed_mask: np.ndarray | None
 
 
@@ -303,7 +312,11 @@ def infer_workspace_shape(
     for example in augmented:
         grids.extend((example.input_grid.shape, example.output_grid.shape))
     for grid in test_inputs:
-        grids.extend((grid.shape, shape_program.predict_shape(grid)))
+        if augmentation in ("bgpad", "d4_bgpad"):
+            padded_shape = (int(grid.shape[0]) + 2, int(grid.shape[1]) + 2)
+            grids.extend((padded_shape, shape_program.predict_shape(np.zeros(padded_shape, dtype=np.uint8))))
+        else:
+            grids.extend((grid.shape, shape_program.predict_shape(grid)))
     rows = max(int(shape[0]) for shape in grids)
     columns = max(int(shape[1]) for shape in grids)
     if max(rows, columns) > ARC_MAX_SIDE:
@@ -320,6 +333,8 @@ def build_canvas_example(
     *,
     hidden_bits: int,
     target_grid: object | None = None,
+    crop_margin: int = 0,
+    include_masks: bool = False,
     include_original: bool = False,
     include_geometry: bool = False,
     include_objects: bool = False,
@@ -331,6 +346,8 @@ def build_canvas_example(
         raise ValueError("input does not fit workspace")
     if output_shape[0] > canvas_rows or output_shape[1] > canvas_columns:
         raise ValueError("output does not fit workspace")
+    if crop_margin < 0 or 2 * crop_margin >= min(output_shape):
+        raise ValueError("invalid output crop margin")
 
     background = modal_color(grid)
     fallback = np.full(canvas_shape, background, dtype=np.uint8)
@@ -343,7 +360,7 @@ def build_canvas_example(
     output_mask = np.zeros(canvas_shape, dtype=np.float32)
     output_mask[: output_shape[0], : output_shape[1]] = 1
     update_mask = np.maximum(input_mask, output_mask)
-    static: list[np.ndarray] = [input_mask[None], output_mask[None]]
+    static: list[np.ndarray] = [input_mask[None], output_mask[None]] if include_masks else [np.zeros((1, canvas_rows, canvas_columns), dtype=np.float32)]
 
     if include_original:
         original = np.zeros((COLOR_BITS, canvas_rows, canvas_columns), dtype=np.float32)
@@ -395,6 +412,7 @@ def build_canvas_example(
         update_mask=update_mask,
         fallback_colors=fallback,
         output_shape=tuple(int(value) for value in output_shape),
+        crop_margin=int(crop_margin),
         changed_mask=changed_mask,
     )
 

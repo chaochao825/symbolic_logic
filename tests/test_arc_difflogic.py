@@ -12,7 +12,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from arc_data import ArcExample  # noqa: E402
+from arc_data import ArcExample, ArcProblem  # noqa: E402
 from arc_difflogic_features import (  # noqa: E402
     augment_examples,
     build_canvas_example,
@@ -22,7 +22,14 @@ from arc_difflogic_features import (  # noqa: E402
     select_augmentation_policy,
     select_shape_program,
 )
-from arc_difflogic_model import hard_numpy_ca_step  # noqa: E402
+from arc_difflogic_model import ArcDiffLogicConfig, hard_numpy_ca_step  # noqa: E402
+from arc_difflogic_train import (  # noqa: E402
+    TrainingConfig,
+    augmented_sparse_predictions,
+    candidate_horizons,
+    prepare_task,
+)
+from run_arc_difflogic import _validate_confirmatory_config  # noqa: E402
 from trainable_difflogic import (  # noqa: E402
     GATE_NAMES,
     HardLogicLayerSpec,
@@ -106,6 +113,89 @@ class ArcDiffLogicDependencyLightTests(unittest.TestCase):
         selected = select_augmentation_policy(examples)
         self.assertIn(selected.policy, ("none", "d4"))
 
+    def test_background_padding_is_demo_audited_and_repairs_edge_semantics(self) -> None:
+        source = np.zeros((5, 5), dtype=np.uint8)
+        source[1, 1] = 1  # isolated object: recolor it
+        source[3, 2:4] = 1  # connected object: retain it
+        target = source.copy()
+        target[1, 1] = 2
+        test_input = np.zeros((3, 3), dtype=np.uint8)
+        test_input[0, 0] = 1
+        problem = ArcProblem("edge_probe", (ArcExample(source, target),), (test_input,))
+
+        direct, _ = augmented_sparse_predictions(problem, "d4")
+        padded, record = augmented_sparse_predictions(problem, "d4_bgpad")
+        self.assertTrue(direct)
+        self.assertEqual(int(direct[0][0, 0]), 1)
+        self.assertEqual(record["status"], "selected")
+        self.assertEqual(record["deployment_demo_task_exact"], 1.0)
+        self.assertEqual(record["deployment_eligible"], 1.0)
+        self.assertEqual(int(padded[0][0, 0]), 2)
+
+        prepared = prepare_task(problem, ArcDiffLogicConfig("pad_probe"), "d4_bgpad")
+        self.assertIsNotNone(prepared)
+        assert prepared is not None
+        self.assertTrue(all(example.crop_margin == 1 for example in prepared.training + prepared.tests))
+        self.assertEqual(prepared.tests[0].output_shape, (5, 5))
+        self.assertGreaterEqual(prepared.workspace_shape[0], 7)
+
+    def test_confirmatory_receipt_freezes_all_result_affecting_choices(self) -> None:
+        from argparse import Namespace
+
+        config = TrainingConfig(epochs=7, trace_every=2, early_stop_patience=1)
+        args = Namespace(
+            suite="arc",
+            cohort="conf_induction_hash",
+            mode="full",
+            device="cpu",
+            augmentation="auto",
+        )
+        receipt = {
+            "protocol": "arc_difflogic_v1",
+            "source_commit": "abc",
+            "suite": "arc",
+            "cohort": "conf_induction_hash",
+            "mode": "full",
+            "device": "cpu",
+            "augmentation": "auto",
+            "variants": ["dl1"],
+            "seeds": [0, 1, 2],
+            "training_config": config.__dict__,
+            "task_ids": ["task"],
+            "task_id_digest": "ids",
+            "task_content_digest": "content",
+        }
+        _validate_confirmatory_config(
+            receipt,
+            source_head="abc",
+            args=args,
+            variants=("dl1",),
+            seeds=(0, 1, 2),
+            training_config=config,
+            task_ids=("task",),
+            task_id_digest_value="ids",
+            task_content_digest_value="content",
+        )
+        changed = dict(receipt)
+        changed["seeds"] = [0]
+        with self.assertRaisesRegex(ValueError, "confirmatory config mismatch"):
+            _validate_confirmatory_config(
+                changed,
+                source_head="abc",
+                args=args,
+                variants=("dl1",),
+                seeds=(0, 1, 2),
+                training_config=config,
+                task_ids=("task",),
+                task_id_digest_value="ids",
+                task_content_digest_value="content",
+            )
+
+    def test_adaptive_horizon_uses_declared_doubling_candidates(self) -> None:
+        self.assertEqual(candidate_horizons(1), (1,))
+        self.assertEqual(candidate_horizons(8), (1, 2, 4, 8))
+        self.assertEqual(candidate_horizons(6), (1, 2, 4, 6))
+
     def test_canvas_features_separate_input_and_output_masks(self) -> None:
         source = np.asarray([[1, 0], [0, 0]], dtype=np.uint8)
         target = np.repeat(np.repeat(source, 2, axis=0), 2, axis=1)
@@ -120,6 +210,7 @@ class ArcDiffLogicDependencyLightTests(unittest.TestCase):
             shape,
             hidden_bits=2,
             target_grid=target,
+            include_masks=True,
             include_original=True,
             include_geometry=True,
             include_objects=True,
@@ -143,13 +234,24 @@ class ArcDiffLogicDependencyLightTests(unittest.TestCase):
 
 try:
     import torch
-    from trainable_difflogic import DifferentiableLogicLayer
+    from trainable_difflogic import DifferentiableLogicLayer, DifferentiableLogicNetwork
 except ImportError:  # pragma: no cover
     torch = None
 
 
 @unittest.skipIf(torch is None, "optional PyTorch training dependency is absent")
 class ArcDiffLogicTorchTests(unittest.TestCase):
+    def test_state_backbone_reaches_every_layer_and_output_lane(self) -> None:
+        network = DifferentiableLogicNetwork(
+            13,
+            (10, 8, 4),
+            wiring_seed=19,
+            backbone_inputs=(2, 5, 8, 11),
+        )
+        np.testing.assert_array_equal(network.layers[0].left_indices[:4].numpy(), np.asarray([2, 5, 8, 11]))
+        for layer in network.layers[1:]:
+            np.testing.assert_array_equal(layer.left_indices[:4].numpy(), np.arange(4))
+
     def test_straight_through_gate_has_finite_gradient(self) -> None:
         layer = DifferentiableLogicLayer(2, 4, wiring_seed=7)
         values = torch.tensor([[0.0, 1.0], [1.0, 0.0]], requires_grad=True)
