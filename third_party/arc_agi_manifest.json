@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "datasets_are_not_vendored": true,
+  "datasets": {
+    "ARC-AGI-1": {
+      "repository": "https://github.com/fchollet/ARC-AGI.git",
+      "release": "v1.0.2",
+      "commit": "aa922be204204ec148a1137fe6ed4d34ddde812b",
+      "license": "Apache-2.0",
+      "role": "historical development diagnostic",
+      "training_tasks": 400,
+      "evaluation_tasks": 400,
+      "splits": {
+        "training": {
+          "content_digest": "20f5ece7b6ee70e6f058e8ba1d077764d69c6452b52dc50f0856a63be3a552de",
+          "task_id_digest": "c4e1b145daad71b4f02ac3482be215f1ab07863b67f13fc1bde1572f501ff75a"
+        },
+        "evaluation": {
+          "content_digest": "b27020a211f2d55f5556cdc27e30b42771394ecaecfc2e0a53da3061b6f5de76",
+          "task_id_digest": "911bf838d8843606d5fc1ba0550a0c23670027bf8f6e32e4e4fbf93854957ddd"
+        }
+      }
+    },
+    "ARC-AGI-2": {
+      "repository": "https://github.com/arcprize/ARC-AGI-2.git",
+      "release": null,
+      "commit": "f3283f727488ad98fe575ea6a5ac981e4a188e49",
+      "license": "Apache-2.0",
+      "role": "primary current static-grid benchmark",
+      "training_tasks": 1000,
+      "evaluation_tasks": 120,
+      "splits": {
+        "training": {
+          "content_digest": "10a0146ab6374f18f44a770b37154ccb6d579fddb9a321eb3bf936666bc85aa8",
+          "task_id_digest": "6031afc0c6f31a05793362bbf162b4d75448efdcf43afb1e79d4bc54ada9c2a2"
+        },
+        "evaluation": {
+          "content_digest": "ddb0a9f8794407f47ff9dc692ef7d3e578ddd503c92f555a4f38b509b0ba05aa",
+          "task_id_digest": "54ca25cdc4444e5669e272e25cbe301bbfe3aa81da8f555126095153aff69425"
+        }
+      },
+      "changelog": "https://github.com/arcprize/ARC-AGI-2/blob/f3283f727488ad98fe575ea6a5ac981e4a188e49/changelog.md"
+    }
+  },
+  "evaluation_policy": {
+    "primary_metric": "full-task exact pass@1",
+    "prediction_budget": 2,
+    "unsupported_tasks_remain_in_primary_denominator": true,
+    "public_evaluation_requires_clean_frozen_source": true,
+    "arc_agi_2_evaluation_requires_declared_one_shot_ledger": true,
+    "posthoc_train_plus_test_local_rule_is_diagnostic_only": true
+  }
+}

@@ -14,6 +14,8 @@ The discrete-theory extension replaces that failed identification with an execut
 
 The cellular-automata extension asks when one compiled local Boolean program can be reused across space and time. It separates (i) semantic replay of the official hard DiffLogic-CA circuits, (ii) exact local-transition tasks such as elementary CA and Game of Life, and (iii) collective tasks such as density classification, synchronization, checkerboard repair, and Boolean wavefront pathfinding. Model description, trajectory residual, dynamic gate evaluations, state memory, and iteration count are reported separately; a short local rule is not assumed to imply an easy global computation.
 
+The ARC-CA extension applies the same distinction to ARC-AGI-2.  A frozen, demonstration-only categorical local-rule learner is evaluated on every task, including explicit refusals for shape changes and inconsistent local semantics.  Its selected rules are replayed through direct, 4-bit, and one-hot implementations.  Public-evaluation scoring occurs only after the grammar and source are frozen; post-hoc train-plus-test representability is labeled as an oracle diagnostic rather than a solver result.
+
 ## Audience and deliverable
 
 The deliverable is a reproducible Python experiment suite and a Chinese evidence report. It uses synthetic, fully enumerable Boolean predicates and layered reachability graphs so that both successes and failure modes can be checked exactly.
@@ -32,3 +34,5 @@ The two supplied documents agree on the architecture `encoder -> named predicate
 - Replaying an official frozen circuit is not a retraining result. Any attempted DiffLogic-CA retraining is labeled separately from hard-circuit semantic validation.
 - The Google DiffLogic-CA topology is fixed; this extension does not call it learned topology or claim that active-gate counts are minimum circuits.
 - Cellular-automata CPU timings and gate-evaluation counts are implementation measurements, not FPGA/ASIC PPA evidence.
+- ARC exactness is reported over the full split; supported-subset scores do not remove failures from the primary denominator.
+- A sparse table compiled to equality/multiplexer gates is an upper-bound construction, not a minimum netlist or proof that few demonstrations identify the intended rule.
