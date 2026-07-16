@@ -13,6 +13,14 @@ label evaluation until all tasks/seeds/circuits have been selected.  These are
 development-informed fixes, not preregistered findings; all corresponding
 development numbers are rerun from the clean implementation commit.
 
+After the clean `DEV-LOW-MDL` run but before opening confirmatory results, a
+raw test hit from a hard circuit that did not exactly fit its demonstrations
+motivated the confirmatory primary metric
+`hard_demo_task_exact * hard_task_exact`.  Raw test exactness remains in the
+artifacts, but only a hard demo-exact candidate is deployment-eligible.  This
+analysis rule, the source commit, task-content digest, variants, seeds, and all
+training hyperparameters are bound by the external confirmatory receipt.
+
 ## Question and evidence boundary
 
 This experiment asks whether a genuine differentiable-logic cellular automaton
@@ -139,7 +147,9 @@ multi-step propagation, context-disambiguated rules, shape expansion, and
 fixed-point stopping.  Training claims use seeds `0,1,2` and report each seed;
 a smoke run is not a success-rate claim.
 
-The primary ARC metric is hard full-task exactness.  Secondary metrics are
+The primary ARC metric is deployment-eligible hard full-task exactness: a
+candidate must first be hard-exact on every demonstration.  Unqualified raw
+hard full-task exactness is a secondary diagnostic.  Other secondary metrics are
 pair exactness, active-cell and all-canvas accuracy, demonstration exactness,
 soft-to-hard drop, invalid-code rate, selected augmentation/horizon, fixed-point
 status, active gates, state bits, dynamic gate evaluations, and wall time.

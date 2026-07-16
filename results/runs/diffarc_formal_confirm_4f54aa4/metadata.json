@@ -1,0 +1,178 @@
+{
+  "artifacts": {
+    "arc_difflogic_hard_circuits.jsonl": {
+      "bytes": 220997,
+      "sha256": "38d416a12431c0ec0f00de4c70482e62199e410c36ee133dca73d221efbeb757"
+    },
+    "arc_difflogic_predictions.jsonl": {
+      "bytes": 85417,
+      "sha256": "4a19a5cb9123baed707c10c55efa8d403233992e9c8392aa7fdc965377279f3e"
+    },
+    "arc_difflogic_seed_results.csv": {
+      "bytes": 29474,
+      "sha256": "567ec280fca26887e6da1bdd6214b1d1afb701876173e735754d090f5de5d918"
+    },
+    "arc_difflogic_selected_results.csv": {
+      "bytes": 13998,
+      "sha256": "28c6ffeba40456aaf99ce9347dd4fbcc213461a7f4361a402f47a41c50df7467"
+    },
+    "arc_difflogic_summary.csv": {
+      "bytes": 596,
+      "sha256": "ad276d2186d58b9aedd0b483eb15fce85d636f953d7f36e936ccccfd8a060efc"
+    },
+    "arc_difflogic_traces.jsonl": {
+      "bytes": 513060,
+      "sha256": "95c1cd91404feed7f0129f9ad4f0f00fd2c3a07d2effd34dd13fb8ce0e91a4bd"
+    }
+  },
+  "claim_boundary": "ARC2 evaluation is untouched; cohorts are ARC2-training mechanism probes, not a full benchmark score; timing is not PPA.",
+  "cohort": "conf_induction_hash",
+  "confirmatory_config": {
+    "analysis_plan": {
+      "primary_metric": "strict_hard_task_exact = hard_demo_task_exact * hard_task_exact",
+      "raw_test_exact_is_secondary": true,
+      "selection": "per-variant seed selected by hard demonstration exactness, cell accuracy, active non-pass-through gates, then seed",
+      "success_criterion": "at least one strict hard exact task above the corresponding frozen sparse/D4 baseline, without retuning"
+    },
+    "augmentation": "auto",
+    "cohort": "conf_induction_hash",
+    "device": "cuda",
+    "freeze_date": "2026-07-16",
+    "mode": "full",
+    "protocol": "arc_difflogic_v1",
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "source_commit": "4f54aa45d1e6328d96352028375718b7506d926a",
+    "suite": "arc",
+    "task_content_digest": "16430006bb75a64badd09129590c9eec1089bb3fc330708dcc4dca46c5a34aaa",
+    "task_id_digest": "eb66d1483a204f43a5256ba9162f68e46fb6521f6031b5a59226b434655939fb",
+    "task_ids": [
+      "1e0a9b12",
+      "3345333e",
+      "68b16354",
+      "7ee1c6ea",
+      "9b5080bb",
+      "9caf5b84",
+      "a04b2602",
+      "a834deea",
+      "a8d7556c",
+      "b60334d2",
+      "bda2d7a6",
+      "cc9053aa"
+    ],
+    "training_config": {
+      "binary_weight": 0.01,
+      "changed_cell_weight": 4.0,
+      "early_stop_patience": 3,
+      "entropy_weight": 0.0002,
+      "epochs": 480,
+      "gradient_clip": 1.0,
+      "intermediate_loss_weight": 0.0,
+      "invalid_weight": 0.05,
+      "learning_rate": 0.02,
+      "mlp_learning_rate": 0.003,
+      "soft_fraction": 0.65,
+      "temperature_hard_end": 0.2,
+      "temperature_soft_end": 0.5,
+      "temperature_start": 2.0,
+      "trace_every": 20
+    },
+    "variants": [
+      "dl1",
+      "dl1_wide"
+    ]
+  },
+  "confirmatory_config_sha256": "0817bad7b056fc3ca39a9802c54637499373a8b31c5f9ce598b83eee0bd90e26",
+  "device": "cuda",
+  "elapsed_seconds": 610.5297318979865,
+  "environment": {
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "python": "3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]",
+    "torch": "2.8.0+cu128"
+  },
+  "experiment": "arc_difflogic_v1",
+  "mode": "full",
+  "result_rows": 108,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "selected_rows": 60,
+  "source_commit": "4f54aa45d1e6328d96352028375718b7506d926a",
+  "source_files": {
+    "src/arc_ca.py": {
+      "bytes": 20133,
+      "sha256": "abbee248cce8d174743ff86dac0e7d43205d8f4ef33b1ca9fa4155f022a57996"
+    },
+    "src/arc_data.py": {
+      "bytes": 6464,
+      "sha256": "b628ab98845da2c115a9d3755b25c486172ca0d05696765c80913cdbec06dfc5"
+    },
+    "src/arc_difflogic_features.py": {
+      "bytes": 19495,
+      "sha256": "2dd4a9937a0dd6af15c631a3c7db6349f858555ab2261a3d4c650bb31314dfef"
+    },
+    "src/arc_difflogic_model.py": {
+      "bytes": 12862,
+      "sha256": "ec997cc83d905c53fb5ae8d94e0ce297734fd534909ee868453f105f073b4551"
+    },
+    "src/arc_difflogic_train.py": {
+      "bytes": 26479,
+      "sha256": "8adefbe90dbe843a18b6b5e33151e134a980285ffbf975718bd1feac1439fd54"
+    },
+    "src/run_arc_difflogic.py": {
+      "bytes": 28408,
+      "sha256": "11f186bcc3ba7b364a72229f05e760ce49fac12eb7dacaeee23b0bfab7e8b3f8"
+    },
+    "src/trainable_difflogic.py": {
+      "bytes": 13347,
+      "sha256": "55d16d38b7b3488023d28b6c08bbe2377d74a53ad90bdd2c8fefcec4d821a0b7"
+    }
+  },
+  "source_status_end": "",
+  "source_status_start": "",
+  "suite": "arc",
+  "task_content_digest": "16430006bb75a64badd09129590c9eec1089bb3fc330708dcc4dca46c5a34aaa",
+  "task_id_digest": "eb66d1483a204f43a5256ba9162f68e46fb6521f6031b5a59226b434655939fb",
+  "task_ids": [
+    "1e0a9b12",
+    "3345333e",
+    "68b16354",
+    "7ee1c6ea",
+    "9b5080bb",
+    "9caf5b84",
+    "a04b2602",
+    "a834deea",
+    "a8d7556c",
+    "b60334d2",
+    "bda2d7a6",
+    "cc9053aa"
+  ],
+  "training_config": {
+    "binary_weight": 0.01,
+    "changed_cell_weight": 4.0,
+    "early_stop_patience": 3,
+    "entropy_weight": 0.0002,
+    "epochs": 480,
+    "gradient_clip": 1.0,
+    "intermediate_loss_weight": 0.0,
+    "invalid_weight": 0.05,
+    "learning_rate": 0.02,
+    "mlp_learning_rate": 0.003,
+    "soft_fraction": 0.65,
+    "temperature_hard_end": 0.2,
+    "temperature_soft_end": 0.5,
+    "temperature_start": 2.0,
+    "trace_every": 20
+  },
+  "variants": [
+    "dl1",
+    "dl1_wide"
+  ]
+}

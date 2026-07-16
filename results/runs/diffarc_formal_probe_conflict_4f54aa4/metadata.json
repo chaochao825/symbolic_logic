@@ -1,0 +1,114 @@
+{
+  "artifacts": {
+    "arc_difflogic_hard_circuits.jsonl": {
+      "bytes": 72038,
+      "sha256": "32bb6908750feab754555c67b68e0efc684ceb23418e63cbd8ab8b3e1e9f1a6c"
+    },
+    "arc_difflogic_predictions.jsonl": {
+      "bytes": 61236,
+      "sha256": "7cd3f86fb9689224e37c9a7363e83b2919d80a3f847639ec02b9a8cde42b52fd"
+    },
+    "arc_difflogic_seed_results.csv": {
+      "bytes": 13393,
+      "sha256": "2df8ea5e6a2773f964d19c5331425155800a0ec5349de639092b1b6564f64565"
+    },
+    "arc_difflogic_selected_results.csv": {
+      "bytes": 6279,
+      "sha256": "57dd6f43d9fb9eebdacff843b25ece8ed3e026ffc7067eb1eff7b1f0933fb763"
+    },
+    "arc_difflogic_summary.csv": {
+      "bytes": 575,
+      "sha256": "116c64b4f078b47843ece82ff9a607c9ae2a827f87b3f9cc7a109a1e4ea6eb33"
+    },
+    "arc_difflogic_traces.jsonl": {
+      "bytes": 250128,
+      "sha256": "56f6dff451b94b9647e97badf288842445c9a6d89f5c2da0cfc3f4589eed2094"
+    }
+  },
+  "claim_boundary": "ARC2 evaluation is untouched; cohorts are ARC2-training mechanism probes, not a full benchmark score; timing is not PPA.",
+  "cohort": "local_conflict",
+  "confirmatory_config": null,
+  "confirmatory_config_sha256": "",
+  "device": "cuda",
+  "elapsed_seconds": 517.955726673943,
+  "environment": {
+    "cuda_available": true,
+    "cuda_device_count": 1,
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "python": "3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]",
+    "torch": "2.8.0+cu128"
+  },
+  "experiment": "arc_difflogic_v1",
+  "mode": "full",
+  "result_rows": 48,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "selected_rows": 24,
+  "source_commit": "4f54aa45d1e6328d96352028375718b7506d926a",
+  "source_files": {
+    "src/arc_ca.py": {
+      "bytes": 20133,
+      "sha256": "abbee248cce8d174743ff86dac0e7d43205d8f4ef33b1ca9fa4155f022a57996"
+    },
+    "src/arc_data.py": {
+      "bytes": 6464,
+      "sha256": "b628ab98845da2c115a9d3755b25c486172ca0d05696765c80913cdbec06dfc5"
+    },
+    "src/arc_difflogic_features.py": {
+      "bytes": 19495,
+      "sha256": "2dd4a9937a0dd6af15c631a3c7db6349f858555ab2261a3d4c650bb31314dfef"
+    },
+    "src/arc_difflogic_model.py": {
+      "bytes": 12862,
+      "sha256": "ec997cc83d905c53fb5ae8d94e0ce297734fd534909ee868453f105f073b4551"
+    },
+    "src/arc_difflogic_train.py": {
+      "bytes": 26479,
+      "sha256": "8adefbe90dbe843a18b6b5e33151e134a980285ffbf975718bd1feac1439fd54"
+    },
+    "src/run_arc_difflogic.py": {
+      "bytes": 28408,
+      "sha256": "11f186bcc3ba7b364a72229f05e760ce49fac12eb7dacaeee23b0bfab7e8b3f8"
+    },
+    "src/trainable_difflogic.py": {
+      "bytes": 13347,
+      "sha256": "55d16d38b7b3488023d28b6c08bbe2377d74a53ad90bdd2c8fefcec4d821a0b7"
+    }
+  },
+  "source_status_end": "",
+  "source_status_start": "",
+  "suite": "arc",
+  "task_content_digest": "6c1cc92c5649920a8335e917df7550e783074861e645470e09c6813e11cc57b6",
+  "task_id_digest": "a79ffb9af92e3bc57fe756da0942265b60aa6d69707b2b89b80a5c00ccbfdd6c",
+  "task_ids": [
+    "342ae2ed",
+    "465b7d93",
+    "94be5b80",
+    "a3f84088"
+  ],
+  "training_config": {
+    "binary_weight": 0.01,
+    "changed_cell_weight": 4.0,
+    "early_stop_patience": 3,
+    "entropy_weight": 0.0002,
+    "epochs": 480,
+    "gradient_clip": 1.0,
+    "intermediate_loss_weight": 0.0,
+    "invalid_weight": 0.05,
+    "learning_rate": 0.02,
+    "mlp_learning_rate": 0.003,
+    "soft_fraction": 0.65,
+    "temperature_hard_end": 0.2,
+    "temperature_soft_end": 0.5,
+    "temperature_start": 2.0,
+    "trace_every": 20
+  },
+  "variants": [
+    "dlr",
+    "dlo",
+    "mlp"
+  ]
+}
