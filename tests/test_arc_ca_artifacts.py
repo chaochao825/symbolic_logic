@@ -19,6 +19,73 @@ from run_arc_ca import FROZEN_SPLITS, _complete_receipt, _reserve_receipt  # noq
 
 
 class ArcCAArtifactTests(unittest.TestCase):
+    FROZEN_COMMIT = "888573d15de3c865e339677df8d2e804e999ff88"
+    COMMITTED_RUNS = {
+        "arc_ca_v1_arc2_training_full_210_888573d": (1000, 13, 253, 7, 253),
+        "arc_ca_v1_arc2_evaluation_full_210_888573d": (120, 0, 18, 0, 18),
+        "arc_ca_v1_arc1_training_full_210_888573d": (400, 12, 114, 6, 114),
+        "arc_ca_v1_arc1_evaluation_full_210_888573d": (400, 1, 79, 1, 79),
+    }
+
+    @staticmethod
+    def _csv_rows(path: Path) -> list[dict[str, str]]:
+        with path.open(encoding="utf-8", newline="") as handle:
+            return list(csv.DictReader(handle))
+
+    def test_committed_full_runs_are_hash_valid_and_keep_full_denominators(self) -> None:
+        runs = ROOT / "results" / "runs"
+        compiled_arc_rows = 0
+        compiled_equivalent = 0
+        for name, expected in self.COMMITTED_RUNS.items():
+            with self.subTest(run=name):
+                directory = runs / name
+                metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
+                self.assertEqual(metadata["source_git_at_start"]["commit"], self.FROZEN_COMMIT)
+                self.assertFalse(metadata["source_git_at_start"]["dirty"])
+                self.assertFalse(metadata["source_git_at_end"]["dirty"])
+                self.assertEqual(metadata["configuration"]["compile_policy"], "all_selected_rules")
+                for filename, artifact in metadata["artifacts"].items():
+                    path = directory / filename
+                    self.assertEqual(path.stat().st_size, artifact["bytes"])
+                    self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), artifact["sha256"])
+                for relative, source in metadata["sources"].items():
+                    path = ROOT / relative
+                    self.assertEqual(path.stat().st_size, source["bytes"])
+                    self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), source["sha256"])
+
+                tasks = self._csv_rows(directory / "arc_ca_task_results.csv")
+                programs = self._csv_rows(directory / "arc_ca_program_results.csv")
+                codecs = self._csv_rows(directory / "arc_ca_codec_results.csv")
+                task_count, exact_count, selected_count, program_exact, arc_codec_count = expected
+                self.assertEqual(metadata["dataset"]["task_count"], task_count)
+                self.assertEqual(len(tasks), task_count)
+                self.assertEqual(sum(float(row["task_exact"]) == 1.0 for row in tasks), exact_count)
+                self.assertEqual(sum(row["selection_status"] == "selected" for row in tasks), selected_count)
+                self.assertEqual(sum(float(row["task_exact"]) == 1.0 for row in programs), program_exact)
+                arc_codecs = [row for row in codecs if row.get("dataset")]
+                self.assertEqual(len(arc_codecs), arc_codec_count)
+                compiled_arc_rows += len(arc_codecs)
+                compiled_equivalent += sum(float(row["compiled_equivalent"]) == 1.0 for row in arc_codecs)
+                self.assertEqual(
+                    sum(1 for line in (directory / "arc_ca_predictions.jsonl").read_text(encoding="utf-8").splitlines() if line),
+                    task_count,
+                )
+        self.assertEqual(compiled_arc_rows, 464)
+        self.assertEqual(compiled_equivalent, 464)
+
+    def test_public_evaluation_receipt_binds_completed_metadata(self) -> None:
+        runs = ROOT / "results" / "runs"
+        directory = runs / "arc_ca_v1_arc2_evaluation_full_210_888573d"
+        ledger = runs / "arc_ca_v1_arc2_evaluation_full_210_888573d.receipt.jsonl"
+        records = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual([record["status"] for record in records], ["reserved_before_scoring", "completed"])
+        self.assertEqual(records[0]["source_commit"], self.FROZEN_COMMIT)
+        self.assertEqual(records[0]["task_id_digest"], FROZEN_SPLITS[("ARC-AGI-2", "evaluation")]["task_id_digest"])
+        self.assertEqual(
+            records[1]["metadata_sha256"],
+            hashlib.sha256((directory / "metadata.json").read_bytes()).hexdigest(),
+        )
+
     def test_receipt_ledger_is_exclusive_and_append_only_jsonl(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
