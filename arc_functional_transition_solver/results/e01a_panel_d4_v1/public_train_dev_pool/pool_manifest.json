@@ -1,0 +1,57 @@
+{
+  "case_set_id": "93fe4870982313fb840d27bc4082e079f41d8b58d4f679cea15b5e5b1381b177",
+  "command": [
+    "afts-arc",
+    "run-e01a-symbolic-pool",
+    "--blind-dataset-dir",
+    "results/e01a_panel_d4_v1/public_train_dev_blind",
+    "--output-dir",
+    "results/e01a_panel_d4_v1/public_train_dev_pool",
+    "--max-depth",
+    "2",
+    "--beam-width",
+    "64",
+    "--max-instruction-options",
+    "64",
+    "--max-exact-programs",
+    "128"
+  ],
+  "completed_at": "2026-07-11T10:12:03.945861+00:00",
+  "config": {
+    "dsl_semantics_version": "afts-grid-dsl/v0.4",
+    "oracle_inputs_available_to_pool": false,
+    "panel_parser_semantics_version": "afts-full-span-panels/v0.1",
+    "panel_parser_stage": "M02b_full_span_separator_panels",
+    "panel_sequence_d4_proposer_semantics_version": "afts-panel-sequence-d4-proposer/v0.1",
+    "panel_sequence_d4_semantics_version": "afts-panel-sequence-d4/v0.1",
+    "panel_sequence_d4_stage": "M05d_indexed_panel_sequence_d4",
+    "parser_semantics_version": "afts-multiview-cc/v0.1",
+    "parser_stage": "M02a_connected_components_only",
+    "search": {
+      "beam_width": 64,
+      "max_depth": 2,
+      "max_exact_programs": 128,
+      "max_instruction_options": 64
+    },
+    "shape_proposer_semantics_version": "afts-output-shape/v0.1"
+  },
+  "evidence_status": "frozen_oracle_unread_symbolic_candidate_pool",
+  "parent_blind_bundle": {
+    "artifact_manifest_sha256": "933b5bbb6302d7165246847b9bab70e8f3d6a961e197848915c6bea226d027d3",
+    "blind_tasks_sha256": "e80dacf901852e878d49bc2f2fe124792460a2bbfe4553adc10c2e36aea7f290"
+  },
+  "pool_content_id": "a467e18fc3734bc2e4013c78bbd07bb2a17b20b7a40673198d59048face3fc48",
+  "pool_spec_id": "a02f946f7bfcc3a6a174feb831b6262826d7f7a8bd3f9b603e2f22d48148b586",
+  "runtime_source_fingerprint_sha256": "5cc8c9a5a2cc2a13d34c40b96606382f6d98f49fb5d8cbaa264278a4b4a70530",
+  "schema": "afts.e01a-symbolic-pool/v4",
+  "source_loader": {
+    "bootstrap_import_run_source_match": true,
+    "cwd_removed_from_import_path": true,
+    "launcher_material": "scripts/afts_arc_evidence.py",
+    "policy": "fresh_nonexistent_pycache_prefix_with_bytecode_writes_disabled",
+    "project_source_after_standard_library": true,
+    "python_isolated_mode": true
+  },
+  "started_at": "2026-07-11T09:52:40.242974+00:00",
+  "test_source_fingerprint_sha256": "bb670fb6b8f47b805af6211c000f31c43f14850ac5d890b33dbb3ef8d71736be"
+}

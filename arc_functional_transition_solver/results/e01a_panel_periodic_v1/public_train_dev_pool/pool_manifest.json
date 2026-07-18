@@ -1,0 +1,60 @@
+{
+  "case_set_id": "93fe4870982313fb840d27bc4082e079f41d8b58d4f679cea15b5e5b1381b177",
+  "command": [
+    "afts-arc",
+    "run-e01a-symbolic-pool",
+    "--blind-dataset-dir",
+    "results/e01a_panel_periodic_v1/public_train_dev_blind",
+    "--output-dir",
+    "results/e01a_panel_periodic_v1/public_train_dev_pool",
+    "--max-depth",
+    "2",
+    "--beam-width",
+    "64",
+    "--max-instruction-options",
+    "64",
+    "--max-exact-programs",
+    "128"
+  ],
+  "completed_at": "2026-07-11T11:28:10.190479+00:00",
+  "config": {
+    "dsl_semantics_version": "afts-grid-dsl/v0.5",
+    "oracle_inputs_available_to_pool": false,
+    "panel_lattice_periodic_proposer_semantics_version": "afts-panel-lattice-periodic-proposer/v0.1",
+    "panel_lattice_periodic_semantics_version": "afts-panel-lattice-periodic/v0.1",
+    "panel_lattice_periodic_stage": "M05e_two_axis_periodic_panel_broadcast",
+    "panel_parser_semantics_version": "afts-full-span-panels/v0.1",
+    "panel_parser_stage": "M02b_full_span_separator_panels",
+    "panel_sequence_d4_proposer_semantics_version": "afts-panel-sequence-d4-proposer/v0.1",
+    "panel_sequence_d4_semantics_version": "afts-panel-sequence-d4/v0.1",
+    "panel_sequence_d4_stage": "M05d_indexed_panel_sequence_d4",
+    "parser_semantics_version": "afts-multiview-cc/v0.1",
+    "parser_stage": "M02a_connected_components_only",
+    "search": {
+      "beam_width": 64,
+      "max_depth": 2,
+      "max_exact_programs": 128,
+      "max_instruction_options": 64
+    },
+    "shape_proposer_semantics_version": "afts-output-shape/v0.1"
+  },
+  "evidence_status": "frozen_oracle_unread_symbolic_candidate_pool",
+  "parent_blind_bundle": {
+    "artifact_manifest_sha256": "7ce5a523449e3493522070952c871c523793571720c6cce22b61100f8d9d6920",
+    "blind_tasks_sha256": "e80dacf901852e878d49bc2f2fe124792460a2bbfe4553adc10c2e36aea7f290"
+  },
+  "pool_content_id": "c34da41d0634b882669e0e05fd7732b23746407229fc91749e356247ab29c088",
+  "pool_spec_id": "35f8d8a22d721d847a8f99f91b037c5d4839c798680624b691b8371c509ccfc1",
+  "runtime_source_fingerprint_sha256": "d34264e84123b503fff917664e09a8fd4b971a716a91800d1d2d67dc96ab2095",
+  "schema": "afts.e01a-symbolic-pool/v5",
+  "source_loader": {
+    "bootstrap_import_run_source_match": true,
+    "cwd_removed_from_import_path": true,
+    "launcher_material": "scripts/afts_arc_evidence.py",
+    "policy": "fresh_nonexistent_pycache_prefix_with_bytecode_writes_disabled",
+    "project_source_after_standard_library": true,
+    "python_isolated_mode": true
+  },
+  "started_at": "2026-07-11T11:05:06.992937+00:00",
+  "test_source_fingerprint_sha256": "c055dfa088ebad015d302132494a9737a0f046d0a9038633ddeb198bf48f7b0c"
+}

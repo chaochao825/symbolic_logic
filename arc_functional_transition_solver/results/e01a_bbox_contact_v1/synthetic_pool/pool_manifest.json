@@ -1,0 +1,65 @@
+{
+  "case_set_id": "79ef5b6f4439d1cf71439ff9d7ee7e172147225bbb8dbb9e5dfd968571e6b39f",
+  "command": [
+    "afts-arc",
+    "run-e01a-symbolic-pool",
+    "--blind-dataset-dir",
+    "results/e01a_bbox_contact_v1/synthetic_blind",
+    "--output-dir",
+    "results/e01a_bbox_contact_v1/synthetic_pool",
+    "--max-depth",
+    "2",
+    "--beam-width",
+    "64",
+    "--max-instruction-options",
+    "64",
+    "--max-exact-programs",
+    "128"
+  ],
+  "completed_at": "2026-07-11T13:55:33.025234+00:00",
+  "config": {
+    "bbox_contact_action_semantics_version": "afts-bbox-contact-render/v0.1",
+    "bbox_contact_action_stage": "M05f_bbox_contact_renderer",
+    "bbox_contact_proposer_semantics_version": "afts-bbox-contact-proposer/v0.1",
+    "dsl_semantics_version": "afts-grid-dsl/v0.6",
+    "oracle_inputs_available_to_pool": false,
+    "panel_lattice_periodic_proposer_semantics_version": "afts-panel-lattice-periodic-proposer/v0.1",
+    "panel_lattice_periodic_semantics_version": "afts-panel-lattice-periodic/v0.1",
+    "panel_lattice_periodic_stage": "M05e_two_axis_periodic_panel_broadcast",
+    "panel_parser_semantics_version": "afts-full-span-panels/v0.1",
+    "panel_parser_stage": "M02b_full_span_separator_panels",
+    "panel_sequence_d4_proposer_semantics_version": "afts-panel-sequence-d4-proposer/v0.1",
+    "panel_sequence_d4_semantics_version": "afts-panel-sequence-d4/v0.1",
+    "panel_sequence_d4_stage": "M05d_indexed_panel_sequence_d4",
+    "parser_semantics_version": "afts-multiview-cc/v0.1",
+    "parser_stage": "M02a_connected_components_only",
+    "relation_parser_semantics_version": "afts-axis-aligned-bbox-contact/v0.1",
+    "relation_parser_stage": "M02c_axis_aligned_singleton_bbox_contact",
+    "search": {
+      "beam_width": 64,
+      "max_depth": 2,
+      "max_exact_programs": 128,
+      "max_instruction_options": 64
+    },
+    "shape_proposer_semantics_version": "afts-output-shape/v0.1"
+  },
+  "evidence_status": "frozen_oracle_unread_symbolic_candidate_pool",
+  "parent_blind_bundle": {
+    "artifact_manifest_sha256": "cfe3b929613d3b10ada3c7ad75ddd5801fb7fa3583a5f485b61694466e3ee380",
+    "blind_tasks_sha256": "ac5fedd62caae907cf04f54d72333c01d554e38bcdb35ac241e4cea752b14f91"
+  },
+  "pool_content_id": "fd36d3c0986517d89c18d38bc59311c4cf79deab9a4d610102b5b96c9b70aca2",
+  "pool_spec_id": "b1b76eccce5b500d9e755842dfa471d83fd7fcdc8ded2dbf9e4194c3b982d207",
+  "runtime_source_fingerprint_sha256": "3955ed3dedf1a34176e55dd38e85990337fed98512e5e626cd5edf4f45349c67",
+  "schema": "afts.e01a-symbolic-pool/v6",
+  "source_loader": {
+    "bootstrap_import_run_source_match": true,
+    "cwd_removed_from_import_path": true,
+    "launcher_material": "scripts/afts_arc_evidence.py",
+    "policy": "fresh_nonexistent_pycache_prefix_with_bytecode_writes_disabled",
+    "project_source_after_standard_library": true,
+    "python_isolated_mode": true
+  },
+  "started_at": "2026-07-11T13:21:54.201021+00:00",
+  "test_source_fingerprint_sha256": "3372e76503d01a8e66d4c37d9fe8205605d0e104b94b9d66f452a311f5e025dd"
+}

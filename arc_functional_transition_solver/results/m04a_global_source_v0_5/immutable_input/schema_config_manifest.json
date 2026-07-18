@@ -1,0 +1,61 @@
+{
+  "frozen_schema_versions": {
+    "checkpoint_selection": "afts-grid-cmlm-checkpoint-selection/v0.1",
+    "decoder_forward_ledger": "afts-decoder-forward-ledger/v0.1",
+    "encoder_forward_ledger": "afts-encoder-forward-ledger/v0.1",
+    "lane_row": "afts-m04a-lane/v0.1",
+    "lane_trace": "afts-maskgit-trace/v0.1",
+    "model_config_contract": "afts-grid-cmlm-model-config/v0.1",
+    "pair_cost": "afts-m04a-pair-cost/v0.1",
+    "pool_setup_cost": "afts-m04a-pool-setup-cost/v0.1",
+    "rearc_parent_split": "m04a-rearc-parent-split/v0.1",
+    "sample_orbit": "afts-sample-d4-color-orbit/v0.1",
+    "task_orbit": "afts-task-d4-color-orbit/v0.1",
+    "training_config": "afts-grid-cmlm-training-config/v0.1",
+    "training_cost_ledger": "afts-training-cost-ledger/v0.1",
+    "validation_episode_row": "afts-grid-cmlm-validation-episode-row/v0.1",
+    "validation_episode_summary": "afts-grid-cmlm-validation-episode-summary/v0.1"
+  },
+  "manifest_id": "987ec12a62ba751af5f9df2d21a938e46a06bc4687b4120848658dd2ed49012f",
+  "schema": "afts-m04a-schema-config-manifest/v0.1",
+  "training_config": {
+    "campaign_gpu_budget_ns": 86400000000000,
+    "checkpoint_selection": "minimum_parent_grouped_masked_cell_ce_then_earlier_step",
+    "config_id": "7f9b4059f0d9096391fc42c562a4971b1e219ceeaaa4e0902e880f9975343024",
+    "data_folds_semantics_version": "afts-m04a-parent-folds/v0.1",
+    "grad_scaler": false,
+    "gradient_accumulation": 16,
+    "gradient_clip_global_norm": 1.0,
+    "microbatch_episodes": 1,
+    "model_semantics_version": "afts-grid-cmlm/v0.1",
+    "optimizer": {
+      "amsgrad": false,
+      "base_learning_rate": 0.0003,
+      "betas": [
+        0.9,
+        0.95
+      ],
+      "capturable": false,
+      "decay_exclusions": [],
+      "differentiable": false,
+      "eps": 1e-08,
+      "foreach": false,
+      "fused": false,
+      "maximize": false,
+      "name": "AdamW",
+      "parameter_groups": 1,
+      "weight_decay": 0.1
+    },
+    "optimizer_updates": 20000,
+    "post_warmup_schedule": "cosine_to_zero",
+    "precision": "cuda_bfloat16_autocast_forward_fp32_loss",
+    "preflight_updates": 100,
+    "sampler_semantics_version": "afts-maskgit-cosine/v0.1",
+    "schema": "afts-grid-cmlm-training-config/v0.1",
+    "training_seed": 20260711,
+    "validation_interval": 2000,
+    "validation_pass_count": 10,
+    "validation_semantics_version": "afts-grid-cmlm-validation/v0.1",
+    "warmup_updates": 2000
+  }
+}

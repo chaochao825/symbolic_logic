@@ -1,0 +1,179 @@
+{
+  "schema": "afts-m04a-posthoc-evaluation/v0.1",
+  "publication_date": "2026-07-15",
+  "evaluation_mode": "read_only_inference_no_optimizer_no_backward",
+  "training_performed": false,
+  "model": {
+    "model_semantics_version": "afts-grid-cmlm/v0.1",
+    "sampler_semantics_version": "afts-maskgit-cosine/v0.1",
+    "parameter_count": 8733706,
+    "encoder_layers": 3,
+    "decoder_layers": 6,
+    "d_model": 256,
+    "attention_heads": 8,
+    "ffn_width": 1024,
+    "output_colors": 10,
+    "denoising_steps": 12,
+    "lanes_per_pair": 64
+  },
+  "campaign": {
+    "run_id": "m04a-training-20260713-07",
+    "planned_optimizer_updates": 20000,
+    "completed_optimizer_step": 13150,
+    "latest_persisted_optimizer_step": 12000,
+    "completed_training_episodes": 210400,
+    "latest_persisted_training_episodes": 192000,
+    "failure_cause": "BrokenPipeError",
+    "status": "CAMPAIGN_INCOMPLETE",
+    "training_evidence_eligible": false,
+    "selected_checkpoint_complete": false,
+    "failure_receipt_sha256": "4c7780eaf66ddd42f23eab15f14fff15677129145f379efc94242a0d1f210efe"
+  },
+  "validation_manifest": {
+    "episode_count": 2656,
+    "target_group_count": 817,
+    "semantic_parent_count": 145,
+    "masked_cell_count": 222159,
+    "full_mask_episode_count": 664,
+    "summary_id": "38dde5553291edcd133dfebbc3f39e77cfce6cf3fdcd640ae565996eb85c20f5",
+    "jsonl_sha256": "030dd768a84683c81bdd85244827783a354c7a377837d4c53ddab37d5690ebf7",
+    "outer_artifact_manifest_sha256": "93a385975223f60970a2fecfff4fc72a907c34b2eedfab05bd46bde3235f3c64"
+  },
+  "remote_read_only_checkpoint_audit": {
+    "audit_date": "2026-07-15",
+    "checkpoint_count": 6,
+    "model_tensor_count_per_checkpoint": 157,
+    "all_observed_model_tensors_finite": true,
+    "model_state_present": true,
+    "adamw_state_present": true,
+    "rng_state_present": true,
+    "public_reproducibility": "The checkpoint binaries remain on the remote experiment host and are not ordinary Git blobs, so these audit observations are not independently reproducible from this repository alone."
+  },
+  "checkpoint_metrics": [
+    {
+      "optimizer_step": 2000,
+      "checkpoint_file": "checkpoint-01.pt",
+      "checkpoint_bytes": 104993427,
+      "checkpoint_sha256": "1b9317901901fe72fc2d39e774f797a9f5642a722690912aaa0be7c836be9ccc",
+      "parent_grouped_masked_cell_ce": 1.243924856185913,
+      "masked_cell_accuracy": 0.586939984425569,
+      "exact_masked_episode_rate": 0.03765060240963856,
+      "full_mask_cell_accuracy": 0.531553655177727,
+      "full_mask_exact_grid_count": 2,
+      "full_mask_exact_grid_rate": 0.0030120481927710845
+    },
+    {
+      "optimizer_step": 4000,
+      "checkpoint_file": "checkpoint-02.pt",
+      "checkpoint_bytes": 104993427,
+      "checkpoint_sha256": "ff1bbe92780926fb7c63b307b3ba336feaef230c894004cf53d3ef372a47f2fb",
+      "parent_grouped_masked_cell_ce": 1.0610074996948242,
+      "masked_cell_accuracy": 0.6419231271296684,
+      "exact_masked_episode_rate": 0.040286144578313254,
+      "full_mask_cell_accuracy": 0.5769508566145668,
+      "full_mask_exact_grid_count": 4,
+      "full_mask_exact_grid_rate": 0.006024096385542169
+    },
+    {
+      "optimizer_step": 6000,
+      "checkpoint_file": "checkpoint-03.pt",
+      "checkpoint_bytes": 104993427,
+      "checkpoint_sha256": "5303f83824ac6de18297a89516a66efea48783627b7abe46f4bb13d06beef011",
+      "parent_grouped_masked_cell_ce": 0.9763545393943787,
+      "masked_cell_accuracy": 0.6776497913656435,
+      "exact_masked_episode_rate": 0.04442771084337349,
+      "full_mask_cell_accuracy": 0.6028659752116257,
+      "full_mask_exact_grid_count": 1,
+      "full_mask_exact_grid_rate": 0.0015060240963855422
+    },
+    {
+      "optimizer_step": 8000,
+      "checkpoint_file": "checkpoint-04.pt",
+      "checkpoint_bytes": 104993427,
+      "checkpoint_sha256": "db5ba084d5af3ab670fe00963c5a4cadaeaf680417567cb44cf631b56f13a3a5",
+      "parent_grouped_masked_cell_ce": 0.9211580753326416,
+      "masked_cell_accuracy": 0.6962040700579315,
+      "exact_masked_episode_rate": 0.04894578313253012,
+      "full_mask_cell_accuracy": 0.6117547356966072,
+      "full_mask_exact_grid_count": 1,
+      "full_mask_exact_grid_rate": 0.0015060240963855422
+    },
+    {
+      "optimizer_step": 10000,
+      "checkpoint_file": "checkpoint-05.pt",
+      "checkpoint_bytes": 104993427,
+      "checkpoint_sha256": "ef43c5f046c70459d8a838759befbb24913a244a527453f3d44ffc088c7233ba",
+      "parent_grouped_masked_cell_ce": 0.9020414352416992,
+      "masked_cell_accuracy": 0.7028524615253039,
+      "exact_masked_episode_rate": 0.05421686746987952,
+      "full_mask_cell_accuracy": 0.6102524099808357,
+      "full_mask_exact_grid_count": 2,
+      "full_mask_exact_grid_rate": 0.0030120481927710845
+    },
+    {
+      "optimizer_step": 12000,
+      "checkpoint_file": "checkpoint-06.pt",
+      "checkpoint_bytes": 104993427,
+      "checkpoint_sha256": "e457d9386b61d42791e6fa04bb5b9755dd682bb36b0492c84edf22a999e477d9",
+      "parent_grouped_masked_cell_ce": 0.8713449239730835,
+      "masked_cell_accuracy": 0.7120305726979326,
+      "exact_masked_episode_rate": 0.0545933734939759,
+      "full_mask_cell_accuracy": 0.6212790955228767,
+      "full_mask_exact_grid_count": 1,
+      "full_mask_exact_grid_rate": 0.0015060240963855422
+    }
+  ],
+  "step_12000_by_mask_fraction": {
+    "0.15": {
+      "episodes": 664,
+      "masked_cells": 15725,
+      "mean_episode_masked_cell_ce": 0.6839950123934373,
+      "masked_cell_accuracy": 0.8167885532591415,
+      "exact_masked_episode_rate": 0.1430722891566265
+    },
+    "0.35": {
+      "episodes": 664,
+      "masked_cells": 35990,
+      "mean_episode_masked_cell_ce": 0.715385275268759,
+      "masked_cell_accuracy": 0.8145040288969158,
+      "exact_masked_episode_rate": 0.05421686746987952
+    },
+    "0.65": {
+      "episodes": 664,
+      "masked_cells": 66605,
+      "mean_episode_masked_cell_ce": 0.8335189305439434,
+      "masked_cell_accuracy": 0.7734104046242775,
+      "exact_masked_episode_rate": 0.01957831325301205
+    },
+    "1.0": {
+      "episodes": 664,
+      "masked_cells": 103839,
+      "mean_episode_masked_cell_ce": 1.2747535084273263,
+      "masked_cell_accuracy": 0.6212790955228767,
+      "exact_masked_episode_rate": 0.0015060240963855422
+    }
+  },
+  "step_12000_by_source": {
+    "arc2": {
+      "episodes": 2452,
+      "masked_cells": 191040,
+      "mean_episode_masked_cell_ce": 0.8839072436823542,
+      "masked_cell_accuracy": 0.7122592127303182,
+      "exact_masked_episode_rate": 0.0534257748776509
+    },
+    "rearc": {
+      "episodes": 204,
+      "masked_cells": 31119,
+      "mean_episode_masked_cell_ce": 0.7928472988994555,
+      "masked_cell_accuracy": 0.7106269481667149,
+      "exact_masked_episode_rate": 0.06862745098039216
+    }
+  },
+  "limitations": [
+    "The campaign did not atomically publish validation metrics or a selected checkpoint; these values are a post-hoc read-only reconstruction.",
+    "Checkpoint state and finiteness claims are observations from the 2026-07-15 read-only remote audit; the checkpoint binaries are not published in ordinary Git.",
+    "Masked-region exact includes partial-mask episodes and is not an ARC task solve rate.",
+    "Full-mask exact is one decoder pass, not the frozen 12-step 64-lane sampler.",
+    "Oracle@64, DSL-union marginal coverage, pass@2, local repair, learned ranking, and public ARC evaluation were not measured."
+  ]
+}
