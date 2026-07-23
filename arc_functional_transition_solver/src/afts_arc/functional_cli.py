@@ -9,12 +9,15 @@ from pathlib import Path
 
 from .blind import BlindTask
 from .hybrid import (
+    BudgetVector,
     CodeModelProvider,
     DiffLogicHardProvider,
     DslProgramProvider,
     FunctionalRouterConfig,
     FunctionalRouterSolver,
     MaskedDiffusionProvider,
+    OnlineControlConfig,
+    OnlineFunctionalRouterSolver,
     SparseCAProvider,
 )
 from .search import SearchConfig
@@ -37,6 +40,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-selected", type=int, default=2)
     parser.add_argument("--max-repair-parents", type=int, default=8)
     parser.add_argument("--minimum-repair-agreement", type=float, default=0.5)
+    parser.add_argument(
+        "--controller",
+        choices=("online", "static"),
+        default="online",
+        help="online recompiles legal actions after every residual; static is the v1 run-all baseline",
+    )
+    parser.add_argument("--compute-units", type=int, default=96)
+    parser.add_argument("--controller-steps", type=int, default=16)
+    parser.add_argument("--provider-calls", type=int, default=8)
+    parser.add_argument("--repair-attempts", type=int, default=8)
+    parser.add_argument("--candidate-slots", type=int, default=80)
+    parser.add_argument("--provider-batch-size", type=int, default=4)
+    parser.add_argument("--localized-residual-fraction", type=float, default=0.35)
     parser.add_argument(
         "--no-ca",
         action="store_true",
@@ -72,14 +88,32 @@ def main(argv: list[str] | None = None) -> int:
             MaskedDiffusionProvider(),
         )
     )
-    solver = FunctionalRouterSolver(
-        providers=providers,
-        config=FunctionalRouterConfig(
-            max_selected_hypotheses=args.max_selected,
-            max_repair_parents=args.max_repair_parents,
-            minimum_repair_agreement=args.minimum_repair_agreement,
-        ),
-    )
+    if args.controller == "online":
+        solver = OnlineFunctionalRouterSolver(
+            providers=providers,
+            config=OnlineControlConfig(
+                budget_limit=BudgetVector(
+                    compute_units=args.compute_units,
+                    controller_steps=args.controller_steps,
+                    provider_calls=args.provider_calls,
+                    repair_attempts=args.repair_attempts,
+                    candidate_slots=args.candidate_slots,
+                ),
+                provider_batch_size=args.provider_batch_size,
+                max_selected_hypotheses=args.max_selected,
+                minimum_repair_agreement=args.minimum_repair_agreement,
+                localized_residual_fraction=args.localized_residual_fraction,
+            ),
+        )
+    else:
+        solver = FunctionalRouterSolver(
+            providers=providers,
+            config=FunctionalRouterConfig(
+                max_selected_hypotheses=args.max_selected,
+                max_repair_parents=args.max_repair_parents,
+                minimum_repair_agreement=args.minimum_repair_agreement,
+            ),
+        )
     report = solver.solve(blind).to_json_dict(task_id=source_task.task_id)
     serialized = json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if args.output:

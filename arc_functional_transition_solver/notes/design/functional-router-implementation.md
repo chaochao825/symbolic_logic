@@ -12,6 +12,12 @@ DSL/code/masked-diffusion/sparse-CA/DiffLogic providers
   -> re-verification and at most two semantically distinct outputs
 ```
 
+This document describes the preserved v1 provider and verification substrate.
+The stateful v2 controller that recompiles actions after every execution result
+is specified in `online-residual-controller.md`; `FunctionalRouterSolver` remains
+the eager static baseline and `OnlineFunctionalRouterSolver` is the new default
+CLI path.
+
 ## Trust boundary
 
 `FunctionalRouterSolver.solve()` accepts `BlindTask` only. A public ARC file is

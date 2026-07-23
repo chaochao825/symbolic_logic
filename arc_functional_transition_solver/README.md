@@ -88,11 +88,33 @@ The repository now contains a runnable integration MVP in `src/afts_arc/hybrid/`
   and an explicit attestation boundary for external verifiers;
 - residual-directed global-color and high-support radius-one local repair.
 
+The v2 path adds the previously missing online controller:
+
+- immutable content-addressed blackboard states, typed actions, action results,
+  and explicit STOP;
+- a multi-dimensional normalized-compute ledger that reserves and charges every
+  provider/repair action before execution;
+- execution-failure and demonstration-residual compilation into legal local
+  repair or cross-representation actions;
+- a context-aware `act(...)` provider boundary plus compatibility with legacy
+  `propose(...)` sources;
+- content-addressed frozen heterogeneous pools for strict matched-budget policy
+  comparisons;
+- post-hoc oracle metrics for coverage utilization, pass@k, and correct repair
+  per compute, isolated from the controller by the blind-task content hash.
+
 Run it from the repository root with:
 
 ```bash
 python arc_functional_transition_solver/scripts/afts_arc_hybrid.py path/to/task.json
 ```
+
+The CLI uses the online residual controller by default.  Pass
+`--controller static` to reproduce the v1 eager run-all orchestration.  Budget
+flags (`--compute-units`, `--controller-steps`, `--provider-calls`,
+`--repair-attempts`, and `--candidate-slots`) define the exact controller ledger.
+See `notes/design/online-residual-controller.md` for action typing, accounting,
+provider fidelity labels, and the matched-budget experiment contract.
 
 Unconfigured neural/code providers return explicit abstention receipts. The
 default CLI never resumes M04a or DiffLogic training; programmatically supplied
