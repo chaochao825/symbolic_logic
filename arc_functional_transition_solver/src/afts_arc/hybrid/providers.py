@@ -13,15 +13,23 @@ import math
 import re
 from pathlib import Path
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, TYPE_CHECKING
 
 from ..blind import BlindTask
 from ..dsl import Instruction, Program, execute_program, primitive_registry
 from ..grid import Grid
-from ..search import SearchConfig, search_programs
+from ..search import (
+    SearchConfig,
+    evaluate_program,
+    instruction_proposals,
+    search_programs,
+)
 from .router import RouteDecision, TaskFeatures
 from .types import CandidateHypothesis, ProviderResult, canonical_json
+
+if TYPE_CHECKING:
+    from .control import Blackboard, ControlAction
 
 
 DSL_PROVIDER_VERSION = "afts-hybrid-dsl/v1"
@@ -80,7 +88,13 @@ def _program_description_bits(program: Program) -> int:
     )
 
 
-def _dsl_hypothesis(program: Program) -> CandidateHypothesis:
+def _dsl_hypothesis(
+    program: Program,
+    *,
+    parent_hypothesis_id: str | None = None,
+    control_operator: str | None = None,
+    control_metadata: dict[str, object] | None = None,
+) -> CandidateHypothesis:
     serialized = program.to_json_dict()
 
     def replay(grid: Grid) -> object | None:
@@ -92,6 +106,10 @@ def _dsl_hypothesis(program: Program) -> CandidateHypothesis:
         grids = tuple(pair.input for pair in task.train) + task.test_inputs
         return all(execute_program(reparsed, grid).ok for grid in grids)
 
+    metadata: dict[str, object] = {"node_count": program.node_count}
+    if control_operator is not None:
+        metadata["control_operator"] = control_operator
+    metadata.update(control_metadata or {})
     return CandidateHypothesis.create(
         name=f"dsl:{program.program_id}",
         source="typed_dsl",
@@ -101,7 +119,10 @@ def _dsl_hypothesis(program: Program) -> CandidateHypothesis:
         verification_mode="replayable",
         functional_trace=program.functional_trace,
         spec={"program": serialized},
-        metadata={"node_count": program.node_count},
+        metadata=metadata,
+        parent_hypothesis_ids=(
+            () if parent_hypothesis_id is None else (parent_hypothesis_id,)
+        ),
         replay=replay,
         hard_verifier=hard_verify,
     )
@@ -113,6 +134,10 @@ class DslProgramProvider:
     include_repair_seeds: bool = True
     name: str = "typed_dsl"
     route: str = "dsl_program"
+    strict_budget_contract: bool = field(default=False, init=False)
+    supports_residual_actions: bool = field(default=True, init=False)
+    supports_repeated_batches: bool = field(default=False, init=False)
+    max_control_calls: int = field(default=3, init=False)
 
     def propose(
         self,
@@ -164,6 +189,188 @@ class DslProgramProvider:
             },
         )
 
+    @staticmethod
+    def _parent_candidate(
+        blackboard: "Blackboard", parent_hypothesis_id: str | None
+    ) -> CandidateHypothesis | None:
+        if parent_hypothesis_id is None:
+            return None
+        return next(
+            (
+                item
+                for item in blackboard.candidates
+                if item.hypothesis_id == parent_hypothesis_id
+            ),
+            None,
+        )
+
+    @staticmethod
+    def _parent_program(parent: CandidateHypothesis) -> Program | None:
+        raw = parent.spec.get("program")
+        if not isinstance(raw, dict):
+            return None
+        try:
+            return Program.from_json_dict(raw)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _parent_score(
+        blackboard: "Blackboard", parent_hypothesis_id: str
+    ) -> tuple[int, int, float]:
+        evaluation = next(
+            item
+            for item in blackboard.evaluations
+            if item.hypothesis.hypothesis_id == parent_hypothesis_id
+        )
+        return (
+            sum(item.exact for item in evaluation.residuals),
+            sum(item.shape_match for item in evaluation.residuals),
+            evaluation.agreement,
+        )
+
+    def _residual_programs(
+        self,
+        task: BlindTask,
+        blackboard: "Blackboard",
+        action: "ControlAction",
+    ) -> ProviderResult:
+        parent = self._parent_candidate(blackboard, action.parent_hypothesis_id)
+        if parent is None or action.parent_hypothesis_id is None:
+            return ProviderResult.abstained(
+                self.name,
+                self.route,
+                "residual_parent_unavailable",
+                {"action_operator": action.operator},
+            )
+        parent_program = self._parent_program(parent)
+        options = instruction_proposals(task)[: self.search_config.max_instruction_options]
+        programs: dict[str, Program] = {}
+        if action.operator == "shape_resynthesize":
+            for instruction in options:
+                program = Program.create((instruction,))
+                programs[program.program_id] = program
+                if parent_program is not None and parent_program.node_count < 3:
+                    appended = Program.create(
+                        (*parent_program.instructions, instruction)
+                    )
+                    programs[appended.program_id] = appended
+        elif action.operator == "suffix_resynthesize":
+            for instruction in options:
+                if instruction.op == "identity":
+                    continue
+                if parent_program is None:
+                    program = Program.create((instruction,))
+                    programs[program.program_id] = program
+                    continue
+                if parent_program.node_count < 3:
+                    appended = Program.create(
+                        (*parent_program.instructions, instruction)
+                    )
+                    programs[appended.program_id] = appended
+                replaced = Program.create(
+                    (*parent_program.instructions[:-1], instruction)
+                )
+                programs[replaced.program_id] = replaced
+        else:
+            raise ValueError("unsupported residual DSL operator")
+
+        parent_score = self._parent_score(blackboard, action.parent_hypothesis_id)
+        evaluated = tuple(evaluate_program(program, task) for program in programs.values())
+
+        def score(item: object) -> tuple[int, int, float, int, str]:
+            return (
+                item.exact_demo_count,
+                item.shape_match_count,
+                item.agreement,
+                -item.program.node_count,
+                item.program.program_id,
+            )
+
+        improved = []
+        for evaluation in evaluated:
+            candidate_score = (
+                evaluation.exact_demo_count,
+                evaluation.shape_match_count,
+                evaluation.agreement,
+            )
+            if action.operator == "shape_resynthesize":
+                keep = (
+                    evaluation.shape_match_count > parent_score[1]
+                    or evaluation.all_demo_exact
+                )
+            else:
+                keep = candidate_score > parent_score
+            if keep:
+                improved.append(evaluation)
+        ranked = tuple(sorted(improved, key=score, reverse=True))
+        selected = ranked[: action.budget.candidate_slots]
+        candidates = tuple(
+            _dsl_hypothesis(
+                evaluation.program,
+                parent_hypothesis_id=action.parent_hypothesis_id,
+                control_operator=action.operator,
+                control_metadata={
+                    "improved_over_parent": True,
+                    "evidence_signal_ids": list(action.evidence_signal_ids),
+                },
+            )
+            for evaluation in selected
+        )
+        diagnostics = {
+            "action_operator": action.operator,
+            "parent_hypothesis_id": action.parent_hypothesis_id,
+            "parent_representation": (
+                "dsl_program" if parent_program is not None else parent.route
+            ),
+            "instruction_option_count": len(options),
+            "program_trials": len(evaluated),
+            "improving_program_count": len(improved),
+            "native_cost": {
+                "program_trials": len(evaluated),
+                "demo_program_executions": len(evaluated) * len(task.train),
+                "query_program_executions": len(evaluated) * len(task.test_inputs),
+            },
+        }
+        if not candidates:
+            return ProviderResult.abstained(
+                self.name,
+                self.route,
+                "no_residual_improving_program",
+                diagnostics,
+            )
+        return ProviderResult.ok(self.name, self.route, candidates, diagnostics)
+
+    def act(
+        self,
+        task: BlindTask,
+        features: TaskFeatures,
+        decision: RouteDecision,
+        blackboard: "Blackboard",
+        action: "ControlAction",
+    ) -> ProviderResult:
+        if (
+            action.kind != "propose"
+            or action.actor != self.name
+            or action.route != self.route
+        ):
+            raise ValueError("DSL provider received an action for another provider")
+        if action.operator == "synthesize":
+            raw = self.propose(task, features, decision)
+            if raw.status != "ok":
+                return raw
+            selected = raw.candidates[: action.budget.candidate_slots]
+            diagnostics = {
+                **raw.diagnostics,
+                "action_operator": action.operator,
+                "candidate_slot_limit": action.budget.candidate_slots,
+                "native_cost": {
+                    "program_expansions": raw.diagnostics.get("expansions", 0),
+                },
+            }
+            return ProviderResult.ok(self.name, self.route, selected, diagnostics)
+        return self._residual_programs(task, blackboard, action)
+
 
 def _load_ca_backend() -> dict[str, Any]:
     """Load inference-only root modules; never import arc_difflogic_train."""
@@ -177,6 +384,40 @@ def _python_grid(array: object) -> list[list[int]]:
     return [[int(cell) for cell in row] for row in values]
 
 
+def _condition_candidate_on_action(
+    candidate: CandidateHypothesis,
+    action: "ControlAction",
+) -> CandidateHypothesis:
+    parents = tuple(
+        dict.fromkeys(
+            (
+                *candidate.parent_hypothesis_ids,
+                *((action.parent_hypothesis_id,) if action.parent_hypothesis_id else ()),
+            )
+        )
+    )
+    return CandidateHypothesis.create(
+        name=candidate.name,
+        source=candidate.source,
+        source_version=candidate.source_version,
+        route=candidate.route,
+        description_bits=candidate.description_bits,
+        verification_mode=candidate.verification_mode,
+        functional_trace=(*candidate.functional_trace, f"control:{action.operator}"),
+        spec=candidate.spec,
+        metadata={
+            **candidate.metadata,
+            "control_operator": action.operator,
+            "evidence_signal_ids": list(action.evidence_signal_ids),
+        },
+        parent_hypothesis_ids=parents,
+        replay=candidate.replay,
+        hard_verifier=candidate.hard_verifier,
+        explicit_demo_outputs=candidate.explicit_demo_outputs,
+        explicit_query_outputs=candidate.explicit_query_outputs,
+    )
+
+
 @dataclass(slots=True)
 class SparseCAProvider:
     policies: tuple[str, ...] = ("none", "d4", "bgpad", "d4_bgpad")
@@ -186,6 +427,10 @@ class SparseCAProvider:
     minimum_foreground_support: float = 0.5
     name: str = "sparse_ca_d4_bgpad"
     route: str = "sparse_ca"
+    strict_budget_contract: bool = field(default=False, init=False)
+    supports_residual_actions: bool = field(default=True, init=False)
+    supports_repeated_batches: bool = field(default=False, init=False)
+    max_control_calls: int = field(default=2, init=False)
 
     def __post_init__(self) -> None:
         allowed = {"none", "d4", "bgpad", "d4_bgpad"}
@@ -540,6 +785,74 @@ class SparseCAProvider:
                 "bounded_program_exact_candidates": program_selection.exact_candidates,
             },
         )
+
+    def act(
+        self,
+        task: BlindTask,
+        features: TaskFeatures,
+        decision: RouteDecision,
+        blackboard: "Blackboard",
+        action: "ControlAction",
+    ) -> ProviderResult:
+        if (
+            action.kind != "propose"
+            or action.actor != self.name
+            or action.route != self.route
+        ):
+            raise ValueError("CA provider received an action for another provider")
+        policy_family = {
+            "local_transition_search": ("none", "bgpad"),
+            "d4_bgpad_search": ("d4", "d4_bgpad"),
+        }[action.operator]
+        selected_policies = tuple(
+            policy for policy in self.policies if policy in policy_family
+        )
+        if not selected_policies:
+            return ProviderResult.abstained(
+                self.name,
+                self.route,
+                "operator_policy_family_unavailable",
+                {
+                    "action_operator": action.operator,
+                    "configured_policies": list(self.policies),
+                },
+            )
+        delegated = SparseCAProvider(
+            policies=selected_policies,
+            max_rules_per_policy=self.max_rules_per_policy,
+            max_programs=(
+                self.max_programs
+                if action.operator == "local_transition_search"
+                else 0
+            ),
+            minimum_query_support=self.minimum_query_support,
+            minimum_foreground_support=self.minimum_foreground_support,
+            name=self.name,
+            route=self.route,
+        )
+        raw = delegated.propose(task, features, decision)
+        if raw.status != "ok":
+            return raw
+        conditioned = tuple(
+            _condition_candidate_on_action(candidate, action)
+            for candidate in raw.candidates[: action.budget.candidate_slots]
+        )
+        diagnostics = {
+            **raw.diagnostics,
+            "action_operator": action.operator,
+            "parent_hypothesis_id": action.parent_hypothesis_id,
+            "selected_policy_family": list(selected_policies),
+            "candidate_slot_limit": action.budget.candidate_slots,
+            "native_cost": {
+                "policy_fits": len(selected_policies),
+                "max_rules_per_policy": self.max_rules_per_policy,
+                "bounded_program_trials_enabled": (
+                    action.operator == "local_transition_search"
+                    and self.max_programs > 0
+                ),
+            },
+        }
+        return ProviderResult.ok(self.name, self.route, conditioned, diagnostics)
 
 
 ExternalCallback = Callable[[BlindTask, TaskFeatures, RouteDecision], Sequence[CandidateHypothesis]]

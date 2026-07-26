@@ -9,14 +9,18 @@ from afts_arc.hybrid import (
     BudgetVector,
     CandidateHypothesis,
     ControlAction,
+    DslProgramProvider,
     FixedSchedulePolicy,
+    FrozenActionBatch,
     FrozenCandidatePoolProvider,
     OnlineControlConfig,
     OnlineFunctionalRouterSolver,
     ProviderResult,
+    SparseCAProvider,
     aggregate_control_metrics,
     evaluate_online_report_with_oracle,
 )
+from afts_arc.search import SearchConfig
 from afts_arc.task import ARCPair, ARCTask
 
 
@@ -294,6 +298,101 @@ class OnlineControllerTests(unittest.TestCase):
         self.assertEqual(len(report.selected), 2)
         self.assertEqual(report.states[-1].stop_reason, "pass_at_k_filled")
 
+    def test_frozen_pool_never_falls_back_to_another_action_batch(self) -> None:
+        task = _blind((([[1]], [[1]]),), ([[2]],))
+        hidden = _hypothesis("hidden", lambda grid: grid, route="dsl_program")
+        provider = FrozenCandidatePoolProvider.from_action_batches(
+            (
+                FrozenActionBatch(
+                    "suffix_resynthesize",
+                    (hidden,),
+                    parent_hypothesis_id="unseen-parent",
+                ),
+            ),
+            "strict-action-pool",
+            "dsl_program",
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(provider,),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        proposal = report.states[-1].action_results[0]
+        self.assertEqual(proposal.status, "abstained")
+        self.assertEqual(proposal.reason, "frozen_action_unavailable")
+        self.assertFalse(report.states[-1].candidates)
+        self.assertTrue(report.strict_budget_comparable)
+
+    def test_shape_resynthesize_executes_a_parent_conditioned_dsl_search(self) -> None:
+        task = _blind(
+            (([[3]], [[3, 3], [3, 3]]),),
+            ([[4]],),
+        )
+        wrong_shape = _hypothesis(
+            "shape-parent",
+            lambda grid: grid,
+            route="dsl_program",
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(
+                FrozenCandidatePoolProvider(
+                    (wrong_shape,), "shape-seed-pool", "dsl_program"
+                ),
+                DslProgramProvider(
+                    search_config=SearchConfig(
+                        max_depth=1,
+                        beam_width=16,
+                        max_instruction_options=32,
+                        max_exact_programs=8,
+                    ),
+                    include_repair_seeds=False,
+                ),
+            ),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=2, provider_calls=2, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        actions = report.states[-1].action_results
+        self.assertEqual(actions[1].action.operator, "shape_resynthesize")
+        self.assertEqual(
+            actions[1].action.parent_hypothesis_id, wrong_shape.hypothesis_id
+        )
+        self.assertEqual(report.status, "solved")
+        child = report.selected[0].hypothesis
+        self.assertEqual(child.parent_hypothesis_ids, (wrong_shape.hypothesis_id,))
+        self.assertEqual(child.metadata["control_operator"], "shape_resynthesize")
+
+    def test_ca_operator_selects_a_disjoint_d4_policy_family(self) -> None:
+        task = _blind(
+            (([[0, 1], [1, 0]], [[0, 1], [1, 0]]),),
+            ([[1, 0], [0, 1]],),
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(
+                SparseCAProvider(max_rules_per_policy=1, max_programs=0),
+            ),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        proposal = report.states[-1].action_results[0]
+        self.assertEqual(proposal.action.operator, "d4_bgpad_search")
+        self.assertEqual(
+            proposal.provider_result.diagnostics["selected_policy_family"],
+            ["d4", "d4_bgpad"],
+        )
+        self.assertIn(
+            "control:d4_bgpad_search",
+            report.states[-1].candidates[0].functional_trace,
+        )
+
     def test_controller_is_invariant_to_hidden_test_oracle(self) -> None:
         def source_task(output: list[list[int]]) -> ARCTask:
             return ARCTask(
@@ -383,14 +482,68 @@ class OnlineControllerTests(unittest.TestCase):
                 max_selected_hypotheses=1,
             ),
         ).solve(task)
-        metrics = evaluate_online_report_with_oracle(report, source)
+        metrics = evaluate_online_report_with_oracle(
+            report,
+            source,
+            pool_candidates=report.states[-1].candidates,
+        )
+        self.assertTrue(metrics.strict_pool_metrics)
         self.assertTrue(metrics.oracle_covered)
         self.assertTrue(metrics.pass_at_k)
         self.assertEqual(metrics.oracle_coverage_utilization, 1.0)
         self.assertEqual(metrics.correct_repair_count, 1)
+        self.assertTrue(metrics.repair_recovered_task)
         aggregate = aggregate_control_metrics((metrics,))
         self.assertEqual(aggregate.pass_rate, 1.0)
         self.assertEqual(aggregate.oracle_coverage_utilization, 1.0)
+        self.assertEqual(aggregate.repair_recovered_tasks, 1)
+
+    def test_pool_coverage_is_not_confused_with_observed_coverage(self) -> None:
+        source = ARCTask(
+            task_id="pool_vs_observed",
+            train=(ARCPair(as_grid([[1]]), as_grid([[1]])),),
+            test=(ARCPair(as_grid([[2]]), as_grid([[3]])),),
+            source_path="fixture",
+            source_sha256="2" * 64,
+        )
+        task = BlindTask.from_task(source)
+        wrong = _hypothesis(
+            "pool-wrong",
+            lambda grid: grid,
+            route="dsl_program",
+            bits=8,
+        )
+        correct = _hypothesis(
+            "pool-correct",
+            lambda grid: as_grid([[3]]) if grid == as_grid([[2]]) else grid,
+            route="dsl_program",
+            bits=9,
+        )
+        provider = FrozenCandidatePoolProvider(
+            (wrong, correct), "coverage-pool", "dsl_program"
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(provider,),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        metrics = evaluate_online_report_with_oracle(
+            report,
+            source,
+            pool_candidates=provider.candidates,
+        )
+        self.assertTrue(metrics.pool_selectable_oracle_covered)
+        self.assertFalse(metrics.observed_selectable_oracle_covered)
+        self.assertFalse(metrics.pass_at_k)
+        self.assertEqual(metrics.pool_coverage_utilization, 0.0)
+        self.assertEqual(metrics.exploration_recall, 0.0)
+        self.assertIsNone(metrics.selection_utilization)
+        aggregate = aggregate_control_metrics((metrics,))
+        self.assertEqual(aggregate.pool_selectable_oracle_covered_tasks, 1)
+        self.assertEqual(aggregate.observed_selectable_oracle_covered_tasks, 0)
 
 
 if __name__ == "__main__":

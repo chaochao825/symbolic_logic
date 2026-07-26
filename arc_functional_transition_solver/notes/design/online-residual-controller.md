@@ -65,6 +65,15 @@ blackboard and this typed action through `act(task, features, decision,
 blackboard, action)`.  Existing `propose(...)` providers are adapted without an
 API break, but they cannot consume residual context.
 
+The built-in DSL and sparse-CA providers now implement `act(...)` directly.
+`shape_resynthesize` searches demo-inferred shape-compatible programs;
+`suffix_resynthesize` performs bounded append/tail-replacement edits from a DSL
+parent (or a bounded cross-representation one-step search); and sparse-CA
+operators select disjoint local versus D4/bgpad policy families.  Every
+residual-conditioned candidate records its parent and operator.  The external
+code, diffusion, and hard-circuit callbacks remain legacy proposal boundaries
+until an integration implements the same contract.
+
 The current compiler implements these deployable mappings:
 
 | Observed evidence | Preferred legal actions |
@@ -121,12 +130,13 @@ adapters that bind and report their own search/FLOP limits.
 ## Frozen heterogeneous pools
 
 `FrozenCandidatePoolProvider` is the controlled experiment boundary.  Its pool
-ID hashes the provider identity, route, and canonical payload of every replayable
-candidate.  It deterministically reveals unseen candidates up to the action's
-slot limit, never mutates an internal cursor, and can therefore be run under
-multiple policies with identical pool contents and budgets.  Candidate metadata
-may declare `control_operators` to order candidates relevant to a compiled
-action; candidate and state IDs still expose the exact choice.
+ID hashes the provider identity, route, canonical candidate payloads, and every
+`FrozenActionBatch`.  A batch has the hard key `(operator,
+parent_hypothesis_id)`.  It deterministically reveals unseen candidates up to
+the action's slot limit and never mutates an internal cursor.  An action with no
+exact batch match abstains as `frozen_action_unavailable`; it cannot fall back to
+candidates generated for another operator or parent.  This prevents a typed
+action label from becoming a post-hoc metadata preference.
 
 The online merge evaluates only the newly emitted batch.  Repeated IDs must have
 identical canonical payload, demo/query replay, verifier result, and rejection
@@ -139,19 +149,25 @@ The runtime report contains only oracle-free quantities: candidate-slot
 utilization, eligible repair count per NCU, distinct selected query bundles, and
 the complete action/state trajectory.  It never labels a query output correct.
 
-`evaluate_online_report_with_oracle(report, task)` is a separate post-hoc step.
-It first reconstructs the blind task and checks its content hash against the
-frozen report, then measures:
+`evaluate_online_report_with_oracle(report, task, pool_candidates=...)` is a
+separate post-hoc step.  It first reconstructs the blind task, checks its content
+hash against the frozen report, and verifies that every observed candidate is a
+canonical member of the declared pool.  It then measures three distinct layers:
 
-- whether any observed candidate covers the oracle;
-- whether the final selected set passes at k (normally k=2);
-- task-level oracle-coverage utilization;
-- correct repaired candidates per NCU.
+- full-pool raw and selectable oracle coverage;
+- observed raw and selectable oracle coverage;
+- final pass at k (normally k=2);
+- exploration recall = observed selectable coverage / pool selectable coverage;
+- selection utilization = pass / observed selectable coverage;
+- total pool utilization = pass / pool selectable coverage;
+- correct repair candidates and uniquely recovered tasks per NCU.
 
-`aggregate_control_metrics` computes suite pass rate, selected-pass divided by
-oracle-covered tasks, and correct repairs per total NCU.  This separation makes
-it testable that changing hidden test outputs cannot change controller states,
-actions, or selections.
+Omitting `pool_candidates` retains an explicitly labelled
+`observed_only_fallback`; such a report has `strict_pool_metrics=false` and
+cannot support a pool-utilization claim.  This separation makes it testable that
+changing hidden test outputs cannot change controller states, actions, or
+selections, while also preventing observed coverage from being mislabeled as
+pool oracle coverage.
 
 ## Minimal API
 
@@ -189,13 +205,16 @@ started or resumed by this implementation.
 
 Unit tests establish budget enforcement, typed cross-representation compilation,
 repair-before-restart behavior, explicit STOP, deterministic content IDs,
-strict-provider overrun rejection, and hidden-oracle invariance.  A synthetic
+strict action-batch access, pool/observed coverage separation, parent-conditioned
+DSL resynthesis, strict-provider overrun rejection, and hidden-oracle invariance.  A synthetic
 matched-budget fixture uses exactly 4 NCU and two candidate slots for both
 policies: residual-first selects a successful color repair, while fixed run-all
 spends the second action on a distractor and abstains.
 
-That fixture validates mechanism, not ARC generalization.  The next evidence
-step is a frozen multi-task candidate-pool experiment comparing run-all, fixed
-schedule, round-robin, residual-first, a contextual controller, and an oracle
-scheduler under identical pool manifests and NCU limits.  No pass@2 or repair
-efficiency improvement should be claimed before those result bundles exist.
+`scripts/afts_arc_online_matched_budget.py` performs the next evidence step.  It
+discovers typed DSL/CA actions without oracle access, freezes their action
+mapping, replays residual-first, two fixed orders, round-robin, static routing,
+deterministic random, and single-source baselines, and only then evaluates public
+oracles.  The full frozen pool supplies the oracle-scheduler upper bound.  NCU is
+strictly replay-matched; provider-native cost vectors are reported descriptively
+and must not be conflated with matched FLOPs.

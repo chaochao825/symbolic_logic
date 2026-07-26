@@ -43,6 +43,13 @@ PROVIDER_OPERATORS: dict[str, frozenset[str]] = {
     "difflogic_hard": frozenset({"hard_circuit_search"}),
     "masked_diffusion": frozenset({"global_sample", "masked_inpaint"}),
 }
+DEFAULT_PROVIDER_OPERATOR: dict[str, str] = {
+    "dsl_program": "synthesize",
+    "code_llm": "open_hypothesis",
+    "sparse_ca": "local_transition_search",
+    "difflogic_hard": "hard_circuit_search",
+    "masked_diffusion": "global_sample",
+}
 REPAIR_OPERATORS = frozenset({"global_color_map", "local_transition"})
 
 
@@ -808,12 +815,60 @@ class OnlineCandidateProvider(Protocol):
 
 
 @dataclass(frozen=True, slots=True)
+class FrozenActionBatch:
+    """One immutable action-conditioned slice of a frozen candidate pool."""
+
+    operator: str
+    candidates: tuple[CandidateHypothesis, ...]
+    parent_hypothesis_id: str | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.operator, str) or not self.operator:
+            raise TypeError("frozen action operator must be non-empty")
+        if self.parent_hypothesis_id is not None and (
+            not isinstance(self.parent_hypothesis_id, str)
+            or not self.parent_hypothesis_id
+        ):
+            raise TypeError("frozen action parent must be None or a non-empty ID")
+        canonical = tuple(
+            sorted(
+                self.candidates,
+                key=lambda item: (item.description_bits, item.hypothesis_id),
+            )
+        )
+        if any(not isinstance(item, CandidateHypothesis) for item in canonical):
+            raise TypeError("frozen action batches require CandidateHypothesis values")
+        if len({item.hypothesis_id for item in canonical}) != len(canonical):
+            raise ValueError("a frozen action batch requires unique candidate IDs")
+        object.__setattr__(self, "candidates", canonical)
+
+    @property
+    def batch_id(self) -> str:
+        return _content_id(
+            {
+                "operator": self.operator,
+                "parent_hypothesis_id": self.parent_hypothesis_id,
+                "candidates": [item.to_json_dict() for item in self.candidates],
+            }
+        )
+
+    def to_json_dict(self) -> dict[str, object]:
+        return {
+            "batch_id": self.batch_id,
+            "operator": self.operator,
+            "parent_hypothesis_id": self.parent_hypothesis_id,
+            "candidate_ids": [item.hypothesis_id for item in self.candidates],
+        }
+
+
+@dataclass(frozen=True, slots=True)
 class FrozenCandidatePoolProvider:
-    """Replay deterministic batches from a frozen, content-addressed pool."""
+    """Replay deterministic batches from a strict action-addressed pool."""
 
     candidates: tuple[CandidateHypothesis, ...]
     name: str
     route: str
+    action_batches: tuple[FrozenActionBatch, ...] = ()
     strict_budget_contract: bool = field(default=True, init=False)
     supports_residual_actions: bool = field(default=True, init=False)
     supports_repeated_batches: bool = field(default=True, init=False)
@@ -821,17 +876,71 @@ class FrozenCandidatePoolProvider:
     def __post_init__(self) -> None:
         if not self.name or self.route not in ROUTES:
             raise ValueError("frozen pool requires a name and registered route")
-        if any(item.route != self.route for item in self.candidates):
-            raise ValueError("frozen-pool candidate route mismatch")
+        batches = tuple(self.action_batches)
+        if any(not isinstance(item, FrozenActionBatch) for item in batches):
+            raise TypeError("action_batches must contain FrozenActionBatch values")
+        if not batches:
+            batches = (
+                FrozenActionBatch(
+                    DEFAULT_PROVIDER_OPERATOR[self.route],
+                    tuple(self.candidates),
+                ),
+            )
+        if any(
+            batch.operator not in PROVIDER_OPERATORS[self.route] for batch in batches
+        ):
+            raise ValueError("frozen action operator is not legal for the provider route")
+        batch_keys = tuple(
+            (batch.operator, batch.parent_hypothesis_id) for batch in batches
+        )
+        if len(set(batch_keys)) != len(batch_keys):
+            raise ValueError("frozen action batches require unique action keys")
+
+        supplied = (
+            *self.candidates,
+            *(candidate for batch in batches for candidate in batch.candidates),
+        )
+        payload_by_id: dict[str, str] = {}
+        pooled: dict[str, CandidateHypothesis] = {}
+        for candidate in supplied:
+            if candidate.route != self.route:
+                raise ValueError("frozen-pool candidate route mismatch")
+            payload = canonical_json(candidate.to_json_dict())
+            incumbent = payload_by_id.get(candidate.hypothesis_id)
+            if incumbent is not None and incumbent != payload:
+                raise ValueError("frozen-pool candidate IDs have conflicting payloads")
+            payload_by_id[candidate.hypothesis_id] = payload
+            pooled[candidate.hypothesis_id] = candidate
         canonical = tuple(
             sorted(
-                self.candidates,
+                pooled.values(),
                 key=lambda item: (item.description_bits, item.hypothesis_id),
             )
         )
-        if len({item.hypothesis_id for item in canonical}) != len(canonical):
-            raise ValueError("frozen pool requires unique candidate IDs")
         object.__setattr__(self, "candidates", canonical)
+        object.__setattr__(
+            self,
+            "action_batches",
+            tuple(
+                sorted(
+                    batches,
+                    key=lambda item: (
+                        item.operator,
+                        item.parent_hypothesis_id or "",
+                        item.batch_id,
+                    ),
+                )
+            ),
+        )
+
+    @classmethod
+    def from_action_batches(
+        cls,
+        action_batches: Sequence[FrozenActionBatch],
+        name: str,
+        route: str,
+    ) -> "FrozenCandidatePoolProvider":
+        return cls((), name, route, tuple(action_batches))
 
     @property
     def pool_id(self) -> str:
@@ -840,18 +949,32 @@ class FrozenCandidatePoolProvider:
                 "name": self.name,
                 "route": self.route,
                 "candidates": [item.to_json_dict() for item in self.candidates],
+                "action_batches": [
+                    item.to_json_dict() for item in self.action_batches
+                ],
             }
         )
 
     @property
     def max_control_calls(self) -> int:
-        return max(1, len(self.candidates))
+        return max(1, len(self.candidates), len(self.action_batches))
 
     def has_unseen_candidates(self, blackboard: Blackboard) -> bool:
-        return any(
-            item.hypothesis_id not in blackboard.seen_candidate_ids
-            for item in self.candidates
-        )
+        attempted = {
+            (result.action.operator, result.action.parent_hypothesis_id)
+            for result in blackboard.action_results
+            if result.action.kind == "propose" and result.action.actor == self.name
+        }
+        for batch in self.action_batches:
+            key = (batch.operator, batch.parent_hypothesis_id)
+            if batch.candidates and any(
+                item.hypothesis_id not in blackboard.seen_candidate_ids
+                for item in batch.candidates
+            ):
+                return True
+            if not batch.candidates and key not in attempted:
+                return True
+        return False
 
     def act(
         self,
@@ -868,30 +991,56 @@ class FrozenCandidatePoolProvider:
             or action.route != self.route
         ):
             raise ValueError("frozen pool received an action for another provider")
+        matching = tuple(
+            batch
+            for batch in self.action_batches
+            if batch.operator == action.operator
+            and batch.parent_hypothesis_id == action.parent_hypothesis_id
+        )
+        available_keys = tuple(
+            sorted(
+                f"{batch.operator}:{batch.parent_hypothesis_id or '-'}"
+                for batch in self.action_batches
+            )
+        )
+        if not matching:
+            return ProviderResult.abstained(
+                self.name,
+                self.route,
+                "frozen_action_unavailable",
+                {
+                    "pool_id": self.pool_id,
+                    "strict_budget_contract": True,
+                    "requested_operator": action.operator,
+                    "requested_parent_hypothesis_id": action.parent_hypothesis_id,
+                    "available_action_keys": list(available_keys),
+                },
+            )
         unseen = tuple(
             item
-            for item in self.candidates
+            for batch in matching
+            for item in batch.candidates
             if item.hypothesis_id not in blackboard.seen_candidate_ids
         )
-
-        def operator_rank(candidate: CandidateHypothesis) -> tuple[object, ...]:
-            declared = candidate.metadata.get("control_operators", ())
-            matches = isinstance(declared, list) and action.operator in declared
-            return (not matches, candidate.description_bits, candidate.hypothesis_id)
-
         selected = tuple(
-            sorted(unseen, key=operator_rank)[: action.budget.candidate_slots]
+            sorted(
+                {item.hypothesis_id: item for item in unseen}.values(),
+                key=lambda item: (item.description_bits, item.hypothesis_id),
+            )[: action.budget.candidate_slots]
         )
         diagnostics = {
             "pool_id": self.pool_id,
             "strict_budget_contract": True,
+            "matched_batch_ids": [item.batch_id for item in matching],
+            "requested_operator": action.operator,
+            "requested_parent_hypothesis_id": action.parent_hypothesis_id,
             "available_before_action": len(unseen),
             "candidate_slot_limit": action.budget.candidate_slots,
             "remaining_after_action": len(unseen) - len(selected),
         }
         if not selected:
             return ProviderResult.abstained(
-                self.name, self.route, "frozen_pool_exhausted", diagnostics
+                self.name, self.route, "frozen_action_exhausted", diagnostics
             )
         return ProviderResult.ok(self.name, self.route, selected, diagnostics)
 
@@ -958,6 +1107,117 @@ class FixedSchedulePolicy:
         if not stops:
             raise ValueError("compiled action set has no executable action or STOP")
         return min(stops, key=lambda item: item.action_id)
+
+
+@dataclass(frozen=True, slots=True)
+class StaticRoutePolicy:
+    """One-shot task router baseline that ignores residual priority bonuses."""
+
+    name: str = "static_task_router_v1"
+
+    def select(
+        self,
+        blackboard: Blackboard,
+        actions: Sequence[ControlAction],
+    ) -> ControlAction:
+        available = tuple(actions)
+        proposals = tuple(item for item in available if item.kind == "propose")
+        if proposals:
+            return min(
+                proposals,
+                key=lambda item: (
+                    blackboard.route_decision.priority_for(item.route or ""),
+                    item.actor,
+                    item.action_id,
+                ),
+            )
+        repairs = tuple(item for item in available if item.kind == "repair")
+        if repairs:
+            return min(repairs, key=lambda item: (item.priority, item.action_id))
+        stops = tuple(item for item in available if item.kind == "stop")
+        if not stops:
+            raise ValueError("compiled action set has no executable action or STOP")
+        return min(stops, key=lambda item: item.action_id)
+
+
+@dataclass(frozen=True, slots=True)
+class RoundRobinPolicy:
+    """Explore the least-called provider before consuming another provider slice."""
+
+    schedule: tuple[str, ...] = ROUTES
+    name: str = "round_robin_v1"
+
+    def __post_init__(self) -> None:
+        if not self.schedule or len(set(self.schedule)) != len(self.schedule):
+            raise ValueError("round-robin schedule must contain unique tokens")
+
+    def select(
+        self,
+        blackboard: Blackboard,
+        actions: Sequence[ControlAction],
+    ) -> ControlAction:
+        available = tuple(actions)
+        proposals = tuple(item for item in available if item.kind == "propose")
+        if proposals:
+            calls: dict[str, int] = {}
+            for result in blackboard.action_results:
+                if result.action.kind == "propose":
+                    calls[result.action.actor] = calls.get(result.action.actor, 0) + 1
+
+            def schedule_rank(action: ControlAction) -> int:
+                for index, token in enumerate(self.schedule):
+                    if action.actor == token or action.route == token:
+                        return index
+                return len(self.schedule)
+
+            return min(
+                proposals,
+                key=lambda item: (
+                    calls.get(item.actor, 0),
+                    schedule_rank(item),
+                    item.actor,
+                    item.action_id,
+                ),
+            )
+        repairs = tuple(item for item in available if item.kind == "repair")
+        if repairs:
+            return min(repairs, key=lambda item: (item.priority, item.action_id))
+        stops = tuple(item for item in available if item.kind == "stop")
+        if not stops:
+            raise ValueError("compiled action set has no executable action or STOP")
+        return min(stops, key=lambda item: item.action_id)
+
+
+@dataclass(frozen=True, slots=True)
+class DeterministicRandomPolicy:
+    """Oracle-free random-action baseline with content-stable sampling."""
+
+    seed: int = 0
+    name: str = "deterministic_random_v1"
+
+    def __post_init__(self) -> None:
+        if type(self.seed) is not int:
+            raise TypeError("random-policy seed must be an integer")
+
+    def select(
+        self,
+        blackboard: Blackboard,
+        actions: Sequence[ControlAction],
+    ) -> ControlAction:
+        del blackboard
+        available = tuple(actions)
+        if not available:
+            raise ValueError("policy requires at least one compiled action")
+        non_stop = tuple(item for item in available if item.kind != "stop")
+        pool = non_stop or available
+
+        def random_key(action: ControlAction) -> tuple[str, str]:
+            digest = hashlib.sha256(
+                f"{self.seed}:{action.state_id}:{action.action_id}".encode("ascii")
+            ).hexdigest()
+            return digest, action.action_id
+
+        return min(pool, key=random_key)
 
 
 @dataclass(frozen=True, slots=True)

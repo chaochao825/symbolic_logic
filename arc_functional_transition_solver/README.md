@@ -96,12 +96,13 @@ The v2 path adds the previously missing online controller:
   provider/repair action before execution;
 - execution-failure and demonstration-residual compilation into legal local
   repair or cross-representation actions;
-- a context-aware `act(...)` provider boundary plus compatibility with legacy
-  `propose(...)` sources;
-- content-addressed frozen heterogeneous pools for strict matched-budget policy
-  comparisons;
-- post-hoc oracle metrics for coverage utilization, pass@k, and correct repair
-  per compute, isolated from the controller by the blind-task content hash.
+- parent-conditioned DSL shape/suffix resynthesis and operator-specific sparse
+  CA policy families through the context-aware `act(...)` boundary;
+- strict `(operator, parent) -> batch` frozen heterogeneous pools for
+  matched-budget policy comparisons, with no cross-action fallback;
+- post-hoc separation of full-pool, observed, and selected oracle coverage,
+  plus pass@k, exploration recall, selection utilization, and unique repair
+  recovery per compute.
 
 Run it from the repository root with:
 
@@ -115,6 +116,17 @@ flags (`--compute-units`, `--controller-steps`, `--provider-calls`,
 `--repair-attempts`, and `--candidate-slots`) define the exact controller ledger.
 See `notes/design/online-residual-controller.md` for action typing, accounting,
 provider fidelity labels, and the matched-budget experiment contract.
+
+The no-training matched-budget evaluator builds content-addressed action pools,
+replays residual-first/fixed/round-robin/static/random and single-source
+baselines, and scores public oracles only after each replay:
+
+```bash
+python arc_functional_transition_solver/scripts/afts_arc_online_matched_budget.py \
+  /path/to/ARC-AGI-1/data \
+  arc_functional_transition_solver/results/online_control_frozen_v1 \
+  --split training --limit 32 --sample-seed 20260726
+```
 
 Unconfigured neural/code providers return explicit abstention receipts. The
 default CLI never resumes M04a or DiffLogic training; programmatically supplied
