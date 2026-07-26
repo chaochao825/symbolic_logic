@@ -1,0 +1,50 @@
+{
+  "config": {
+    "contrastive_temperature": 0.07,
+    "contrastive_weight": 0.5,
+    "detach_between_steps": true,
+    "eos_token_id": 1,
+    "expansion": 4.0,
+    "hidden_size": 368,
+    "inner_loops": 4,
+    "mask_token_id": 12,
+    "max_demos": 5,
+    "max_grid_size": 30,
+    "max_reasoning_steps": 16,
+    "no_grad_warmup_cycles": true,
+    "num_heads": 8,
+    "outer_loops": 3,
+    "pad_token_id": 0,
+    "query_tokens": 4,
+    "rms_norm_eps": 1e-05,
+    "rope_theta": 10000.0,
+    "sm_layers": 2,
+    "um_layers": 2,
+    "vocab_size": 12
+  },
+  "paper_reported_parameters_rounded": 7000000,
+  "parameter_ratio_to_paper_rounded": 1.0147864285714285,
+  "shape_contract_three_demos": {
+    "gated_rule_tokens": [
+      16,
+      368
+    ],
+    "raw_rules": [
+      3,
+      4,
+      368
+    ],
+    "sm_state": [
+      916,
+      368
+    ],
+    "um_input": [
+      3,
+      904,
+      368
+    ]
+  },
+  "status": "architecture_contract_only",
+  "trainable_parameters": 7103505,
+  "warning": "No official USRL code/checkpoint was available; matching parameter and tensor contracts does not validate the omitted training details."
+}

@@ -1,0 +1,72 @@
+{
+  "arc_content_sha256": "c3996e76e152466e6ea5416a58003d76b2568e6b4ec3446febbf02bb569d9cfa",
+  "arc_json_file_count": 800,
+  "arc_root": "/home/wangmeiqi/codex_runs/datasets/ARC-AGI-1/data",
+  "evaluation_task_count": 400,
+  "paper_spec": {
+    "adaptive_halting_pass_at_2": 0.47,
+    "augmented_tasks": 876000,
+    "base_arc_tasks": 800,
+    "concept_arc_tasks": 160,
+    "ema": true,
+    "epochs_as_named_by_paper": 100000,
+    "global_batch_size": 768,
+    "learning_rate": 0.0001,
+    "optimizer": "AdamW",
+    "parameters": 7000000,
+    "reported_arc_agi_1_pass_at_2": 0.472,
+    "training_hardware": "8x NVIDIA L40S + 16x NVIDIA V100",
+    "weight_decay": 0.01
+  },
+  "paper_transductive": {
+    "evaluation_demonstrations_used_for_gradient_updates": true,
+    "evaluation_test_outputs_used_for_gradient_updates": false,
+    "fit": {
+      "by_source_split": {
+        "evaluation-demo": 1363,
+        "training": 1302
+      },
+      "content_sha256": "0666e947ccba20d2deb93ea658c95acb8fd0c7dfcdd5dd3c29c002117db4a05c",
+      "episode_count": 2665,
+      "task_count": 800
+    },
+    "validation": {
+      "by_source_split": {
+        "evaluation-test": 419
+      },
+      "content_sha256": "60a979fc2add78843003ae7af285cd51b6a386653f72022e588f9d3d9ebe28cb",
+      "episode_count": 419,
+      "task_count": 400
+    }
+  },
+  "paper_unspecified_fields": [
+    "gate equation and whether answer-rule tokens are concatenated before SM",
+    "construction of supervised episodes from each task's demonstration pairs",
+    "positional encoding, normalization, activation, and exact Transformer block",
+    "stochastic-halting probability/distribution and dynamic replacement algorithm",
+    "EMA decay, learning-rate warmup/schedule, gradient clipping, and random seeds",
+    "initial answer/state values and gradient detachment boundaries",
+    "variable output-shape encoding and pass@2 candidate generation/voting",
+    "meaning of one epoch relative to 876k augmented tasks"
+  ],
+  "strict": {
+    "evaluation_demonstrations_used_for_gradient_updates": false,
+    "fit": {
+      "by_source_split": {
+        "training": 1037
+      },
+      "content_sha256": "19318983c4e0c500fef661ff55ab33f36a1392a0b8c7769f086137fb6ff9c904",
+      "episode_count": 1037,
+      "task_count": 320
+    },
+    "validation": {
+      "by_source_split": {
+        "training-heldout": 87
+      },
+      "content_sha256": "56a800fcb11c846b2b09f36b3e9f974b499e3608ae4cf92289271e840d5c9fb7",
+      "episode_count": 87,
+      "task_count": 80
+    }
+  },
+  "training_task_count": 400
+}

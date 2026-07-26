@@ -1,0 +1,148 @@
+{
+  "augmentation": "random D4 + non-background colour permutation + shared pair translation",
+  "batch_size": 8,
+  "claim_boundary": "This 30x30 pilot uses a 96-dim, one-block, 1x1 recurrent model for a small number of optimizer updates. The DRM option is a paper-grounded training hybrid, but this remains a pipeline diagnostic, not a 7M/100k-epoch reproduction.",
+  "config": {
+    "contrastive_temperature": 0.07,
+    "contrastive_weight": 0.5,
+    "detach_between_steps": true,
+    "eos_token_id": 1,
+    "expansion": 2.0,
+    "hidden_size": 96,
+    "inner_loops": 1,
+    "mask_token_id": 12,
+    "max_demos": 5,
+    "max_grid_size": 30,
+    "max_reasoning_steps": 2,
+    "no_grad_warmup_cycles": false,
+    "num_heads": 4,
+    "outer_loops": 1,
+    "pad_token_id": 0,
+    "query_tokens": 2,
+    "rms_norm_eps": 1e-05,
+    "rope_theta": 10000.0,
+    "sm_layers": 1,
+    "um_layers": 1,
+    "vocab_size": 13
+  },
+  "contrastive_weight": 0.0,
+  "curriculum": "drm-cosine-mask",
+  "environment": {
+    "cuda_available": true,
+    "cuda_version": "12.4",
+    "device": "cuda",
+    "gpu": "NVIDIA A800 80GB PCIe",
+    "gpu_memory_bytes": 85094825984,
+    "python": "3.13.5",
+    "torch": "2.6.0+cu124"
+  },
+  "episodes_seen_with_replacement": 24000,
+  "fit_episode_count": 2665,
+  "fit_task_count": 800,
+  "metrics": {
+    "adaptive_background_cell_accuracy": 0.9859392037954584,
+    "adaptive_eos_accuracy": 0.8445549477871706,
+    "adaptive_exact_accuracy": 0.0,
+    "adaptive_foreground_cell_accuracy": 0.3158816660179058,
+    "adaptive_mean_residual_cells": 80.9856801909308,
+    "adaptive_median_residual_cells": 43,
+    "adaptive_shape_accuracy": 0.5632458233890215,
+    "adaptive_task_weighted_accuracy": 0.0,
+    "adaptive_valid_cell_accuracy": 0.687455098093396,
+    "adaptive_within_5_residual_cells": 0.016706443914081145,
+    "episode_count": 419,
+    "fixed_final_exact_accuracy": 0.0,
+    "fixed_final_valid_cell_accuracy": 0.6865985078751036,
+    "mean_adaptive_halt_step": 1.9928400954653938,
+    "solved_task_ids": [],
+    "task_count": 400
+  },
+  "optimizer_updates": 3000,
+  "protocol": "paper-transductive",
+  "sampler": "uniform_without_replacement_over_tasks_then_uniform_leave-one-out_episode",
+  "seed": 20260726,
+  "status": "compute_bounded_arc_pilot",
+  "steps": 3000,
+  "trace": [
+    {
+      "contrastive": 2.8896610736846924,
+      "cross_entropy": 3.3731040954589844,
+      "loss": 3.3731040954589844,
+      "mean_sampled_mask_ratio": 0.35952186584472656,
+      "step": 1
+    },
+    {
+      "contrastive": 2.902656078338623,
+      "cross_entropy": 1.6126705408096313,
+      "loss": 1.6126705408096313,
+      "mean_sampled_mask_ratio": 0.39234235882759094,
+      "step": 300
+    },
+    {
+      "contrastive": 2.282212257385254,
+      "cross_entropy": 0.9478146433830261,
+      "loss": 0.9478146433830261,
+      "mean_sampled_mask_ratio": 0.46245089173316956,
+      "step": 600
+    },
+    {
+      "contrastive": 2.3822591304779053,
+      "cross_entropy": 1.0081405639648438,
+      "loss": 1.0081405639648438,
+      "mean_sampled_mask_ratio": 0.49813467264175415,
+      "step": 900
+    },
+    {
+      "contrastive": 2.6955907344818115,
+      "cross_entropy": 0.93548983335495,
+      "loss": 0.93548983335495,
+      "mean_sampled_mask_ratio": 0.7312504053115845,
+      "step": 1200
+    },
+    {
+      "contrastive": 2.4932446479797363,
+      "cross_entropy": 0.7703195810317993,
+      "loss": 0.7703195810317993,
+      "mean_sampled_mask_ratio": 0.4190150201320648,
+      "step": 1500
+    },
+    {
+      "contrastive": 2.747410774230957,
+      "cross_entropy": 0.3565785884857178,
+      "loss": 0.3565785884857178,
+      "mean_sampled_mask_ratio": 0.47797882556915283,
+      "step": 1800
+    },
+    {
+      "contrastive": 2.5114428997039795,
+      "cross_entropy": 0.5541085600852966,
+      "loss": 0.5541085600852966,
+      "mean_sampled_mask_ratio": 0.4658217132091522,
+      "step": 2100
+    },
+    {
+      "contrastive": 1.7395151853561401,
+      "cross_entropy": 1.0121098756790161,
+      "loss": 1.0121098756790161,
+      "mean_sampled_mask_ratio": 0.5157883167266846,
+      "step": 2400
+    },
+    {
+      "contrastive": 2.1112868785858154,
+      "cross_entropy": 0.411943256855011,
+      "loss": 0.411943256855011,
+      "mean_sampled_mask_ratio": 0.4063587486743927,
+      "step": 2700
+    },
+    {
+      "contrastive": 2.1662144660949707,
+      "cross_entropy": 0.36140909790992737,
+      "loss": 0.36140909790992737,
+      "mean_sampled_mask_ratio": 0.4011521339416504,
+      "step": 3000
+    }
+  ],
+  "train_seconds": 154.38159415894188,
+  "trainable_parameters": 177265,
+  "validation_episode_count": 419
+}

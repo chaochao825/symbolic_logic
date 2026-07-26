@@ -171,6 +171,22 @@ still requires a frozen evaluation run.
   and unrun artifacts.
 - `trash/`: ignored staging area for removals; never publish or commit it.
 
+## USRL paper-spec reproduction
+
+An independent reconstruction of the CVPR 2026 Understanding and Solving
+Reasoning Loop now lives in `src/afts_arc/usrl/`, with a bounded experiment
+driver at `scripts/afts_arc_usrl_reproduce.py`. It matches the public 7M-class
+tensor contract, separates strict unseen-task and paper-transductive protocols,
+and records deterministic architecture, data, optimization, and cost receipts.
+
+This is not presented as a reproduction of the paper's 47.2% pass@2: no official
+code/checkpoint was available, several algorithmic details are unspecified, and
+the committed ARC pilots use a 177K-or-smaller model for only 3,000 updates. See
+`notes/design/usrl-paper-spec-reproduction.md`,
+`notes/literature/usrl-and-recursive-reasoning-20260726.md`, and
+`notes/results/usrl-cvpr2026-reproduction-20260726.md` for the exact claim
+boundary and results.
+
 ## Non-goals
 
 - claiming a biologically faithful model of cortical areas;

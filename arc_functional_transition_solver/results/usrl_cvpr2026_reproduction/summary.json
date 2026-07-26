@@ -1,0 +1,93 @@
+{
+  "status": "paper_score_not_reproduced_under_bounded_compute",
+  "date": "2026-07-26",
+  "seed": 20260726,
+  "paper_reported_arc_agi_1_pass_at_2": 0.472,
+  "claim_boundary": "Selected pilots produce one deterministic candidate after 3000 updates with a 177K-parameter model. They are pass@1 diagnostics, not a pass@2 or full-scale reproduction.",
+  "metric_contract": {
+    "background": "ARC colour 0 / black token only; not an inferred modal background",
+    "foreground": "ARC colours 1..9 / non-black tokens",
+    "valid": "all non-PAD target tokens, including EOS"
+  },
+  "architecture": {
+    "paper_spec_trainable_parameters": 7103505,
+    "paper_reported_parameters_rounded": 7000000,
+    "pilot_parameters_without_mask_token": 177121,
+    "pilot_to_paper_spec_parameter_ratio": 0.024932901425331953
+  },
+  "selected_runs": {
+    "strict_direct": {
+      "artifact": "final_strict_shallow_3000.json",
+      "recurrence": "1x1",
+      "exact": 0.0,
+      "valid_cell": 0.7783500872310376,
+      "foreground": 0.4450134113630822,
+      "background": 0.9669499527856469,
+      "eos": 0.8849557522123894,
+      "shape": 0.7011494252873564,
+      "mean_residual_cells": 30.666666666666668,
+      "within_5_residual_cells": 0.16091954022988506
+    },
+    "strict_contrastive": {
+      "artifact": "final_strict_shallow_contrastive_3000.json",
+      "recurrence": "1x1",
+      "exact": 0.0,
+      "valid_cell": 0.7466146049680152,
+      "foreground": 0.39429407461594734,
+      "background": 0.9386213408876298,
+      "eos": 0.888748419721871,
+      "shape": 0.6551724137931034,
+      "mean_residual_cells": 35.05747126436781,
+      "within_5_residual_cells": 0.1839080459770115
+    },
+    "transductive_direct": {
+      "artifact": "final_transductive_shallow_3000.json",
+      "recurrence": "1x1",
+      "exact": 0.0,
+      "valid_cell": 0.7932117527862209,
+      "foreground": 0.5630163055231175,
+      "background": 0.9829166108698564,
+      "eos": 0.8656389855793137,
+      "shape": 0.6563245823389021,
+      "mean_residual_cells": 53.582338902147974,
+      "within_5_residual_cells": 0.028639618138424822
+    },
+    "transductive_shallow_cosine_mask_no_sampler": {
+      "artifact": "final_transductive_shallow_mask_3000.json",
+      "recurrence": "1x1",
+      "exact": 0.0,
+      "valid_cell": 0.687455098093396,
+      "foreground": 0.3158816660179058,
+      "background": 0.9859392037954584,
+      "eos": 0.8445549477871706,
+      "shape": 0.5632458233890215,
+      "mean_residual_cells": 80.9856801909308,
+      "within_5_residual_cells": 0.016706443914081145
+    },
+    "transductive_deep_direct": {
+      "artifact": "final_transductive_deep_nomask_3000.json",
+      "recurrence": "4x3",
+      "exact": 0.0,
+      "valid_cell": 0.5021460808694851,
+      "foreground": 0.0,
+      "background": 0.9965565397050102,
+      "eos": 0.24117354549975137,
+      "shape": 0.30071599045346065,
+      "mean_residual_cells": 129.00238663484487,
+      "within_5_residual_cells": 0.014319809069212411
+    },
+    "transductive_deep_cosine_mask_no_sampler": {
+      "artifact": "final_transductive_deep_cosine_mask_no_sampler_3000.json",
+      "recurrence": "4x3",
+      "exact": 0.0,
+      "valid_cell": 0.5551533572810169,
+      "foreground": 0.000021625362224817266,
+      "background": 0.9955235016165133,
+      "eos": 0.8187966185977126,
+      "shape": 0.60381861575179,
+      "mean_residual_cells": 115.26730310262529,
+      "within_5_residual_cells": 0.014319809069212411
+    }
+  },
+  "conclusion": "The architecture and optimization path are viable, but the bounded ARC models learn class-imbalanced completion rather than exact abstract transformations. Full-scale score equivalence remains untested."
+}

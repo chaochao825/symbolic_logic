@@ -1,0 +1,89 @@
+{
+  "claim_boundary": "This verifies optimization and tensor flow on eight fixed synthetic recolouring episodes; it is not ARC accuracy evidence.",
+  "config": {
+    "contrastive_temperature": 0.07,
+    "contrastive_weight": 0.5,
+    "detach_between_steps": true,
+    "eos_token_id": 1,
+    "expansion": 2.0,
+    "hidden_size": 64,
+    "inner_loops": 1,
+    "mask_token_id": 12,
+    "max_demos": 3,
+    "max_grid_size": 6,
+    "max_reasoning_steps": 2,
+    "no_grad_warmup_cycles": false,
+    "num_heads": 4,
+    "outer_loops": 1,
+    "pad_token_id": 0,
+    "query_tokens": 2,
+    "rms_norm_eps": 1e-05,
+    "rope_theta": 10000.0,
+    "sm_layers": 1,
+    "um_layers": 1,
+    "vocab_size": 12
+  },
+  "elapsed_seconds": 5.0132809318602085,
+  "environment": {
+    "cuda_available": true,
+    "cuda_version": "12.4",
+    "device": "cuda:0",
+    "gpu": "NVIDIA A800 80GB PCIe",
+    "gpu_memory_bytes": 85094825984,
+    "python": "3.13.5",
+    "torch": "2.6.0+cu124"
+  },
+  "final": {
+    "loss": 0.34798717498779297,
+    "mean_adaptive_halt_step": 2.0,
+    "valid_cell_accuracy": 0.9895833134651184,
+    "valid_grid_exact": 0.75
+  },
+  "initial": {
+    "loss": 4.065487861633301,
+    "valid_cell_accuracy": 0.046875,
+    "valid_grid_exact": 0.0
+  },
+  "seed": 20260726,
+  "status": "bounded_synthetic_overfit_smoke",
+  "steps": 100,
+  "trace": [
+    {
+      "contrastive": 3.132585048675537,
+      "cross_entropy": 2.499195098876953,
+      "loss": 4.065487861633301,
+      "step": 1
+    },
+    {
+      "contrastive": 1.63861083984375,
+      "cross_entropy": 0.8649217486381531,
+      "loss": 1.6842272281646729,
+      "step": 20
+    },
+    {
+      "contrastive": 1.0669467449188232,
+      "cross_entropy": 0.13683660328388214,
+      "loss": 0.6703099608421326,
+      "step": 40
+    },
+    {
+      "contrastive": 0.6998879909515381,
+      "cross_entropy": 0.013543502427637577,
+      "loss": 0.36348751187324524,
+      "step": 60
+    },
+    {
+      "contrastive": 0.6939420700073242,
+      "cross_entropy": 0.002333112061023712,
+      "loss": 0.3493041396141052,
+      "step": 80
+    },
+    {
+      "contrastive": 0.6935111880302429,
+      "cross_entropy": 0.0012639501364901662,
+      "loss": 0.348019540309906,
+      "step": 100
+    }
+  ],
+  "trainable_parameters": 95553
+}

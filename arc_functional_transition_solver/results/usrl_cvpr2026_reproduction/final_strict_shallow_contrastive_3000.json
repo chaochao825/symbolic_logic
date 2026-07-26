@@ -1,0 +1,148 @@
+{
+  "augmentation": "random D4 + non-background colour permutation + shared pair translation",
+  "batch_size": 8,
+  "claim_boundary": "This 30x30 pilot uses a 96-dim, one-block, 1x1 recurrent model for a small number of optimizer updates. The DRM option is a paper-grounded training hybrid, but this remains a pipeline diagnostic, not a 7M/100k-epoch reproduction.",
+  "config": {
+    "contrastive_temperature": 0.07,
+    "contrastive_weight": 0.5,
+    "detach_between_steps": true,
+    "eos_token_id": 1,
+    "expansion": 2.0,
+    "hidden_size": 96,
+    "inner_loops": 1,
+    "mask_token_id": 12,
+    "max_demos": 5,
+    "max_grid_size": 30,
+    "max_reasoning_steps": 2,
+    "no_grad_warmup_cycles": false,
+    "num_heads": 4,
+    "outer_loops": 1,
+    "pad_token_id": 0,
+    "query_tokens": 2,
+    "rms_norm_eps": 1e-05,
+    "rope_theta": 10000.0,
+    "sm_layers": 1,
+    "um_layers": 1,
+    "vocab_size": 12
+  },
+  "contrastive_weight": 0.5,
+  "curriculum": "none",
+  "environment": {
+    "cuda_available": true,
+    "cuda_version": "12.4",
+    "device": "cuda",
+    "gpu": "NVIDIA A800 80GB PCIe",
+    "gpu_memory_bytes": 85094825984,
+    "python": "3.13.5",
+    "torch": "2.6.0+cu124"
+  },
+  "episodes_seen_with_replacement": 24000,
+  "fit_episode_count": 1037,
+  "fit_task_count": 320,
+  "metrics": {
+    "adaptive_background_cell_accuracy": 0.9386213408876298,
+    "adaptive_eos_accuracy": 0.888748419721871,
+    "adaptive_exact_accuracy": 0.0,
+    "adaptive_foreground_cell_accuracy": 0.39429407461594734,
+    "adaptive_mean_residual_cells": 35.05747126436781,
+    "adaptive_median_residual_cells": 18,
+    "adaptive_shape_accuracy": 0.6551724137931034,
+    "adaptive_task_weighted_accuracy": 0.0,
+    "adaptive_valid_cell_accuracy": 0.7466146049680152,
+    "adaptive_within_5_residual_cells": 0.1839080459770115,
+    "episode_count": 87,
+    "fixed_final_exact_accuracy": 0.0,
+    "fixed_final_valid_cell_accuracy": 0.7466146049680152,
+    "mean_adaptive_halt_step": 2.0,
+    "solved_task_ids": [],
+    "task_count": 80
+  },
+  "optimizer_updates": 3000,
+  "protocol": "strict",
+  "sampler": "uniform_without_replacement_over_tasks_then_uniform_leave-one-out_episode",
+  "seed": 20260726,
+  "status": "compute_bounded_arc_pilot",
+  "steps": 3000,
+  "trace": [
+    {
+      "contrastive": 2.944438934326172,
+      "cross_entropy": 2.6562132835388184,
+      "loss": 4.128432750701904,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 1
+    },
+    {
+      "contrastive": 1.7578967809677124,
+      "cross_entropy": 1.7314752340316772,
+      "loss": 2.6104235649108887,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 300
+    },
+    {
+      "contrastive": 1.332033634185791,
+      "cross_entropy": 1.3613437414169312,
+      "loss": 2.027360439300537,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 600
+    },
+    {
+      "contrastive": 2.21459698677063,
+      "cross_entropy": 1.554972529411316,
+      "loss": 2.662271022796631,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 900
+    },
+    {
+      "contrastive": 1.162424087524414,
+      "cross_entropy": 1.2212225198745728,
+      "loss": 1.8024345636367798,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 1200
+    },
+    {
+      "contrastive": 0.36852216720581055,
+      "cross_entropy": 1.5247620344161987,
+      "loss": 1.709023118019104,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 1500
+    },
+    {
+      "contrastive": 0.5882457494735718,
+      "cross_entropy": 1.3040200471878052,
+      "loss": 1.5981428623199463,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 1800
+    },
+    {
+      "contrastive": 1.1413257122039795,
+      "cross_entropy": 1.336501955986023,
+      "loss": 1.9071648120880127,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 2100
+    },
+    {
+      "contrastive": 0.9741813540458679,
+      "cross_entropy": 1.4074349403381348,
+      "loss": 1.8945256471633911,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 2400
+    },
+    {
+      "contrastive": 0.991015613079071,
+      "cross_entropy": 1.3338743448257446,
+      "loss": 1.8293821811676025,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 2700
+    },
+    {
+      "contrastive": 1.4663970470428467,
+      "cross_entropy": 1.469849944114685,
+      "loss": 2.2030484676361084,
+      "mean_sampled_mask_ratio": 0.0,
+      "step": 3000
+    }
+  ],
+  "train_seconds": 179.9558412549086,
+  "trainable_parameters": 177121,
+  "validation_episode_count": 87
+}
