@@ -20,6 +20,13 @@ from .control import (
 )
 from .online import OnlineControlConfig, OnlineFunctionalRouterSolver, OnlineSolveReport
 from .deliberation import DeliberationSketch, StructuredDeliberationPolicy
+from .metareasoning import (
+    NativeBudgetLedger,
+    NativeCostContract,
+    NativeCostReservation,
+    NativeCostVector,
+    conditional_mutual_information,
+)
 from .control_evaluation import (
     AggregateControlMetrics,
     TaskControlMetrics,
@@ -75,6 +82,10 @@ __all__ = [
     "FrozenActionBatch",
     "FrozenCandidatePoolProvider",
     "MaskedDiffusionProvider",
+    "NativeBudgetLedger",
+    "NativeCostContract",
+    "NativeCostReservation",
+    "NativeCostVector",
     "OnlineControlConfig",
     "OnlineFunctionalRouterSolver",
     "OnlineSolveReport",
@@ -94,6 +105,7 @@ __all__ = [
     "SparseCAProvider",
     "StaticRoutePolicy",
     "StructuredDeliberationPolicy",
+    "conditional_mutual_information",
     "TaskFeatures",
     "TaskControlMetrics",
     "aggregate_control_metrics",

@@ -47,6 +47,8 @@ from afts_arc.hybrid import (  # noqa: E402
     FixedSchedulePolicy,
     FrozenActionBatch,
     FrozenCandidatePoolProvider,
+    NativeCostContract,
+    NativeCostVector,
     OnlineControlConfig,
     OnlineFunctionalRouterSolver,
     ResidualFirstPolicy,
@@ -97,10 +99,28 @@ def _merge_candidates(
             payload = canonical_json(candidate.to_json_dict())
             incumbent = payloads.get(candidate.hypothesis_id)
             if incumbent is not None and incumbent != payload:
-                raise ValueError("candidate ID collision while constructing frozen pool")
+                raise ValueError(
+                    "candidate ID collision while constructing frozen pool"
+                )
             payloads[candidate.hypothesis_id] = payload
             candidates[candidate.hypothesis_id] = candidate
     return tuple(candidates[key] for key in sorted(candidates))
+
+
+def _numeric_cost_payload(value: object) -> dict[str, object]:
+    """Strip descriptive bool/string leaves from provider cost diagnostics."""
+
+    if not isinstance(value, dict):
+        return {}
+    cleaned: dict[str, object] = {}
+    for key, item in value.items():
+        if isinstance(item, dict):
+            nested = _numeric_cost_payload(item)
+            if nested:
+                cleaned[str(key)] = nested
+        elif isinstance(item, (int, float)) and not isinstance(item, bool):
+            cleaned[str(key)] = item
+    return cleaned
 
 
 class RecordingProvider:
@@ -141,7 +161,15 @@ class RecordingProvider:
 
     def frozen(self) -> FrozenCandidatePoolProvider:
         batches = tuple(
-            FrozenActionBatch(operator, result.candidates, parent)
+            FrozenActionBatch(
+                operator,
+                result.candidates,
+                parent,
+                NativeCostVector.from_mapping(
+                    _numeric_cost_payload(result.diagnostics.get("native_cost", {})),
+                    prefix=f"{self.name}.native_cost",
+                ),
+            )
             for (operator, parent), result in sorted(
                 self.cache.items(), key=lambda item: (item[0][0], item[0][1] or "")
             )
@@ -151,19 +179,21 @@ class RecordingProvider:
         )
 
     def manifest(self) -> dict[str, object]:
+        frozen = self.frozen()
         return {
             "provider": self.name,
             "route": self.route,
             "strict_live_budget_contract": False,
+            "frozen_action_batches": [
+                batch.to_json_dict() for batch in frozen.action_batches
+            ],
             "actions": [
                 {
                     "operator": operator,
                     "parent_hypothesis_id": parent,
                     "status": result.status,
                     "reason": result.reason,
-                    "candidate_ids": [
-                        item.hypothesis_id for item in result.candidates
-                    ],
+                    "candidate_ids": [item.hypothesis_id for item in result.candidates],
                     "diagnostics": result.diagnostics,
                 }
                 for (operator, parent), result in sorted(
@@ -213,6 +243,18 @@ def _policy_specs() -> tuple[PolicySpec, ...]:
             "heterogeneous_union",
         ),
         PolicySpec(
+            "static_grounding_only",
+            lambda: StructuredDeliberationPolicy(
+                name="static_grounding_only",
+                use_grounding=True,
+                use_phase_control=False,
+                use_adaptive_diversity=False,
+                use_borderline_ucb=False,
+            ),
+            expanded,
+            "heterogeneous_union",
+        ),
+        PolicySpec(
             "adaptive_diversity",
             lambda: StructuredDeliberationPolicy(
                 name="adaptive_diversity",
@@ -242,17 +284,13 @@ def _policy_specs() -> tuple[PolicySpec, ...]:
         ),
         PolicySpec(
             "fixed_dsl_first",
-            lambda: FixedSchedulePolicy(
-                (dsl, ca, scene), name="fixed_dsl_first"
-            ),
+            lambda: FixedSchedulePolicy((dsl, ca, scene), name="fixed_dsl_first"),
             expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
             "fixed_ca_first",
-            lambda: FixedSchedulePolicy(
-                (ca, dsl, scene), name="fixed_ca_first"
-            ),
+            lambda: FixedSchedulePolicy((ca, dsl, scene), name="fixed_ca_first"),
             expanded,
             "heterogeneous_union",
         ),
@@ -270,9 +308,7 @@ def _policy_specs() -> tuple[PolicySpec, ...]:
         ),
         PolicySpec(
             "random_seed_0",
-            lambda: DeterministicRandomPolicy(
-                seed=0, name="random_seed_0"
-            ),
+            lambda: DeterministicRandomPolicy(seed=0, name="random_seed_0"),
             expanded,
             "heterogeneous_union",
         ),
@@ -309,9 +345,7 @@ def _provider_subset(
 
 def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
     final = report.states[-1]
-    evaluations = {
-        item.hypothesis.hypothesis_id: item for item in final.evaluations
-    }
+    evaluations = {item.hypothesis.hypothesis_id: item for item in final.evaluations}
     seen_semantics: set[tuple[object, ...]] = set()
     semantic_novelty: dict[str, int] = {}
     for result in final.action_results:
@@ -333,6 +367,16 @@ def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
     return {
         "status": report.status,
         "strict_budget_comparable": report.strict_budget_comparable,
+        "native_budget_comparable": report.native_budget_comparable,
+        "native_budget": (
+            None
+            if report.native_budget is None
+            else report.native_budget.to_json_dict()
+        ),
+        "native_reservation_violation_count": (
+            report.native_reservation_violation_count
+        ),
+        "native_masked_action_count": report.native_masked_action_count,
         "stop_reason": final.stop_reason,
         "budget_used": final.budget.used.to_json_dict(),
         "selected_hypothesis_ids": [
@@ -345,9 +389,7 @@ def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
             len(result.accepted_candidate_ids) for result in final.action_results
         ),
         "semantic_novel_candidate_count": sum(semantic_novelty.values()),
-        "deliberation_sketch": DeliberationSketch.from_blackboard(
-            final
-        ).to_json_dict(),
+        "deliberation_sketch": DeliberationSketch.from_blackboard(final).to_json_dict(),
         "actions": [
             {
                 "kind": result.action.kind,
@@ -385,12 +427,22 @@ def _numeric_native_cost(
             totals["repair_attempts"] += 1.0
         if action.kind != "propose":
             continue
-        recorder = by_name.get(action.actor)
-        if recorder is None:
+        replay_cost = (
+            {}
+            if result.provider_result is None
+            else result.provider_result.diagnostics.get("native_cost", {})
+        )
+        if replay_cost:
+            add("", replay_cost)
             continue
-        raw = recorder.cache.get((action.operator, action.parent_hypothesis_id))
-        if raw is not None:
-            add(f"{action.actor}.native_cost", raw.diagnostics.get("native_cost", {}))
+        recorder = by_name.get(action.actor)
+        if recorder is not None:
+            raw = recorder.cache.get((action.operator, action.parent_hypothesis_id))
+            if raw is not None:
+                add(
+                    f"{action.actor}.native_cost",
+                    raw.diagnostics.get("native_cost", {}),
+                )
     return dict(sorted(totals.items()))
 
 
@@ -413,7 +465,7 @@ def _task_pool_manifest(
         for candidate in report.states[-1].candidates
     }
     payload = {
-        "schema": "afts.frozen-action-pool/v2",
+        "schema": "afts.frozen-action-pool/v3",
         "task_id": task.task_id,
         "task_source_sha256": task.source_sha256,
         "blind_content_sha256": blind.blind_content_sha256,
@@ -510,8 +562,17 @@ def run_task(
 
     discovered_pool = _merge_candidates(
         (
-            (candidate for recorder in recorders for result in recorder.cache.values() for candidate in result.candidates),
-            (candidate for report in discovery.values() for candidate in report.states[-1].candidates),
+            (
+                candidate
+                for recorder in recorders
+                for result in recorder.cache.values()
+                for candidate in result.candidates
+            ),
+            (
+                candidate
+                for report in discovery.values()
+                for candidate in report.states[-1].candidates
+            ),
         )
     )
     frozen_providers = tuple(recorder.frozen() for recorder in recorders)
@@ -555,9 +616,7 @@ def run_task(
         if spec.pool_scope == "heterogeneous_union":
             metric_pool = heterogeneous_pool
         else:
-            metric_pool = _single_source_pool(
-                spec, recorders, report
-            )
+            metric_pool = _single_source_pool(spec, recorders, report)
         metrics = evaluate_online_report_with_oracle(
             report,
             task,
@@ -636,7 +695,38 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--ca-max-rules-per-policy", type=int, default=2)
     parser.add_argument("--ca-max-programs", type=int, default=4)
     parser.add_argument("--scene-max-exact-rules", type=int, default=64)
+    parser.add_argument(
+        "--native-budget-profile",
+        type=Path,
+        help="fit-block calibrated native-cost contract and vector budget",
+    )
     return parser
+
+
+def _load_native_budget_profile(
+    path: Path | None,
+) -> tuple[
+    NativeCostContract | None, NativeCostVector | None, dict[str, object] | None
+]:
+    if path is None:
+        return None, None, None
+    resolved = path.resolve()
+    payload = json.loads(resolved.read_text(encoding="utf-8"))
+    if payload.get("schema") != "afts.native-budget-profile/v1":
+        raise ValueError("unknown native budget profile schema")
+    contract = NativeCostContract.from_json_dict(payload.get("contract"))
+    limit = NativeCostVector.from_json_dict(payload.get("budget_limit"))
+    return (
+        contract,
+        limit,
+        {
+            "path": str(resolved),
+            "profile_id": payload.get("profile_id"),
+            "contract_id": contract.contract_id,
+            "reservation_rule": payload.get("reservation_rule"),
+            "budget_rule": payload.get("budget_rule"),
+        },
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -652,6 +742,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    native_contract, native_limit, native_profile = _load_native_budget_profile(
+        args.native_budget_profile
+    )
     config = OnlineControlConfig(
         budget_limit=BudgetVector(
             compute_units=args.compute_units,
@@ -662,6 +755,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
         provider_batch_size=args.provider_batch_size,
         max_selected_hypotheses=2,
+        native_cost_contract=native_contract,
+        native_budget_limit=native_limit,
     )
     started = time.perf_counter()
     task_results: list[dict[str, object]] = []
@@ -715,6 +810,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         for name, items in metrics_by_policy.items()
     }
     native_cost_aggregates: dict[str, dict[str, float]] = {}
+    native_reserved_cost_aggregates: dict[str, dict[str, float]] = {}
     timing_aggregates: dict[str, dict[str, float]] = {}
     for task_result in task_results:
         policies = task_result["policies"]
@@ -722,6 +818,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             native = native_cost_aggregates.setdefault(name, {})
             for key, value in policy_result["native_cost_vector"].items():
                 native[key] = native.get(key, 0.0) + float(value)
+            reserved = native_reserved_cost_aggregates.setdefault(name, {})
+            native_budget_payload = policy_result["native_budget"]
+            if native_budget_payload is not None:
+                for key, value in native_budget_payload["used"]["items"]:
+                    reserved[key] = reserved.get(key, 0.0) + float(value)
             timing = timing_aggregates.setdefault(
                 name, {"discovery_seconds": 0.0, "frozen_replay_seconds": 0.0}
             )
@@ -736,7 +837,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "training_started": False,
         "oracle_access": "posthoc_only_after_each_frozen_replay",
         "claim_scope": (
-            "strict action-frozen NCU comparison; native cost vectors are descriptive"
+            "strict action-frozen NCU plus fit-calibrated native token bucket"
+            if native_profile is not None
+            else "strict action-frozen NCU comparison; native cost vectors are descriptive"
         ),
         "dataset": {
             "root": str(args.dataset_root.resolve()),
@@ -755,6 +858,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             "budget_limit": config.budget_limit.to_json_dict(),
             "provider_batch_size": config.provider_batch_size,
             "max_selected_hypotheses": config.max_selected_hypotheses,
+            "native_budget_profile": native_profile,
+            "native_budget_limit": (
+                None if native_limit is None else native_limit.to_json_dict()
+            ),
         },
         "provider_config": {
             "dsl": {
@@ -774,6 +881,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         },
         "policy_aggregates": aggregates,
         "policy_native_cost_aggregates": native_cost_aggregates,
+        "policy_native_reserved_cost_aggregates": native_reserved_cost_aggregates,
         "policy_timing_aggregates": timing_aggregates,
         "tasks": task_results,
         "failures": failures,

@@ -8,6 +8,7 @@ from afts_arc.grid import as_grid
 from afts_arc.hybrid import (
     BudgetVector,
     CandidateHypothesis,
+    ControlAction,
     DeliberationSketch,
     FrozenCandidatePoolProvider,
     OnlineControlConfig,
@@ -86,9 +87,7 @@ class StructuredDeliberationTests(unittest.TestCase):
                     [[4, 4]],
                 ),
             ),
-            (
-                [[0, 6, 6, 0], [7, 7, 7, 0], [7, 7, 7, 0]],
-            ),
+            ([[0, 6, 6, 0], [7, 7, 7, 0], [7, 7, 7, 0]],),
         )
         result = synthesize_scene_rules(task)
         matching = tuple(
@@ -161,6 +160,67 @@ class StructuredDeliberationTests(unittest.TestCase):
         self.assertNotIn("test_output", canonical_text := str(serialized).lower())
         self.assertNotIn("oracle", canonical_text)
         self.assertIn(first.phase, {"explore", "refine"})
+
+    def test_phase_control_has_a_true_same_model_ablation(self) -> None:
+        task = _blind((([[1]], [[2]]),), ([[1]],))
+        wrong = _hypothesis("wrong", lambda grid: grid, route="dsl_program")
+        report = OnlineFunctionalRouterSolver(
+            providers=(FrozenCandidatePoolProvider((wrong,), "root", "dsl_program"),),
+            config=OnlineControlConfig(
+                budget_limit=_budget(1),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        blackboard = report.states[1]
+        signal = blackboard.residual_signals[0]
+        repair = ControlAction.create(
+            state_id=blackboard.state_id,
+            kind="repair",
+            actor="residual_repair",
+            route="residual_repair",
+            operator="global_color_map",
+            parent_hypothesis_id=wrong.hypothesis_id,
+            evidence_signal_ids=(signal.signal_id,),
+            budget=BudgetVector(
+                compute_units=2,
+                controller_steps=1,
+                repair_attempts=1,
+                candidate_slots=1,
+            ),
+            priority=100,
+        )
+        proposal = ControlAction.create(
+            state_id=blackboard.state_id,
+            kind="propose",
+            actor="root",
+            route="dsl_program",
+            operator="suffix_resynthesize",
+            parent_hypothesis_id=wrong.hypothesis_id,
+            evidence_signal_ids=(signal.signal_id,),
+            budget=BudgetVector(
+                compute_units=2,
+                controller_steps=1,
+                provider_calls=1,
+                candidate_slots=1,
+            ),
+            priority=0,
+        )
+        dynamic = StructuredDeliberationPolicy(
+            use_grounding=False,
+            use_phase_control=True,
+            use_adaptive_diversity=False,
+            use_borderline_ucb=False,
+        )
+        static = StructuredDeliberationPolicy(
+            use_grounding=False,
+            use_phase_control=False,
+            use_adaptive_diversity=False,
+            use_borderline_ucb=False,
+        )
+
+        self.assertEqual(dynamic.select(blackboard, (repair, proposal)), repair)
+        self.assertEqual(static.select(blackboard, (repair, proposal)), proposal)
 
 
 if __name__ == "__main__":

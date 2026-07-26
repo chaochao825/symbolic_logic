@@ -14,6 +14,9 @@ from afts_arc.hybrid import (
     FixedSchedulePolicy,
     FrozenActionBatch,
     FrozenCandidatePoolProvider,
+    NativeCostContract,
+    NativeCostReservation,
+    NativeCostVector,
     OnlineControlConfig,
     OnlineFunctionalRouterSolver,
     ProviderResult,
@@ -158,9 +161,7 @@ class OnlineControllerTests(unittest.TestCase):
             route="dsl_program",
         )
         providers = (
-            FrozenCandidatePoolProvider(
-                (wrong,), "ca-pool", "sparse_ca"
-            ),
+            FrozenCandidatePoolProvider((wrong,), "ca-pool", "sparse_ca"),
             FrozenCandidatePoolProvider.from_action_batches(
                 (
                     FrozenActionBatch(
@@ -183,7 +184,9 @@ class OnlineControllerTests(unittest.TestCase):
             policy=CoverageAwareResidualPolicy(),
         ).solve(task)
         actions = report.states[-1].action_results
-        self.assertEqual([item.action.actor for item in actions[:2]], ["ca-pool", "dsl-pool"])
+        self.assertEqual(
+            [item.action.actor for item in actions[:2]], ["ca-pool", "dsl-pool"]
+        )
         self.assertEqual(actions[1].action.parent_hypothesis_id, wrong.hypothesis_id)
         self.assertEqual(report.status, "solved")
 
@@ -198,9 +201,7 @@ class OnlineControllerTests(unittest.TestCase):
         )
         report = OnlineFunctionalRouterSolver(
             providers=(
-                FrozenCandidatePoolProvider(
-                    (first, second), "ca-stream", "sparse_ca"
-                ),
+                FrozenCandidatePoolProvider((first, second), "ca-stream", "sparse_ca"),
             ),
             config=OnlineControlConfig(
                 budget_limit=_budget(steps=2, provider_calls=2, repairs=0),
@@ -294,9 +295,7 @@ class OnlineControllerTests(unittest.TestCase):
         near = _hypothesis("color-map-near", lambda grid: grid, route="dsl_program")
         report = OnlineFunctionalRouterSolver(
             providers=(
-                FrozenCandidatePoolProvider(
-                    (near,), "color-map-pool", "dsl_program"
-                ),
+                FrozenCandidatePoolProvider((near,), "color-map-pool", "dsl_program"),
             ),
             config=OnlineControlConfig(
                 budget_limit=_budget(steps=2, provider_calls=1, repairs=1),
@@ -543,9 +542,7 @@ class OnlineControllerTests(unittest.TestCase):
             ([[1, 0], [0, 1]],),
         )
         report = OnlineFunctionalRouterSolver(
-            providers=(
-                SparseCAProvider(max_rules_per_policy=1, max_programs=0),
-            ),
+            providers=(SparseCAProvider(max_rules_per_policy=1, max_programs=0),),
             config=OnlineControlConfig(
                 budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
                 provider_batch_size=1,
@@ -714,6 +711,115 @@ class OnlineControllerTests(unittest.TestCase):
         aggregate = aggregate_control_metrics((metrics,))
         self.assertEqual(aggregate.pool_selectable_oracle_covered_tasks, 1)
         self.assertEqual(aggregate.observed_selectable_oracle_covered_tasks, 0)
+
+    def test_native_budget_masks_unaffordable_frozen_option(self) -> None:
+        task = _blind(
+            (([[1]], [[2]]),),
+            ([[1]],),
+        )
+        wrong = _hypothesis("expensive-wrong", lambda grid: grid, route="dsl_program")
+        correct = _hypothesis(
+            "cheap-correct",
+            lambda grid: tuple(
+                tuple(2 if cell == 1 else cell for cell in row) for row in grid
+            ),
+            route="dsl_program",
+        )
+        providers = (
+            FrozenCandidatePoolProvider.from_action_batches(
+                (
+                    FrozenActionBatch(
+                        "synthesize",
+                        (wrong,),
+                        native_cost=NativeCostVector.from_mapping({"cpu.work": 2}),
+                    ),
+                ),
+                "expensive",
+                "dsl_program",
+            ),
+            FrozenCandidatePoolProvider.from_action_batches(
+                (
+                    FrozenActionBatch(
+                        "synthesize",
+                        (correct,),
+                        native_cost=NativeCostVector.from_mapping({"cpu.work": 1}),
+                    ),
+                ),
+                "cheap",
+                "dsl_program",
+            ),
+        )
+        contract = NativeCostContract(
+            (
+                NativeCostReservation(
+                    "expensive",
+                    "synthesize",
+                    NativeCostVector.from_mapping({"cpu.work": 2}),
+                ),
+                NativeCostReservation(
+                    "cheap",
+                    "synthesize",
+                    NativeCostVector.from_mapping({"cpu.work": 1}),
+                ),
+            )
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=providers,
+            policy=FixedSchedulePolicy(("expensive", "cheap")),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+                native_cost_contract=contract,
+                native_budget_limit=NativeCostVector.from_mapping({"cpu.work": 1}),
+            ),
+        ).solve(task)
+
+        proposal = report.states[-1].action_results[0]
+        self.assertEqual(proposal.action.actor, "cheap")
+        self.assertEqual(report.native_masked_action_count, 1)
+        self.assertEqual(report.native_budget.used.to_mapping(), {"cpu.work": 1.0})
+        self.assertTrue(report.native_budget_comparable)
+
+    def test_native_reservation_overrun_invalidates_strict_claim(self) -> None:
+        task = _blind(
+            (([[1]], [[1]]),),
+            ([[1]],),
+        )
+        candidate = _hypothesis("identity", lambda grid: grid, route="dsl_program")
+        provider = FrozenCandidatePoolProvider.from_action_batches(
+            (
+                FrozenActionBatch(
+                    "synthesize",
+                    (candidate,),
+                    native_cost=NativeCostVector.from_mapping({"cpu.work": 2}),
+                ),
+            ),
+            "pool",
+            "dsl_program",
+        )
+        contract = NativeCostContract(
+            (
+                NativeCostReservation(
+                    "pool",
+                    "synthesize",
+                    NativeCostVector.from_mapping({"cpu.work": 1}),
+                ),
+            )
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(provider,),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+                native_cost_contract=contract,
+                native_budget_limit=NativeCostVector.from_mapping({"cpu.work": 1}),
+            ),
+        ).solve(task)
+
+        self.assertEqual(report.native_reservation_violation_count, 1)
+        self.assertFalse(report.native_budget_comparable)
 
 
 if __name__ == "__main__":

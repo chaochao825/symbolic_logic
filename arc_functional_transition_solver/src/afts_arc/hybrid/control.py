@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from typing import Protocol
 
 from ..blind import BlindTask
+from .metareasoning import NativeCostVector
 from .router import ROUTES, RouteDecision, TaskFeatures
 from .types import (
     CandidateEvaluation,
@@ -821,6 +822,7 @@ class FrozenActionBatch:
     operator: str
     candidates: tuple[CandidateHypothesis, ...]
     parent_hypothesis_id: str | None = None
+    native_cost: NativeCostVector = NativeCostVector()
 
     def __post_init__(self) -> None:
         if not isinstance(self.operator, str) or not self.operator:
@@ -830,6 +832,8 @@ class FrozenActionBatch:
             or not self.parent_hypothesis_id
         ):
             raise TypeError("frozen action parent must be None or a non-empty ID")
+        if not isinstance(self.native_cost, NativeCostVector):
+            raise TypeError("frozen action native_cost must be a NativeCostVector")
         canonical = tuple(
             sorted(
                 self.candidates,
@@ -849,6 +853,7 @@ class FrozenActionBatch:
                 "operator": self.operator,
                 "parent_hypothesis_id": self.parent_hypothesis_id,
                 "candidates": [item.to_json_dict() for item in self.candidates],
+                "native_cost": self.native_cost.to_json_dict(),
             }
         )
 
@@ -858,6 +863,7 @@ class FrozenActionBatch:
             "operator": self.operator,
             "parent_hypothesis_id": self.parent_hypothesis_id,
             "candidate_ids": [item.hypothesis_id for item in self.candidates],
+            "native_cost": self.native_cost.to_json_dict(),
         }
 
 
@@ -872,9 +878,7 @@ class FrozenCandidatePoolProvider:
     strict_budget_contract: bool = field(default=True, init=False)
     supports_residual_actions: bool = field(default=True, init=False)
     supports_repeated_batches: bool = field(default=True, init=False)
-    parent_sensitive_operators: frozenset[str] = field(
-        default=frozenset(), init=False
-    )
+    parent_sensitive_operators: frozenset[str] = field(default=frozenset(), init=False)
 
     def __post_init__(self) -> None:
         if not self.name or self.route not in ROUTES:
@@ -892,7 +896,9 @@ class FrozenCandidatePoolProvider:
         if any(
             batch.operator not in PROVIDER_OPERATORS[self.route] for batch in batches
         ):
-            raise ValueError("frozen action operator is not legal for the provider route")
+            raise ValueError(
+                "frozen action operator is not legal for the provider route"
+            )
         batch_keys = tuple(
             (batch.operator, batch.parent_hypothesis_id) for batch in batches
         )
@@ -961,9 +967,7 @@ class FrozenCandidatePoolProvider:
                 "name": self.name,
                 "route": self.route,
                 "candidates": [item.to_json_dict() for item in self.candidates],
-                "action_batches": [
-                    item.to_json_dict() for item in self.action_batches
-                ],
+                "action_batches": [item.to_json_dict() for item in self.action_batches],
             }
         )
 
@@ -1087,6 +1091,8 @@ class FrozenCandidatePoolProvider:
             "available_before_action": len(unseen),
             "candidate_slot_limit": action.budget.candidate_slots,
             "remaining_after_action": len(unseen) - len(selected),
+            "native_cost": matching[0].native_cost.to_mapping(),
+            "native_cost_provenance": "realized_discovery_outcome",
         }
         if not selected:
             return ProviderResult.abstained(
@@ -1221,9 +1227,9 @@ class CoverageAwareResidualPolicy:
             latest_by_operator: dict[tuple[str, str], ActionResult] = {}
             for result in blackboard.action_results:
                 if result.action.kind == "propose":
-                    latest_by_operator[(result.action.actor, result.action.operator)] = (
-                        result
-                    )
+                    latest_by_operator[
+                        (result.action.actor, result.action.operator)
+                    ] = result
 
             def proposal_key(action: ControlAction) -> tuple[object, ...]:
                 previous = latest_by_operator.get((action.actor, action.operator))
@@ -1680,9 +1686,7 @@ class ResidualActionCompiler:
                             evidence_signal_ids=(signal.signal_id,),
                             reason_codes=(reason, "demo_residual_compiled"),
                             budget=repair_slice,
-                            priority=(
-                                -120 if operator == "global_color_map" else -100
-                            )
+                            priority=(-120 if operator == "global_color_map" else -100)
                             + rank,
                         )
                     )
@@ -1732,9 +1736,7 @@ class ResidualActionCompiler:
                     operator, reasons, bonus = self._provider_operator(
                         route, best_signal, blackboard.features
                     )
-                parent_sensitive = getattr(
-                    provider, "parent_sensitive_operators", None
-                )
+                parent_sensitive = getattr(provider, "parent_sensitive_operators", None)
                 parent_id = (
                     None
                     if best_signal is None

@@ -185,6 +185,7 @@ class StructuredDeliberationPolicy:
 
     name: str = "structured_deliberation_v1"
     use_grounding: bool = True
+    use_phase_control: bool = True
     use_adaptive_diversity: bool = True
     use_borderline_ucb: bool = True
 
@@ -223,9 +224,7 @@ class StructuredDeliberationPolicy:
         return gain
 
     @staticmethod
-    def _grounding_rank(
-        blackboard: "Blackboard", action: "ControlAction"
-    ) -> int:
+    def _grounding_rank(blackboard: "Blackboard", action: "ControlAction") -> int:
         features = blackboard.features
         if action.kind == "repair":
             return 0
@@ -274,13 +273,14 @@ class StructuredDeliberationPolicy:
                 else 0
             )
             phase_penalty = 0
-            if sketch.phase == "scope" and action.kind != "propose":
-                phase_penalty += 500
-            if sketch.phase == "refine":
-                if action.kind == "repair":
-                    phase_penalty -= 160
-                elif action.evidence_signal_ids:
-                    phase_penalty -= 40
+            if self.use_phase_control:
+                if sketch.phase == "scope" and action.kind != "propose":
+                    phase_penalty += 500
+                if sketch.phase == "refine":
+                    if action.kind == "repair":
+                        phase_penalty -= 160
+                    elif action.evidence_signal_ids:
+                        phase_penalty -= 40
 
             diversity = 0
             if self.use_adaptive_diversity and action.kind == "propose":
@@ -306,4 +306,3 @@ class StructuredDeliberationPolicy:
             )
 
         return min(non_stop, key=score)
-

@@ -19,6 +19,11 @@ from .control import (
     ResidualFirstPolicy,
 )
 from .orchestrator import SolveReport
+from .metareasoning import (
+    NativeBudgetLedger,
+    NativeCostContract,
+    NativeCostVector,
+)
 from .providers import (
     CodeModelProvider,
     DiffLogicHardProvider,
@@ -55,6 +60,8 @@ class OnlineControlConfig:
     max_selected_hypotheses: int = 2
     minimum_repair_agreement: float = 0.5
     localized_residual_fraction: float = 0.35
+    native_cost_contract: NativeCostContract | None = None
+    native_budget_limit: NativeCostVector | None = None
 
     def __post_init__(self) -> None:
         if type(self.provider_batch_size) is not int or self.provider_batch_size < 1:
@@ -68,6 +75,10 @@ class OnlineControlConfig:
             value = getattr(self, name)
             if not 0.0 <= value <= 1.0:
                 raise ValueError(f"{name} must be in [0, 1]")
+        if (self.native_cost_contract is None) != (self.native_budget_limit is None):
+            raise ValueError(
+                "native cost contract and budget limit must be configured together"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -77,12 +88,22 @@ class OnlineSolveReport:
     base_report: SolveReport
     policy_name: str
     states: tuple[Blackboard, ...]
+    native_budget: NativeBudgetLedger | None = None
+    native_reservation_violation_count: int = 0
+    native_masked_action_count: int = 0
 
     def __post_init__(self) -> None:
         if not self.states or not self.states[-1].stopped:
             raise ValueError("online report requires a terminal blackboard")
         if self.states[0].action_results:
             raise ValueError("initial blackboard must precede all actions")
+        for name in (
+            "native_reservation_violation_count",
+            "native_masked_action_count",
+        ):
+            value = getattr(self, name)
+            if type(value) is not int or value < 0:
+                raise ValueError(f"{name} must be a non-negative integer")
         for previous, current in zip(self.states, self.states[1:]):
             if len(current.action_results) != len(previous.action_results) + 1:
                 raise ValueError(
@@ -128,6 +149,14 @@ class OnlineSolveReport:
             item.budget_fidelity == "strict_replayable" for item in proposal_results
         )
 
+    @property
+    def native_budget_comparable(self) -> bool:
+        return (
+            self.native_budget is not None
+            and self.strict_budget_comparable
+            and self.native_reservation_violation_count == 0
+        )
+
     def candidate_records(
         self, *, task_id: str | None = None
     ) -> tuple[CandidateRecord, ...]:
@@ -156,6 +185,19 @@ class OnlineSolveReport:
                 "strict_budget_comparable": self.strict_budget_comparable,
                 "strict_claim_scope": "frozen/replayable providers declaring strict_budget_contract",
                 "legacy_provider_scope": "controller-only; not FLOP/wall-clock matched",
+            },
+            "native_budget_contract": {
+                "active": self.native_budget is not None,
+                "strict_native_budget_comparable": self.native_budget_comparable,
+                "reservation_violation_count": (
+                    self.native_reservation_violation_count
+                ),
+                "masked_action_count": self.native_masked_action_count,
+                "ledger": (
+                    None
+                    if self.native_budget is None
+                    else self.native_budget.to_json_dict()
+                ),
             },
             "initial_state_id": self.states[0].state_id,
             "final_state_id": final.state_id,
@@ -517,6 +559,22 @@ class OnlineFunctionalRouterSolver:
             localized_fraction=self.config.localized_residual_fraction,
         )
         states = [blackboard]
+        native_contract = self.config.native_cost_contract
+        native_accounting_active = (
+            native_contract is not None
+            and self.config.native_budget_limit is not None
+            and all(
+                bool(getattr(provider, "strict_budget_contract", False))
+                for provider in self.providers
+            )
+        )
+        native_budget = (
+            NativeBudgetLedger(self.config.native_budget_limit)
+            if native_accounting_active
+            else None
+        )
+        native_violations = 0
+        native_masked_actions = 0
 
         while not blackboard.stopped:
             actions = self.compiler.compile(
@@ -525,6 +583,40 @@ class OnlineFunctionalRouterSolver:
                 self.providers,
                 max_selected_hypotheses=self.config.max_selected_hypotheses,
             )
+            reservations: dict[str, NativeCostVector] = {}
+            if native_budget is not None and native_contract is not None:
+                compiled_non_stop = tuple(
+                    item for item in actions if item.kind != "stop"
+                )
+                affordable: list[ControlAction] = []
+                for candidate_action in compiled_non_stop:
+                    reservation = native_contract.reservation_for(
+                        candidate_action.actor, candidate_action.operator
+                    )
+                    if reservation is None or not native_budget.can_reserve(
+                        reservation
+                    ):
+                        native_masked_actions += 1
+                        continue
+                    reservations[candidate_action.action_id] = reservation
+                    affordable.append(candidate_action)
+                if compiled_non_stop and not affordable:
+                    actions = (
+                        ControlAction.create(
+                            state_id=blackboard.state_id,
+                            kind="stop",
+                            actor="controller",
+                            route=None,
+                            operator="stop",
+                            reason_codes=("native_budget_exhausted",),
+                            priority=-10_000,
+                        ),
+                    )
+                else:
+                    actions = (
+                        *affordable,
+                        *(item for item in actions if item.kind == "stop"),
+                    )
             action = self.policy.select(blackboard, actions)
             compiled_by_id = {item.action_id: item for item in actions}
             if (
@@ -567,10 +659,23 @@ class OnlineFunctionalRouterSolver:
                     "compiler emitted an action outside the budget mask"
                 )
             charged = blackboard.budget.charge(action.budget)
+            native_reservation = reservations.get(action.action_id)
+            if native_budget is not None:
+                if native_reservation is None:
+                    raise AssertionError(
+                        "native-budget mask emitted an action without a reservation"
+                    )
+                native_budget = native_budget.charge(native_reservation)
             if action.kind == "propose":
                 provider_result, result, candidates, evaluations, quarantined = (
                     self._provider_action(task, blackboard, action)
                 )
+                if native_reservation is not None:
+                    actual_native = NativeCostVector.from_mapping(
+                        provider_result.diagnostics.get("native_cost", {})
+                    )
+                    if not actual_native.fits_within(native_reservation):
+                        native_violations += 1
                 provider_results = (*blackboard.provider_results, provider_result)
                 repair_receipts = blackboard.repair_receipts
             else:
@@ -621,4 +726,11 @@ class OnlineFunctionalRouterSolver:
             repaired_evaluations=repaired_evaluations,
             selected=selected,
         )
-        return OnlineSolveReport(base, self.policy.name, tuple(states))
+        return OnlineSolveReport(
+            base,
+            self.policy.name,
+            tuple(states),
+            native_budget,
+            native_violations,
+            native_masked_actions,
+        )
