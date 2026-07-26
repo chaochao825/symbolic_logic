@@ -15,7 +15,6 @@ import itertools
 import json
 import math
 import random
-import subprocess
 from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -27,11 +26,25 @@ from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
+from afts_arc.experiment_safety import (
+    ARC_EXPERIMENT_SOURCE_PATHS,
+    ExperimentSafetyError,
+    TaskFingerprint,
+    assert_three_axis_disjoint,
+    atomic_write_json,
+    capture_git_source_provenance,
+    file_sha256,
+    runtime_metadata,
+    validate_clean_source_binding,
+    validate_summary,
+    verify_source_provenance_unchanged,
+)
 from afts_arc.hybrid.metareasoning import conditional_mutual_information
 
 
-SCHEMA_VERSION = "afts.option-switching-audit/v1"
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+SCHEMA_VERSION = "afts.option-switching-audit/v2"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = PROJECT_ROOT.parent
 SOURCES = ("dsl", "ca", "scene")
 SOURCE_POLICIES = {
     "dsl": "dsl_only",
@@ -50,17 +63,6 @@ def _sha256(value: object) -> str:
         allow_nan=False,
     )
     return hashlib.sha256(text.encode("ascii")).hexdigest()
-
-
-def _git_head() -> str:
-    completed = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=REPOSITORY_ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return completed.stdout.strip()
 
 
 def _numeric(value: object) -> float:
@@ -90,6 +92,8 @@ class OptionOutcome:
 @dataclass(frozen=True, slots=True)
 class TaskRecord:
     task_id: str
+    task_source_sha256: str
+    blind_content_sha256: str
     static_tokens: tuple[str, ...]
     options: tuple[tuple[str, OptionOutcome], ...]
     pool_oracle_covered: bool
@@ -152,6 +156,9 @@ def _option_outcome(payload: Mapping[str, object]) -> OptionOutcome:
 
 def _load_records(path: Path) -> tuple[TaskRecord, ...]:
     payload = json.loads(path.read_text(encoding="utf-8"))
+    integrity = validate_summary(payload)
+    if integrity.failed_task_count:
+        raise ExperimentSafetyError(f"option audit requires a complete summary: {path}")
     tasks = payload.get("tasks")
     if not isinstance(tasks, list) or not tasks:
         raise ValueError(f"summary has no tasks: {path}")
@@ -168,6 +175,8 @@ def _load_records(path: Path) -> tuple[TaskRecord, ...]:
         records.append(
             TaskRecord(
                 task_id=str(task["task_id"]),
+                task_source_sha256=str(task["task_source_sha256"]),
+                blind_content_sha256=str(task["blind_content_sha256"]),
                 static_tokens=tuple(
                     sorted(str(item) for item in sketch["factual_tokens"])
                 ),
@@ -575,6 +584,20 @@ def _stratified_cmi(
         "permutation_95_percentile_bits": float(np.quantile(null, 0.95)),
         "permutation_p": p_value,
         "condition": "core task facts plus first option",
+        "conditioning_definition": (
+            "phi_core(shape,change,support) plus first option; not full phi(T)"
+        ),
+        "stratum_count": len(groups),
+        "stratum_size_histogram": dict(
+            sorted(Counter(len(indices) for indices in groups.values()).items())
+        ),
+        "permutable_sample_count": sum(
+            len(indices) for indices in groups.values() if len(indices) > 1
+        ),
+        "interpretation_limit": (
+            "p-value applies only to this plug-in estimator, stratification, "
+            "sample, and permutation null"
+        ),
     }
 
 
@@ -598,6 +621,12 @@ def _dataset_diagnostics(records: Sequence[TaskRecord]) -> dict[str, object]:
     return {
         "task_count": len(records),
         "task_ids_sha256": _sha256(sorted(item.task_id for item in records)),
+        "task_source_sha256_set": _sha256(
+            sorted(item.task_source_sha256 for item in records)
+        ),
+        "blind_content_sha256_set": _sha256(
+            sorted(item.blind_content_sha256 for item in records)
+        ),
         "heterogeneous_pool_oracle_covered_tasks": sum(
             item.pool_oracle_covered for item in records
         ),
@@ -621,11 +650,19 @@ def run_audit(
     *,
     seed: int,
 ) -> dict[str, object]:
-    overlap = {item.task_id for item in fit_records} & {
-        item.task_id for item in test_records
-    }
-    if overlap:
-        raise ValueError(f"fit/test task overlap: {sorted(overlap)[:5]}")
+    fit_fingerprints = tuple(
+        TaskFingerprint(
+            item.task_id, item.task_source_sha256, item.blind_content_sha256
+        )
+        for item in fit_records
+    )
+    test_fingerprints = tuple(
+        TaskFingerprint(
+            item.task_id, item.task_source_sha256, item.blind_content_sha256
+        )
+        for item in test_records
+    )
+    assert_three_axis_disjoint(fit_fingerprints, test_fingerprints)
     feature_space = FeatureSpace.fit(fit_records)
     scales = dict(feature_space.cost_scales)
     models = _fit_models(fit_records, feature_space, seed)
@@ -745,25 +782,49 @@ def run_audit(
     dynamic_vs_history = _paired_comparison(
         aggregates["dynamic_residual"], aggregates["dynamic_history"], seed=seed
     )
-    dynamic_vs_static = _paired_comparison(
-        aggregates["dynamic_residual"], aggregates["static_boosting"], seed=seed + 1
+    dynamic_vs_ablated = _paired_comparison(
+        aggregates["dynamic_residual"],
+        aggregates["residual_ablated"],
+        seed=seed + 1,
     )
-    residual_gain = dynamic_vs_history["rate_difference"]
+    dynamic_vs_static = _paired_comparison(
+        aggregates["dynamic_residual"], aggregates["static_boosting"], seed=seed + 2
+    )
+    residual_gain = dynamic_vs_ablated["rate_difference"]
     if residual_effect["residual_ablated"] == 0:
         gate = "residual_behaviorally_inert"
     elif residual_gain <= 0.0:
         gate = "residual_changes_actions_without_positive_coverage_gain"
     elif residual_gain < 0.03:
         gate = "positive_but_below_three_point_development_gate"
-    elif dynamic_vs_history["paired_bootstrap_95_interval"][0] <= 0.0:
+    elif dynamic_vs_ablated["paired_bootstrap_95_interval"][0] <= 0.0:
         gate = "exploratory_gain_with_interval_crossing_zero"
     else:
         gate = "development_gate_passed_requires_200_task_physical_budget_replication"
 
     return {
         "schema": SCHEMA_VERSION,
-        "training_started": False,
-        "oracle_access": "posthoc source-success labels only",
+        "training_started": True,
+        "neural_provider_training_started": False,
+        "offline_controller_fitting_performed": True,
+        "oracle_access": "posthoc source-success labels on disjoint fit block only",
+        "fit_label_provenance": (
+            "posthoc per-source success labels; query oracle grids are never features"
+        ),
+        "offline_controller_fitting": {
+            "seed": seed,
+            "fit_task_count": len(fit_records),
+            "static_training_rows": len(fit_records) * len(SOURCES),
+            "dynamic_training_rows": len(fit_records)
+            * len(SOURCES)
+            * (len(SOURCES) - 1),
+            "estimators": {
+                "static_tree": "DecisionTreeClassifier(max_depth=3,min_samples_leaf=5,class_weight=balanced)",
+                "static_boosting": "HistGradientBoostingClassifier(max_depth=3,max_iter=120)",
+                "dynamic_history": "HistGradientBoostingClassifier(max_depth=3,max_iter=120)",
+                "dynamic_residual": "HistGradientBoostingClassifier(max_depth=3,max_iter=120)",
+            },
+        },
         "claim_scope": (
             "development option-level residual-increment audit; two option slots; "
             "not a physical-compute-matched end-to-end ARC claim"
@@ -771,6 +832,11 @@ def run_audit(
         "fit": _dataset_diagnostics(fit_records),
         "test": _dataset_diagnostics(test_records),
         "task_sets_disjoint": True,
+        "task_set_disjointness_axes": [
+            "task_id",
+            "task_source_sha256",
+            "blind_content_sha256",
+        ],
         "features": {
             "static_token_count": len(feature_space.static_tokens),
             "residual_token_count": len(feature_space.residual_tokens),
@@ -788,6 +854,7 @@ def run_audit(
         "policies": aggregates,
         "residual_action_intervention": residual_effect,
         "residual_increment_vs_history": dynamic_vs_history,
+        "residual_causal_effect_vs_same_model_ablation": dynamic_vs_ablated,
         "dynamic_vs_static_boosting": dynamic_vs_static,
         "conditional_information": _stratified_cmi(
             test_records, first_by_task, source_cost, seed=seed
@@ -802,25 +869,66 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("test_summary", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--seed", type=int, default=20260726)
+    parser.add_argument(
+        "--allow-dirty-source",
+        action="store_true",
+        help="allow a noncanonical diagnostic audit from modified source",
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    fit_records = _load_records(args.fit_summary.resolve())
-    test_records = _load_records(args.test_summary.resolve())
+    source_start = capture_git_source_provenance(
+        REPOSITORY_ROOT, paths=ARC_EXPERIMENT_SOURCE_PATHS
+    )
+    if source_start.dirty and not args.allow_dirty_source:
+        raise ExperimentSafetyError(
+            "refusing audit from a dirty source tree; commit first or use "
+            "--allow-dirty-source for a noncanonical diagnostic"
+        )
+    fit_path = args.fit_summary.resolve()
+    test_path = args.test_summary.resolve()
+    fit_summary = json.loads(fit_path.read_text(encoding="utf-8"))
+    test_summary = json.loads(test_path.read_text(encoding="utf-8"))
+    input_integrity = {
+        "fit": validate_summary(fit_summary),
+        "test": validate_summary(test_summary),
+    }
+    input_source_blockers: list[str] = []
+    for role, summary in (("fit", fit_summary), ("test", test_summary)):
+        try:
+            validate_clean_source_binding(summary)
+        except ExperimentSafetyError:
+            input_source_blockers.append(f"{role}_summary_source_binding_unavailable")
+    fit_records = _load_records(fit_path)
+    test_records = _load_records(test_path)
     payload: dict[str, Any] = run_audit(fit_records, test_records, seed=args.seed)
+    source_end = capture_git_source_provenance(
+        REPOSITORY_ROOT, paths=ARC_EXPERIMENT_SOURCE_PATHS
+    )
+    verify_source_provenance_unchanged(source_start, source_end)
     payload["inputs"] = {
-        "fit_summary": str(args.fit_summary.resolve()),
-        "test_summary": str(args.test_summary.resolve()),
+        "fit_summary": str(fit_path),
+        "fit_summary_sha256": file_sha256(fit_path),
+        "fit_summary_result_id": input_integrity["fit"].result_id,
+        "test_summary": str(test_path),
+        "test_summary_sha256": file_sha256(test_path),
+        "test_summary_result_id": input_integrity["test"].result_id,
         "seed": args.seed,
     }
-    payload["source_commit"] = _git_head()
+    payload["source_commit"] = source_start.head
+    payload["source_provenance"] = source_start.to_json_dict()
+    payload["runtime"] = runtime_metadata(("numpy", "scikit-learn"))
+    publication_blockers = list(input_source_blockers)
+    if source_start.dirty:
+        publication_blockers.append("dirty_source_override")
+    payload["publication_eligibility"] = {
+        "eligible": not publication_blockers,
+        "blockers": sorted(publication_blockers),
+    }
     payload["result_id"] = _sha256(payload)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    atomic_write_json(args.output.resolve(), payload)
     print(
         json.dumps(
             {

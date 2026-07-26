@@ -4,10 +4,8 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
-import subprocess
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -15,6 +13,20 @@ from typing import Any
 
 import numpy as np
 
+from afts_arc.experiment_safety import (
+    ARC_EXPERIMENT_SOURCE_PATHS,
+    ExperimentSafetyError,
+    GitSourceProvenance,
+    atomic_write_json,
+    canonical_sha256,
+    capture_git_source_provenance,
+    file_sha256,
+    runtime_metadata,
+    validate_pool_manifest,
+    validate_clean_source_binding,
+    validate_summary,
+    verify_source_provenance_unchanged,
+)
 from afts_arc.hybrid.metareasoning import (
     NativeCostContract,
     NativeCostReservation,
@@ -22,8 +34,9 @@ from afts_arc.hybrid.metareasoning import (
 )
 
 
-SCHEMA_VERSION = "afts.native-budget-profile/v1"
-REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+SCHEMA_VERSION = "afts.native-budget-profile/v2"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = PROJECT_ROOT.parent
 EXPECTED_ACTIONS = {
     "typed_dsl": ("synthesize", "shape_resynthesize", "suffix_resynthesize"),
     "sparse_ca_d4_bgpad": ("d4_bgpad_search", "local_transition_search"),
@@ -32,37 +45,12 @@ EXPECTED_ACTIONS = {
 }
 
 
-def _canonical_json(value: object) -> str:
-    return json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True,
-        allow_nan=False,
-    )
-
-
 def _sha256(value: object) -> str:
-    return hashlib.sha256(_canonical_json(value).encode("ascii")).hexdigest()
+    return canonical_sha256(value)
 
 
 def _file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
-def _git_head() -> str:
-    completed = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=REPOSITORY_ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return completed.stdout.strip()
+    return file_sha256(path)
 
 
 def _higher_quantile(values: Sequence[float], quantile: float) -> float:
@@ -71,21 +59,42 @@ def _higher_quantile(values: Sequence[float], quantile: float) -> float:
     return float(np.quantile(values, quantile, method="higher"))
 
 
-def _cost_mapping(value: object, *, prefix: str) -> dict[str, float]:
-    if value is None:
-        value = {}
+def _cost_mapping(
+    value: object,
+    *,
+    prefix: str,
+    legacy_conversions: dict[str, int],
+) -> dict[str, float]:
     if not isinstance(value, Mapping):
         raise TypeError("native cost diagnostics must be a mapping")
 
-    def numeric_only(raw: Mapping[str, object]) -> dict[str, object]:
+    def numeric_only(
+        raw: Mapping[str, object], path: tuple[str, ...] = ()
+    ) -> dict[str, object]:
         cleaned: dict[str, object] = {}
         for key, item in raw.items():
+            text_key = str(key)
+            item_path = (*path, text_key)
             if isinstance(item, Mapping):
-                nested = numeric_only(item)
+                nested = numeric_only(item, item_path)
                 if nested:
-                    cleaned[str(key)] = nested
+                    cleaned[text_key] = nested
             elif isinstance(item, (int, float)) and not isinstance(item, bool):
-                cleaned[str(key)] = item
+                cleaned[text_key] = item
+            elif item_path == ("bounded_program_trials_enabled",) and isinstance(
+                item, bool
+            ):
+                # The v3 legacy pool schema placed this one descriptive flag
+                # under native_cost.  It was never a cost dimension.
+                legacy_key = ".".join((*prefix.split("."), *item_path))
+                legacy_conversions[legacy_key] = (
+                    legacy_conversions.get(legacy_key, 0) + 1
+                )
+            else:
+                raise TypeError(
+                    "native cost leaves must be numeric; unsupported leaf at "
+                    + ".".join(item_path)
+                )
         return cleaned
 
     return NativeCostVector.from_mapping(
@@ -108,37 +117,58 @@ def _calibrated_vector(
     return NativeCostVector(tuple(reserved.items()))
 
 
-def calibrate(summary_path: Path, *, quantile: float) -> dict[str, object]:
+def calibrate(
+    summary_path: Path,
+    *,
+    quantile: float,
+    source_provenance: GitSourceProvenance,
+    runtime: Mapping[str, object],
+) -> dict[str, object]:
     if not 0.0 < quantile <= 1.0 or not math.isfinite(quantile):
         raise ValueError("quantile must be finite and in (0, 1]")
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
-    tasks = summary.get("tasks")
-    if not isinstance(tasks, list) or not tasks:
+    integrity = validate_summary(summary)
+    input_source = validate_clean_source_binding(summary)
+    if integrity.failed_task_count:
+        raise ExperimentSafetyError("fit summary must be complete with no failures")
+    tasks = summary["tasks"]
+    if not tasks:
         raise ValueError("fit summary contains no tasks")
     task_ids = [str(item["task_id"]) for item in tasks]
     if len(set(task_ids)) != len(task_ids):
         raise ValueError("fit summary contains duplicate task IDs")
 
     observations: dict[tuple[str, str], list[dict[str, float]]] = defaultdict(list)
+    legacy_conversions: dict[str, int] = {}
+    fingerprints = {item.task_id: item for item in integrity.task_fingerprints}
+    summary_root = summary_path.parent.resolve()
     for task in tasks:
-        manifest_path = summary_path.parent / str(task["pool_manifest"])
+        manifest_path = (summary_root / str(task["pool_manifest"])).resolve()
+        if not manifest_path.is_relative_to(summary_root):
+            raise ExperimentSafetyError("pool manifest escapes summary directory")
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if manifest.get("task_id") != task["task_id"]:
-            raise ValueError("pool manifest task ID mismatch")
+        manifest_integrity = validate_pool_manifest(
+            manifest, expected_task=fingerprints[str(task["task_id"])]
+        )
+        if manifest_integrity.pool_id != task.get("pool_id"):
+            raise ExperimentSafetyError("summary/pool manifest ID mismatch")
         for provider in manifest["providers"]:
             actor = str(provider["provider"])
             for action in provider["actions"]:
                 operator = str(action["operator"])
                 diagnostics = action.get("diagnostics", {})
-                native = (
-                    diagnostics.get("native_cost", {})
-                    if isinstance(diagnostics, Mapping)
-                    else {}
-                )
+                if not isinstance(diagnostics, Mapping):
+                    raise TypeError("provider diagnostics must be a mapping")
+                if "native_cost" not in diagnostics:
+                    raise ExperimentSafetyError(
+                        f"missing actual native cost for {actor}:{operator}"
+                    )
+                native = diagnostics["native_cost"]
                 observations[(actor, operator)].append(
                     _cost_mapping(
                         native,
                         prefix=f"{actor}.native_cost",
+                        legacy_conversions=legacy_conversions,
                     )
                 )
 
@@ -171,7 +201,7 @@ def calibrate(summary_path: Path, *, quantile: float) -> dict[str, object]:
             reservations.append(reservation)
             support[f"{actor}:{operator}"] = {
                 "observed_action_outcomes": len(values),
-                "used_actor_worst_observed_fallback": used_fallback,
+                "used_actor_pooled_observed_fallback": used_fallback,
             }
     contract = NativeCostContract(tuple(reservations))
 
@@ -182,16 +212,29 @@ def calibrate(summary_path: Path, *, quantile: float) -> dict[str, object]:
     limit = NativeCostVector(tuple(limit_values.items()))
     payload: dict[str, Any] = {
         "schema": SCHEMA_VERSION,
-        "source_commit": _git_head(),
+        "source_commit": source_provenance.head,
+        "source_provenance": source_provenance.to_json_dict(),
+        "runtime": dict(runtime),
+        "publication_eligibility": {
+            "eligible": not source_provenance.dirty,
+            "blockers": (
+                [] if not source_provenance.dirty else ["dirty_source_override"]
+            ),
+        },
         "fit_summary_sha256": _file_sha256(summary_path),
+        "fit_summary_result_id": integrity.result_id,
+        "fit_summary_source_commit": input_source.head,
         "fit_task_count": len(task_ids),
         "fit_task_ids_sha256": _sha256(sorted(task_ids)),
+        "fit_task_fingerprints": [
+            item.to_json_dict() for item in sorted(integrity.task_fingerprints)
+        ],
         "oracle_fields_read": 0,
         "reservation_rule": {
             "estimator": "dimensionwise_empirical_higher_quantile",
             "quantile": quantile,
             "abstentions_are_included": True,
-            "unseen_operator": "actor_worst_observed_fallback",
+            "unseen_operator": "actor_pooled_observed_higher_quantile_fallback",
         },
         "budget_rule": (
             "one calibrated option-call token per actor; per-dimension cap is "
@@ -200,6 +243,7 @@ def calibrate(summary_path: Path, *, quantile: float) -> dict[str, object]:
         "contract": contract.to_json_dict(),
         "budget_limit": limit.to_json_dict(),
         "support": support,
+        "legacy_cost_conversions": dict(sorted(legacy_conversions.items())),
     }
     payload["profile_id"] = _sha256(payload)
     return payload
@@ -210,22 +254,49 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("fit_summary", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--quantile", type=float, default=1.0)
+    parser.add_argument(
+        "--allow-dirty-source",
+        action="store_true",
+        help="allow a noncanonical diagnostic profile from modified source",
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    summary = args.fit_summary.resolve()
-    payload = calibrate(summary, quantile=args.quantile)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+    source_start = capture_git_source_provenance(
+        REPOSITORY_ROOT, paths=ARC_EXPERIMENT_SOURCE_PATHS
     )
+    if source_start.dirty and not args.allow_dirty_source:
+        raise ExperimentSafetyError(
+            "refusing calibration from a dirty source tree; commit first or use "
+            "--allow-dirty-source for a noncanonical diagnostic"
+        )
+    summary = args.fit_summary.resolve()
+    payload = calibrate(
+        summary,
+        quantile=args.quantile,
+        source_provenance=source_start,
+        runtime=runtime_metadata(("numpy",)),
+    )
+    source_end = capture_git_source_provenance(
+        REPOSITORY_ROOT, paths=ARC_EXPERIMENT_SOURCE_PATHS
+    )
+    verify_source_provenance_unchanged(source_start, source_end)
+    output = args.output.resolve()
+    registry_root = (
+        output.parent
+        if output.parent.name == "native_budget_profiles"
+        else output.parent / "native_budget_profiles"
+    )
+    registry_path = registry_root / f"{payload['profile_id']}.json"
+    atomic_write_json(registry_path, payload)
+    atomic_write_json(output, payload)
     print(
         json.dumps(
             {
-                "output": str(args.output.resolve()),
+                "output": str(output),
+                "content_addressed_profile": str(registry_path),
                 "profile_id": payload["profile_id"],
                 "fit_task_count": payload["fit_task_count"],
             },

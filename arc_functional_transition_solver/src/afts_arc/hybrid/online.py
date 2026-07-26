@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from ..blind import BlindTask
@@ -43,6 +43,80 @@ from .types import (
     canonical_json,
 )
 from .verification import evaluate_hypotheses_isolated, rank_verified
+
+
+_STRICT_PROVIDER_INTEGRITY_FAILURES = frozenset(
+    {"budget_contract_violation", "provider_exception"}
+)
+_REPAIR_NATIVE_COSTS = {
+    "residual_repair.native_cost.option_calls": 1.0,
+    "residual_repair.native_cost.repair_attempts": 1.0,
+}
+
+
+def _provider_native_cost(result: ProviderResult | None) -> NativeCostVector | None:
+    """Return a valid explicit observation, never an implicit zero fallback."""
+
+    if result is None:
+        return None
+    diagnostics = result.diagnostics
+    if "native_cost" not in diagnostics:
+        return None
+    raw_cost = diagnostics["native_cost"]
+    if not isinstance(raw_cost, Mapping):
+        return None
+    try:
+        return NativeCostVector.from_mapping(raw_cost)
+    except (TypeError, ValueError):
+        return None
+
+
+def _strict_proposal_integrity(result: ActionResult) -> bool:
+    if result.budget_fidelity != "strict_replayable":
+        return False
+    if result.reason in _STRICT_PROVIDER_INTEGRITY_FAILURES:
+        return False
+    provider_result = result.provider_result
+    if provider_result is None:
+        return False
+    diagnostics = provider_result.diagnostics
+    if "budget_contract_violation" in diagnostics:
+        return False
+    return _provider_native_cost(provider_result) is not None
+
+
+def _declared_repair_native_cost(
+    reservation: NativeCostVector,
+) -> NativeCostVector:
+    """Project fixed repair work onto dimensions declared by the contract."""
+
+    declared = reservation.to_mapping()
+    return NativeCostVector(
+        tuple(
+            (key, value)
+            for key, value in _REPAIR_NATIVE_COSTS.items()
+            if key in declared
+        )
+    )
+
+
+def _declared_proposal_native_cost(
+    result: ProviderResult | None,
+    reservation: NativeCostVector,
+    *,
+    actor: str,
+) -> NativeCostVector | None:
+    """Add the known one-call action counter when its dimension is declared."""
+
+    observed = _provider_native_cost(result)
+    if observed is None:
+        return None
+    option_key = f"{actor}.native_cost.option_calls"
+    if option_key not in reservation.to_mapping():
+        return observed
+    actual = observed.to_mapping()
+    actual[option_key] = max(actual.get(option_key, 0.0), 1.0)
+    return NativeCostVector(tuple(actual.items()))
 
 
 @dataclass(frozen=True, slots=True)
@@ -146,7 +220,7 @@ class OnlineSolveReport:
             if item.action.kind == "propose"
         )
         return bool(proposal_results) and all(
-            item.budget_fidelity == "strict_replayable" for item in proposal_results
+            _strict_proposal_integrity(item) for item in proposal_results
         )
 
     @property
@@ -671,10 +745,14 @@ class OnlineFunctionalRouterSolver:
                     self._provider_action(task, blackboard, action)
                 )
                 if native_reservation is not None:
-                    actual_native = NativeCostVector.from_mapping(
-                        provider_result.diagnostics.get("native_cost", {})
+                    actual_native = _declared_proposal_native_cost(
+                        provider_result,
+                        native_reservation,
+                        actor=action.actor,
                     )
-                    if not actual_native.fits_within(native_reservation):
+                    if actual_native is None or not actual_native.fits_within(
+                        native_reservation
+                    ):
                         native_violations += 1
                 provider_results = (*blackboard.provider_results, provider_result)
                 repair_receipts = blackboard.repair_receipts
@@ -684,6 +762,10 @@ class OnlineFunctionalRouterSolver:
                 )
                 provider_results = blackboard.provider_results
                 repair_receipts = (*blackboard.repair_receipts, repair_receipt)
+                if native_reservation is not None:
+                    actual_native = _declared_repair_native_cost(native_reservation)
+                    if not actual_native.fits_within(native_reservation):
+                        native_violations += 1
 
             blackboard = Blackboard.create(
                 task=task,

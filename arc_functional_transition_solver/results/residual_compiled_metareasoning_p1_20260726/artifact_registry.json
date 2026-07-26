@@ -1,0 +1,97 @@
+{
+  "registry_id": "4b87610e3776de41dd1d0d1cf33eedcd543a8c8bc740f2966f3acbb44b84a294",
+  "canonical_artifacts": [
+    {
+      "artifact": "option_switching_audit.json",
+      "artifact_id": "3e6df17d9e2127df7f40a095272207f43d9494bbab65788dfb88a6650057cbd8",
+      "canonical_for": [
+        "offline_option_switching_audit",
+        "residual_action_ablation"
+      ],
+      "file_sha256": "ab56f4ee50dcfc9abf3f6acce26045b042aa2830dc5f82fc9a154bf7311ebe6d",
+      "limitations": [
+        "legacy training_started=false only meant no neural/provider checkpoint training; offline audit classifiers were fitted"
+      ],
+      "source_commit": "f62a0fe5ea326a0b20bcccd6543575e4f6230925"
+    },
+    {
+      "artifact": "native_budget_profiles/8f54b70c3f3c1b926fc873c58a7d7e6e4bbac3e7b4da9e943aef11c1320b95b8.json",
+      "artifact_id": "8f54b70c3f3c1b926fc873c58a7d7e6e4bbac3e7b4da9e943aef11c1320b95b8",
+      "canonical_for": [
+        "legacy_v1_native_reservation_contract"
+      ],
+      "file_sha256": "32cb972d126e2ccd3a23459ed272272ecca9c3c2a95c8a1c01fe0563baa6a70d",
+      "limitations": [
+        "v1 does not embed fit task source and blind-content fingerprints"
+      ],
+      "source_commit": "f62a0fe5ea326a0b20bcccd6543575e4f6230925"
+    },
+    {
+      "artifact": "native_budget_phase_ablation_offset300_n20/summary.json",
+      "artifact_id": "fbefd0b0b17131eb21980943a746ad2efaf342a72729852fed10aaaa83f6bb98",
+      "canonical_for": [
+        "pass_and_oracle_coverage_metrics",
+        "action_and_candidate_trajectory",
+        "reservation_ledger_comparison"
+      ],
+      "file_sha256": "6760ef94fced66cdd9f94c1c16431ad48639ab3e38cdd3c5d7d0b3d5e43a323d",
+      "not_canonical_for": [
+        "complete_physical_native_actual_accounting"
+      ],
+      "source_commit": "f62a0fe5ea326a0b20bcccd6543575e4f6230925"
+    }
+  ],
+  "diagnostic_artifacts": [
+    {
+      "artifact": "cost_dag_smoke/summary.json",
+      "artifact_id": "aa50e1d9847a8bdd61eb4196fb37682c0565508804e7b7d81d3907292e0369d3",
+      "classification": "noncanonical_dirty_worktree",
+      "declared_source_commit": "ab9442facfc92bb04ebfd3c3289f9d6396803f8a",
+      "file_sha256": "33400d23601ddfdfe3c3113bbfc6a75ce641baa041d5580ddd0f5c8929b6b983"
+    },
+    {
+      "artifact": "native_budget_smoke/summary.json",
+      "artifact_id": "d126f84172266ff1c52d442433b4501ca85b8c49ee025622fcca5aa6f4134e39",
+      "classification": "noncanonical_dirty_worktree",
+      "declared_profile_id": "eb7abb42ae146c6b34913ba61f0c0af0b6c955691abc3887735c4b81a567405a",
+      "declared_source_commit": "ab9442facfc92bb04ebfd3c3289f9d6396803f8a",
+      "file_sha256": "27a279dbecfde3d8a08dc135408f1bfafa9fa60dec5b1b7ef47162092e80e091"
+    },
+    {
+      "artifact": "native_budget_ca_cost_smoke/summary.json",
+      "artifact_id": "e96fe1f72fad9daa3de290da83520823378bbfa5ea28f4c5d095a6c17b293ce0",
+      "classification": "noncanonical_dirty_worktree",
+      "declared_profile_id": "eb7abb42ae146c6b34913ba61f0c0af0b6c955691abc3887735c4b81a567405a",
+      "declared_source_commit": "ab9442facfc92bb04ebfd3c3289f9d6396803f8a",
+      "file_sha256": "161e05f0eebf29c57d408c5b40e1b81687201cb637201da9d5a40fe80e0b265e"
+    },
+    {
+      "artifact": "native_budget_pilot_offset300_n20/summary.json",
+      "artifact_id": "bb0cc80d5744f01c011d292f4566e8183673cc3897ad3680bf52c327e00aa313",
+      "classification": "noncanonical_dirty_worktree",
+      "declared_profile_id": "eb7abb42ae146c6b34913ba61f0c0af0b6c955691abc3887735c4b81a567405a",
+      "declared_source_commit": "ab9442facfc92bb04ebfd3c3289f9d6396803f8a",
+      "file_sha256": "2e313d5aac0552f0b2cd94d79f3ec2441b44bec144cc5812d25852d37a410570"
+    }
+  ],
+  "policy": {
+    "historical_artifacts_modified": false,
+    "noncanonical_artifacts_are_diagnostics_only": true,
+    "profile_files_are_content_addressed_and_immutable": true
+  },
+  "profile_registry": [
+    {
+      "file_sha256": "32cb972d126e2ccd3a23459ed272272ecca9c3c2a95c8a1c01fe0563baa6a70d",
+      "path": "native_budget_profiles/8f54b70c3f3c1b926fc873c58a7d7e6e4bbac3e7b4da9e943aef11c1320b95b8.json",
+      "profile_id": "8f54b70c3f3c1b926fc873c58a7d7e6e4bbac3e7b4da9e943aef11c1320b95b8",
+      "source_binding": "clean_commit_f62a0fe5"
+    },
+    {
+      "file_sha256": "a63f33d88a85b84379bd341bb06fa4a2a3cc313258940025eef0694795a99814",
+      "path": "native_budget_profiles/eb7abb42ae146c6b34913ba61f0c0af0b6c955691abc3887735c4b81a567405a.json",
+      "profile_id": "eb7abb42ae146c6b34913ba61f0c0af0b6c955691abc3887735c4b81a567405a",
+      "source_binding": "unavailable_in_legacy_profile"
+    }
+  ],
+  "schema": "afts.artifact-registry/v1"
+}

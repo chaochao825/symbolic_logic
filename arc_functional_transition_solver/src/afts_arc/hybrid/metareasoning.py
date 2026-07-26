@@ -21,6 +21,15 @@ NATIVE_COST_SCHEMA_VERSION = "afts.native-cost/v1"
 NATIVE_CONTRACT_SCHEMA_VERSION = "afts.native-cost-contract/v1"
 
 
+def _native_cost_number(value: object) -> float:
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        raise TypeError("native costs must contain only numeric leaves")
+    numeric = float(value)
+    if not math.isfinite(numeric) or numeric < 0.0:
+        raise ValueError("native costs must be finite and non-negative")
+    return numeric
+
+
 def _flatten_costs(
     value: Mapping[str, object],
     *,
@@ -34,9 +43,7 @@ def _flatten_costs(
         if isinstance(item, Mapping):
             flattened.extend(_flatten_costs(item, prefix=key))
         elif isinstance(item, (int, float)) and not isinstance(item, bool):
-            numeric = float(item)
-            if not math.isfinite(numeric) or numeric < 0.0:
-                raise ValueError("native costs must be finite and non-negative")
+            numeric = _native_cost_number(item)
             if numeric:
                 flattened.append((key, numeric))
         else:
@@ -56,11 +63,9 @@ class NativeCostVector:
         for key, raw_value in self.items:
             if not isinstance(key, str) or not key:
                 raise TypeError("native-cost keys must be non-empty strings")
-            value = float(raw_value)
+            value = _native_cost_number(raw_value)
             if key in seen:
                 raise ValueError("native-cost keys must be unique")
-            if not math.isfinite(value) or value < 0.0:
-                raise ValueError("native costs must be finite and non-negative")
             seen.add(key)
             if value:
                 canonical.append((key, value))

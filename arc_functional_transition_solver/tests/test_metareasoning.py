@@ -111,3 +111,20 @@ def test_conditional_mutual_information_handles_explained_dependence() -> None:
 def test_native_cost_rejects_invalid_values(value: float) -> None:
     with pytest.raises(ValueError, match="finite and non-negative"):
         NativeCostVector.from_mapping({"work": value})
+
+
+@pytest.mark.parametrize("value", [True, "2"])
+def test_native_cost_rejects_non_numeric_leaves_on_every_load_path(
+    value: object,
+) -> None:
+    encoded = NativeCostVector.from_mapping({"work": 1}).to_json_dict()
+    encoded["items"] = [["work", value]]
+
+    constructors = (
+        lambda: NativeCostVector((("work", value),)),
+        lambda: NativeCostVector.from_mapping({"work": value}),
+        lambda: NativeCostVector.from_json_dict(encoded),
+    )
+    for construct in constructors:
+        with pytest.raises(TypeError, match="numeric leaves"):
+            construct()

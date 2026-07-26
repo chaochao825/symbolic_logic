@@ -1,18 +1,31 @@
 # Residual-Compiled Metareasoning P1: Cost-Carrying DAG and Switching Audit
 
 Date: 2026-07-26
-Source branch before this change: `agent/arc-online-controller-20260724` at
-`ab9442facfc92bb04ebfd3c3289f9d6396803f8a`
-Training launched: **no**
-ARC evaluation opened: **no**
+Development branch: `agent/arc-online-controller-20260724`
+Canonical producer source for the primary artifacts: commit
+`f62a0fe5ea326a0b20bcccd6543575e4f6230925`
+Neural/provider checkpoint training launched: **no**
+Offline audit classifiers fitted: **yes**, on development fit block 0-99 only
+ARC final evaluation opened: **no**
+ARC-AGI-1 training-split development blocks opened: **yes**
+
+The earlier HEAD `ab9442facfc92bb04ebfd3c3289f9d6396803f8a` was the
+base of a dirty development tree, not a sufficient source snapshot for the
+early smoke and pilot files. Those files are retained as non-canonical
+engineering records and are not primary evidence. The artifact status and IDs
+are recorded in
+`notes/results/residual-compiled-metareasoning-artifact-registry-20260727.md`;
+the machine-readable sidecar is
+`results/residual_compiled_metareasoning_p1_20260726/artifact_registry.json`.
 
 ## Verdict
 
 The project now has a sharper theory and a stronger cost-audit primitive, but
 the new experiment rejects the current learned functional-switching premise:
 
-> On the present three-source pool, observed residual tokens add no detectable
-> information or held-out coverage benefit to the second-option decision.
+> On the present three-source pool and under the tested two-option audit,
+> observed residual tokens add no detectable conditional-information signal or
+> held-out coverage benefit to the second-option decision.
 
 The direct residual interventions are behaviorally inert.  A GRU, MLP, or
 diffusion action planner is therefore not justified on this candidate pool.
@@ -55,15 +68,22 @@ than silently equating them with NCU.  A frozen action batch now hashes:
 
 - action operator and parent;
 - content-addressed candidates;
-- realized provider-native cost vector.
+- provider-reported realized native-cost vector.
 
-The pool schema is bumped from `afts.frozen-action-pool/v2` to `/v3`.  Frozen
-replay returns the cost vector from the action batch, so policy cost summaries
-no longer require a side lookup into the live recorder cache.  The provenance is
-explicitly `realized_discovery_outcome`; this is audit evidence, not yet a legal
-inference-time reservation estimate.
+The pool schema is bumped from `afts.frozen-action-pool/v2` to `/v3`. Frozen
+in-process replay returns the cost vector from the action batch, so policy cost
+summaries no longer require a side lookup into the live recorder cache. The
+provenance is explicitly `realized_discovery_outcome`; this is audit evidence,
+not yet a legal inference-time reservation estimate.
 
-A one-task rerun produced:
+The JSON file is an **audit/replay manifest**, not yet a self-contained
+executable snapshot. It records candidate specs, IDs, batches, and diagnostics,
+but the generic replay callable is not serialized and there is no provider-wide
+artifact loader. Consequently, “replay” below means deterministic replay from
+the frozen in-memory objects or regeneration under the bound source, unless a
+statement explicitly says that a JSON artifact was independently rehydrated.
+
+An early one-task dirty-tree engineering smoke produced:
 
 - result ID `aa50e1d9847a8bdd61eb4196fb37682c0565508804e7b7d81d3907292e0369d3`;
 - pool schema `/v3` and pool ID
@@ -71,7 +91,9 @@ A one-task rerun produced:
 - zero behavioral differences from the corresponding previous task across all
   policies, metrics, actions, selections, and cost summaries.
 
-The schema-v3 change alone did **not** establish matched physical compute:
+This smoke is non-canonical and is retained only as a regression diagnostic;
+its numerical observation is not needed for the main negative conclusion. The
+schema-v3 change alone did **not** establish matched physical compute:
 using the realized cost of a frozen outcome to decide whether to run it would
 be hindsight lookahead.  The follow-up implementation below adds a reservation
 that is calibrated before the analysis task is opened.
@@ -83,10 +105,11 @@ maximum reservation (`q=1.0`) for each typed operator.  The controller now:
 
 - masks an action before selection if its reservation does not fit;
 - charges the reservation even when the frozen provider abstains;
-- records realized work separately from reserved work;
-- invalidates the native-budget claim if realized work exceeds a reservation;
-- rejects non-numeric diagnostic leaves instead of silently treating booleans
-  as costs.
+- records the available provider-reported work separately from reserved work;
+- invalidates the proposal-side native-budget claim if a reported provider
+  vector exceeds its reservation;
+- explicitly extracts numeric cost leaves and excludes descriptive boolean and
+  string leaves from the cost vector.
 
 The profile was created without reading query labels or oracle-success fields:
 
@@ -102,12 +125,28 @@ This establishes pre-action native-budget legality for the frozen replay
 experiment.  It does not make heterogeneous dimensions interchangeable, and it
 does not claim that reserved maxima equal realized expenditure.
 
+The “actual” native vector is not yet a complete measurement of physical work.
+In particular, CA `policy_fits` currently counts selected policy families, and
+`max_rules_per_policy` is a configured bound; neither counts all internal
+neighborhood/rule fitting, bounded-program search, candidate verification, or
+hard-verifier refits and executions. Repair records an attempt count rather
+than its internal work, and repair overrun is not checked through the same path
+as provider proposals. Therefore, `native-comparable` below means comparable
+under the **declared and instrumented reservation contract**, not matched total
+CPU/GPU time, FLOPs, or complete physical work. The CA totals should be treated
+as an undercounting proxy until instrumentation is closed.
+
 ### Option-switching audit
 
 The new audit treats `dsl_only`, `ca_only`, and `scene_only` as three
 temporally extended options.  It fits on the previously opened offset 0-99 block
 and tests on the previously opened offset 300-399 block.  It uses exactly two
 option slots and no query-output feature.
+
+The decision tree and gradient-boosting models are genuine offline audit model
+fits. Existing JSON fields such as `training_started: false` mean that no
+neural/provider model or checkpoint training was launched; they must not be
+read as “no estimator was fitted anywhere in the audit.”
 
 Compared models:
 
@@ -190,7 +229,8 @@ controller learner.
 
 The normalized work column divides each named dimension by its positive median
 on the fit block and sums the ratios.  It is useful only for within-audit
-description; raw vectors in the JSON are authoritative.
+description; raw vectors in the JSON are authoritative for the recorded proxy
+dimensions, not a complete account of physical work.
 
 ### Residual intervention and conditional information
 
@@ -199,13 +239,23 @@ description; raw vectors in the JSON are authoritative.
 - replacing all residual tokens by the empty set changes **0/100** choices;
 - shuffling residuals within the selected first source changes **0/100** choices;
 - empirical
-  \(I(m^*_2;R_1\mid\phi(T),m_1)=0.01070\) bit;
+  \(I(m^*_2;R_1\mid\phi_{\mathrm{core}}(T),m_1)=0.01070\) bit, where
+  \(\phi_{\mathrm{core}}\) contains only the audit's `shape:`, `change:`, and
+  `support:` fact tokens rather than the full task feature vector;
 - stratified permutation mean is 0.02202 bit, the 95th percentile is 0.06270
   bit, and permutation `p=1.0`.
 
+The permutation result is limited to this empirical plug-in estimator, this
+coarse \(\phi_{\mathrm{core}}\) stratification, 100 held-out development tasks,
+and 1,000 seeded permutations. `p=1.0` says that the observed estimate is not
+unusual under this particular null construction; it is not proof that every
+possible residual representation is conditionally independent of the next
+useful option.
+
 The four differences between two independently fitted model variants are not a
 residual effect: direct ablation and shuffle of the residual input leave the
-residual model unchanged.  The residual feature has been ignored.
+selected action unchanged. The residual feature has no behaviorally detectable
+effect on the second-option decision in this audit.
 
 The automatic gate is therefore:
 
@@ -220,7 +270,7 @@ A deterministic 20-task pilot from the already opened offset 300 analysis
 block was rerun under the fit-calibrated reservation contract.  This is a
 development ablation, not a final accuracy estimate.
 
-| Policy | pass@2 | native-comparable tasks | reservation violations | masked actions |
+| Policy | pass@2 | declared-native-comparable tasks | reservation violations | masked actions |
 |---|---:|---:|---:|---:|
 | structured deliberation | 4/20 | 20/20 | 0 | 17 |
 | summary grounded | 4/20 | 20/20 | 0 | 17 |
@@ -232,7 +282,8 @@ The decisive mechanistic comparison is negative:
 
 - structured, summary-grounded, and true phase-disabled grounding have
   identical action traces on **20/20**, identical selections on **20/20**, and
-  identical realized and reserved native-cost vectors;
+  identical provider-reported and reserved native-cost vectors on the
+  dimensions recorded by the legacy instrumentation;
 - structured and static task routing differ on 18/20 action traces, but have
   identical selected hypotheses and 0 paired pass wins/losses;
 - static task routing spends 52,666 scene trials and 163,150 demo scene
@@ -246,21 +297,25 @@ The decisive mechanistic comparison is negative:
 
 Adding the true ablation policy does not perturb the pre-existing policies:
 their per-task actions, metrics, selections, and native costs are identical to
-the preceding pilot on all 20 tasks.  Pool IDs change because the manifest
+the preceding pilot on all 20 tasks under those recorded dimensions. Pool IDs
+change because the manifest
 content-addresses the enlarged replay-policy/provenance set.
 
 Raw result ID:
 `fbefd0b0b17131eb21980943a746ad2efaf342a72729852fed10aaaa83f6bb98`.
 
-The audit, calibration profile, and final phase ablation were replayed from
-source commit `f62a0fe5ea326a0b20bcccd6543575e4f6230925`.  Relative to the pre-commit
-pilot, all 20 pool IDs, every policy/task action and metric record, aggregate
-accuracy, realized native cost, and reserved native cost are unchanged.
+The canonical audit, calibration profile, and final phase ablation are bound to
+source commit `f62a0fe5ea326a0b20bcccd6543575e4f6230925`. The earlier smoke and pilot
+files were produced from an uncaptured dirty tree while declaring only the base
+HEAD, and their `eb7abb...` profile path no longer resolves to the declared
+profile content. They are therefore non-canonical even where their common
+policy metrics agree with the canonical run. The old JSON files remain
+unchanged; the sidecar registry carries this correction.
 
-The correct conclusion is therefore stronger than “no significant gain”: the
-current phase/residual terms have no observable causal effect on controller
-behavior in this sample.  The static grounding model, not stateful switching,
-explains the 4/20 result.
+The correct conclusion is therefore stronger than “no significant gain”: for
+this fitted model, sample, and current action set, the phase/residual terms have
+no observable causal effect on controller action selection. The static
+grounding model, not stateful switching, explains the 4/20 result.
 
 ## Interpretation against the original motivation
 
@@ -268,7 +323,8 @@ explains the 4/20 result.
 
 - ARC benefits from specialized, heterogeneous inductive biases.
 - Content-addressed candidates, typed actions, provenance, oracle isolation,
-  and deterministic replay are a credible foundation.
+  and deterministic in-process replay/audit manifests are a credible
+  foundation. Independent JSON rehydration remains future work.
 - A residual loop remains theoretically sensible and is aligned with refinement
   and rational-metareasoning work.
 
@@ -279,8 +335,10 @@ explains the 4/20 result.
 - Current positive accuracy comes from candidate-language expansion and static
   representation priority.
 - Masked diffusion and code/LLM options are not present in the formal pool.
-- A conservative native token bucket is implemented and violation-free in the
-  20-task pilot, but learned value-of-computation stopping is not implemented.
+- A conservative native token bucket is implemented and violation-free for the
+  declared instrumentation in the canonical 20-task phase ablation, but native
+  actual-cost coverage is incomplete and learned value-of-computation stopping
+  is not implemented.
 
 Thus, the system is still an auditable heterogeneous solver platform, not yet a
 validated brain-like adaptive algorithm.
@@ -317,7 +375,10 @@ far are development data.
   repository CA backend on `PYTHONPATH`;
 - Ruff lint and format checks pass for all changed Python files;
 - `git diff --check` passes;
-- the one-task schema-v3 replay has zero behavior/metric regression;
+- the non-canonical one-task schema-v3 smoke has zero behavior/metric
+  regression and is retained only as an engineering check;
 - the 20-task native-budget ablation completes without failures or reservation
-  violations, and its common-policy outputs exactly reproduce the prior pilot;
-- audit input task sets are disjoint and their ID lists are content hashed.
+  violations, and its common-policy outputs numerically match the prior pilot;
+  this does not make the dirty-tree pilot canonical;
+- audit input task sets are disjoint; the later artifact audit also found zero
+  overlap by task ID, full task-source hash, and blind-content hash.

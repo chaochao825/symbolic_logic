@@ -327,7 +327,11 @@ class DslProgramProvider:
                 self.name,
                 self.route,
                 "residual_parent_unavailable",
-                {"action_operator": action.operator},
+                {
+                    "action_operator": action.operator,
+                    "native_cost": {},
+                    "native_cost_status": "not_executed",
+                },
             )
         parent_program = self._parent_program(parent)
         options = instruction_proposals(task)[: self.search_config.max_instruction_options]
@@ -417,6 +421,7 @@ class DslProgramProvider:
                 "demo_program_executions": len(evaluated) * len(task.train),
                 "query_program_executions": len(evaluated) * len(task.test_inputs),
             },
+            "native_cost_status": "executed",
         }
         if not candidates:
             return ProviderResult.abstained(
@@ -443,9 +448,6 @@ class DslProgramProvider:
             raise ValueError("DSL provider received an action for another provider")
         if action.operator == "synthesize":
             raw = self.propose(task, features, decision)
-            if raw.status != "ok":
-                return raw
-            selected = raw.candidates[: action.budget.candidate_slots]
             diagnostics = {
                 **raw.diagnostics,
                 "action_operator": action.operator,
@@ -453,7 +455,23 @@ class DslProgramProvider:
                 "native_cost": {
                     "program_expansions": raw.diagnostics.get("expansions", 0),
                 },
+                "native_cost_status": "executed",
             }
+            if raw.status != "ok":
+                if raw.status == "abstained":
+                    return ProviderResult.abstained(
+                        self.name,
+                        self.route,
+                        raw.reason or "no_candidates",
+                        diagnostics,
+                    )
+                return ProviderResult.error(
+                    self.name,
+                    self.route,
+                    raw.reason or "provider_error",
+                    diagnostics,
+                )
+            selected = raw.candidates[: action.budget.candidate_slots]
             return ProviderResult.ok(self.name, self.route, selected, diagnostics)
         return self._residual_programs(task, blackboard, action)
 
@@ -904,6 +922,8 @@ class SparseCAProvider:
                 {
                     "action_operator": action.operator,
                     "configured_policies": list(self.policies),
+                    "native_cost": {},
+                    "native_cost_status": "not_executed",
                 },
             )
         delegated = SparseCAProvider(
@@ -920,27 +940,49 @@ class SparseCAProvider:
             route=self.route,
         )
         raw = delegated.propose(task, features, decision)
-        if raw.status != "ok":
-            return raw
-        conditioned = tuple(
-            _condition_candidate_on_action(candidate, action)
-            for candidate in raw.candidates[: action.budget.candidate_slots]
-        )
+        search_executed = raw.reason not in {
+            "backend_unavailable",
+            "unsupported_shape_change",
+        }
         diagnostics = {
             **raw.diagnostics,
             "action_operator": action.operator,
             "parent_hypothesis_id": action.parent_hypothesis_id,
             "selected_policy_family": list(selected_policies),
             "candidate_slot_limit": action.budget.candidate_slots,
-            "native_cost": {
-                "policy_fits": len(selected_policies),
-                "max_rules_per_policy": self.max_rules_per_policy,
-                "bounded_program_trials_enabled": (
-                    action.operator == "local_transition_search"
-                    and self.max_programs > 0
-                ),
-            },
+            "bounded_program_trials_enabled": (
+                action.operator == "local_transition_search" and self.max_programs > 0
+            ),
+            "native_cost": (
+                {
+                    "policy_fits": len(selected_policies),
+                    "max_rules_per_policy": self.max_rules_per_policy,
+                }
+                if search_executed
+                else {}
+            ),
+            "native_cost_status": (
+                "executed" if search_executed else "not_executed"
+            ),
         }
+        if raw.status != "ok":
+            if raw.status == "abstained":
+                return ProviderResult.abstained(
+                    self.name,
+                    self.route,
+                    raw.reason or "no_candidates",
+                    diagnostics,
+                )
+            return ProviderResult.error(
+                self.name,
+                self.route,
+                raw.reason or "provider_error",
+                diagnostics,
+            )
+        conditioned = tuple(
+            _condition_candidate_on_action(candidate, action)
+            for candidate in raw.candidates[: action.budget.candidate_slots]
+        )
         return ProviderResult.ok(self.name, self.route, conditioned, diagnostics)
 
 

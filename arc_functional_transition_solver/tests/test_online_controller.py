@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import unittest
 from dataclasses import dataclass
+from unittest.mock import patch
 
 from afts_arc.blind import BlindTask
 from afts_arc.grid import as_grid
@@ -108,6 +109,27 @@ class OverrunningStrictProvider:
 
     def act(self, task, features, decision, blackboard, action):
         return ProviderResult.ok(self.name, self.route, self.candidates)
+
+
+@dataclass
+class StrictCostProvider:
+    candidate: CandidateHypothesis
+    diagnostics: dict[str, object] | None = None
+    raise_exception: bool = False
+    name: str = "strict-cost"
+    route: str = "dsl_program"
+    strict_budget_contract: bool = True
+    max_control_calls: int = 1
+
+    def act(self, task, features, decision, blackboard, action):
+        if self.raise_exception:
+            raise RuntimeError("strict provider failed")
+        return ProviderResult.ok(
+            self.name,
+            self.route,
+            (self.candidate,),
+            self.diagnostics,
+        )
 
 
 class OnlineControllerTests(unittest.TestCase):
@@ -609,6 +631,7 @@ class OnlineControllerTests(unittest.TestCase):
         self.assertEqual(proposal.actual_candidate_evaluations, 0)
         self.assertEqual(report.states[-1].budget.used.compute_units, 2)
         self.assertFalse(report.selected)
+        self.assertFalse(report.strict_budget_comparable)
 
     def test_illegal_cross_route_operator_is_rejected_by_type_system(self) -> None:
         with self.assertRaisesRegex(ValueError, "not legal"):
@@ -820,6 +843,227 @@ class OnlineControllerTests(unittest.TestCase):
 
         self.assertEqual(report.native_reservation_violation_count, 1)
         self.assertFalse(report.native_budget_comparable)
+
+    def test_missing_invalid_or_exceptional_strict_cost_invalidates_claims(
+        self,
+    ) -> None:
+        task = _blind(
+            (([[1]], [[1]]),),
+            ([[1]],),
+        )
+        candidate = _hypothesis("identity", lambda grid: grid, route="dsl_program")
+        contract = NativeCostContract(
+            (
+                NativeCostReservation(
+                    "strict-cost",
+                    "synthesize",
+                    NativeCostVector.from_mapping({"cpu.work": 1}),
+                ),
+            )
+        )
+        config = OnlineControlConfig(
+            budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+            provider_batch_size=1,
+            max_selected_hypotheses=1,
+            native_cost_contract=contract,
+            native_budget_limit=NativeCostVector.from_mapping({"cpu.work": 1}),
+        )
+        cases = (
+            ("missing", None, False, True),
+            ("invalid_bool", {"native_cost": {"cpu.work": True}}, False, True),
+            ("exception", None, True, False),
+        )
+
+        for name, diagnostics, raises, selects in cases:
+            with self.subTest(name=name):
+                report = OnlineFunctionalRouterSolver(
+                    providers=(
+                        StrictCostProvider(
+                            candidate,
+                            diagnostics=diagnostics,
+                            raise_exception=raises,
+                        ),
+                    ),
+                    config=config,
+                ).solve(task)
+
+                self.assertEqual(report.native_reservation_violation_count, 1)
+                self.assertFalse(report.strict_budget_comparable)
+                self.assertFalse(report.native_budget_comparable)
+                self.assertEqual(bool(report.selected), selects)
+
+    def test_proposal_option_call_counter_is_checked_when_declared(self) -> None:
+        task = _blind(
+            (([[1]], [[1]]),),
+            ([[1]],),
+        )
+        candidate = _hypothesis("identity", lambda grid: grid, route="dsl_program")
+        option_key = "strict-cost.native_cost.option_calls"
+        reservation = NativeCostVector.from_mapping({option_key: 0.5})
+        contract = NativeCostContract(
+            (
+                NativeCostReservation(
+                    "strict-cost",
+                    "synthesize",
+                    reservation,
+                ),
+            )
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(StrictCostProvider(candidate, diagnostics={"native_cost": {}}),),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+                native_cost_contract=contract,
+                native_budget_limit=reservation,
+            ),
+        ).solve(task)
+
+        self.assertTrue(report.strict_budget_comparable)
+        self.assertEqual(report.native_reservation_violation_count, 1)
+        self.assertFalse(report.native_budget_comparable)
+
+    def test_repair_native_cost_checks_only_declared_canonical_dimensions(
+        self,
+    ) -> None:
+        task = _blind(
+            (
+                ([[0, 1], [1, 0]], [[0, 2], [2, 0]]),
+                ([[1, 0]], [[2, 0]]),
+            ),
+            ([[0, 1]],),
+        )
+        near = _hypothesis("near-identity", lambda grid: grid, route="dsl_program")
+        provider = FrozenCandidatePoolProvider((near,), "near-pool", "dsl_program")
+
+        def solve(repair_cost: NativeCostVector):
+            contract = NativeCostContract(
+                (
+                    NativeCostReservation(
+                        "near-pool", "synthesize", NativeCostVector()
+                    ),
+                    NativeCostReservation(
+                        "residual_repair", "global_color_map", repair_cost
+                    ),
+                )
+            )
+            return OnlineFunctionalRouterSolver(
+                providers=(provider,),
+                config=OnlineControlConfig(
+                    budget_limit=_budget(steps=2, provider_calls=1, repairs=1),
+                    provider_batch_size=1,
+                    max_selected_hypotheses=1,
+                    native_cost_contract=contract,
+                    native_budget_limit=repair_cost,
+                ),
+            ).solve(task)
+
+        canonical = solve(
+            NativeCostVector.from_mapping(
+                {
+                    "residual_repair.native_cost.option_calls": 1,
+                    "residual_repair.native_cost.repair_attempts": 1,
+                }
+            )
+        )
+        under_reserved = solve(
+            NativeCostVector.from_mapping(
+                {"residual_repair.native_cost.repair_attempts": 0.5}
+            )
+        )
+        unrelated = solve(NativeCostVector.from_mapping({"custom.work": 1}))
+
+        self.assertEqual(canonical.native_reservation_violation_count, 0)
+        self.assertTrue(canonical.native_budget_comparable)
+        self.assertEqual(under_reserved.native_reservation_violation_count, 1)
+        self.assertFalse(under_reserved.native_budget_comparable)
+        self.assertEqual(unrelated.native_reservation_violation_count, 0)
+        self.assertTrue(unrelated.native_budget_comparable)
+
+    def test_no_candidate_searches_report_numeric_native_costs(self) -> None:
+        task = _blind(
+            (([[1]], [[2]]),),
+            ([[1]],),
+        )
+        budget = BudgetVector(
+            compute_units=2,
+            controller_steps=1,
+            provider_calls=1,
+            candidate_slots=1,
+        )
+
+        dsl = DslProgramProvider(
+            search_config=SearchConfig(
+                max_depth=1,
+                beam_width=1,
+                max_instruction_options=1,
+                max_exact_programs=1,
+            ),
+            include_repair_seeds=False,
+        )
+        dsl_action = ControlAction.create(
+            state_id="dsl-state",
+            kind="propose",
+            actor=dsl.name,
+            route=dsl.route,
+            operator="synthesize",
+            budget=budget,
+        )
+        dsl_raw = ProviderResult.abstained(
+            dsl.name,
+            dsl.route,
+            "no_candidates",
+            {"expansions": 7},
+        )
+        with patch.object(DslProgramProvider, "propose", return_value=dsl_raw):
+            dsl_result = dsl.act(task, None, None, None, dsl_action)
+
+        self.assertEqual(
+            dsl_result.diagnostics["native_cost"], {"program_expansions": 7}
+        )
+        self.assertEqual(dsl_result.diagnostics["native_cost_status"], "executed")
+
+        ca = SparseCAProvider()
+        ca_action = ControlAction.create(
+            state_id="ca-state",
+            kind="propose",
+            actor=ca.name,
+            route=ca.route,
+            operator="local_transition_search",
+            budget=budget,
+        )
+        ca_raw = ProviderResult.abstained(
+            ca.name,
+            ca.route,
+            "no_candidates",
+            {"bounded_program_status": "no_exact_program"},
+        )
+        with patch.object(SparseCAProvider, "propose", return_value=ca_raw):
+            ca_result = ca.act(task, None, None, None, ca_action)
+
+        self.assertEqual(
+            ca_result.diagnostics["native_cost"],
+            {"max_rules_per_policy": 2, "policy_fits": 2},
+        )
+        self.assertEqual(ca_result.diagnostics["native_cost_status"], "executed")
+        self.assertIs(ca_result.diagnostics["bounded_program_trials_enabled"], True)
+        self.assertTrue(
+            all(
+                not isinstance(value, bool)
+                for value in ca_result.diagnostics["native_cost"].values()
+            )
+        )
+
+        early_raw = ProviderResult.abstained(
+            ca.name,
+            ca.route,
+            "unsupported_shape_change",
+        )
+        with patch.object(SparseCAProvider, "propose", return_value=early_raw):
+            early_result = ca.act(task, None, None, None, ca_action)
+        self.assertEqual(early_result.diagnostics["native_cost"], {})
+        self.assertEqual(early_result.diagnostics["native_cost_status"], "not_executed")
 
 
 if __name__ == "__main__":

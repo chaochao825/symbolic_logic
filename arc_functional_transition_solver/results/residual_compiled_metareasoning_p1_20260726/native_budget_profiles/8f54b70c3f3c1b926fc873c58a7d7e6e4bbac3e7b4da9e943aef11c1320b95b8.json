@@ -1,0 +1,285 @@
+{
+  "budget_limit": {
+    "items": [
+      [
+        "residual_repair.native_cost.option_calls",
+        1.0
+      ],
+      [
+        "residual_repair.native_cost.repair_attempts",
+        1.0
+      ],
+      [
+        "scene_predicate_dsl.native_cost.demo_scene_rule_executions",
+        35070.0
+      ],
+      [
+        "scene_predicate_dsl.native_cost.option_calls",
+        1.0
+      ],
+      [
+        "scene_predicate_dsl.native_cost.scene_parses",
+        72.0
+      ],
+      [
+        "scene_predicate_dsl.native_cost.scene_rule_trials",
+        11690.0
+      ],
+      [
+        "sparse_ca_d4_bgpad.native_cost.max_rules_per_policy",
+        2.0
+      ],
+      [
+        "sparse_ca_d4_bgpad.native_cost.option_calls",
+        1.0
+      ],
+      [
+        "sparse_ca_d4_bgpad.native_cost.policy_fits",
+        2.0
+      ],
+      [
+        "typed_dsl.native_cost.demo_program_executions",
+        448.0
+      ],
+      [
+        "typed_dsl.native_cost.option_calls",
+        1.0
+      ],
+      [
+        "typed_dsl.native_cost.program_expansions",
+        931.0
+      ],
+      [
+        "typed_dsl.native_cost.program_trials",
+        64.0
+      ],
+      [
+        "typed_dsl.native_cost.query_program_executions",
+        192.0
+      ]
+    ],
+    "schema": "afts.native-cost/v1"
+  },
+  "budget_rule": "one calibrated option-call token per actor; per-dimension cap is the maximum reservation across that actor's operators",
+  "contract": {
+    "contract_id": "168b711f134e84d4f8e0aac41304718875fa1057661ea7b8fa351b401d9eb98a",
+    "reservations": [
+      {
+        "actor": "residual_repair",
+        "cost": {
+          "items": [
+            [
+              "residual_repair.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "residual_repair.native_cost.repair_attempts",
+              1.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "global_color_map"
+      },
+      {
+        "actor": "residual_repair",
+        "cost": {
+          "items": [
+            [
+              "residual_repair.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "residual_repair.native_cost.repair_attempts",
+              1.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "local_transition"
+      },
+      {
+        "actor": "scene_predicate_dsl",
+        "cost": {
+          "items": [
+            [
+              "scene_predicate_dsl.native_cost.demo_scene_rule_executions",
+              35070.0
+            ],
+            [
+              "scene_predicate_dsl.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "scene_predicate_dsl.native_cost.scene_parses",
+              72.0
+            ],
+            [
+              "scene_predicate_dsl.native_cost.scene_rule_trials",
+              11690.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "synthesize"
+      },
+      {
+        "actor": "sparse_ca_d4_bgpad",
+        "cost": {
+          "items": [
+            [
+              "sparse_ca_d4_bgpad.native_cost.max_rules_per_policy",
+              2.0
+            ],
+            [
+              "sparse_ca_d4_bgpad.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "sparse_ca_d4_bgpad.native_cost.policy_fits",
+              2.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "d4_bgpad_search"
+      },
+      {
+        "actor": "sparse_ca_d4_bgpad",
+        "cost": {
+          "items": [
+            [
+              "sparse_ca_d4_bgpad.native_cost.max_rules_per_policy",
+              2.0
+            ],
+            [
+              "sparse_ca_d4_bgpad.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "sparse_ca_d4_bgpad.native_cost.policy_fits",
+              2.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "local_transition_search"
+      },
+      {
+        "actor": "typed_dsl",
+        "cost": {
+          "items": [
+            [
+              "typed_dsl.native_cost.demo_program_executions",
+              448.0
+            ],
+            [
+              "typed_dsl.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "typed_dsl.native_cost.program_trials",
+              64.0
+            ],
+            [
+              "typed_dsl.native_cost.query_program_executions",
+              192.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "shape_resynthesize"
+      },
+      {
+        "actor": "typed_dsl",
+        "cost": {
+          "items": [
+            [
+              "typed_dsl.native_cost.demo_program_executions",
+              310.0
+            ],
+            [
+              "typed_dsl.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "typed_dsl.native_cost.program_trials",
+              62.0
+            ],
+            [
+              "typed_dsl.native_cost.query_program_executions",
+              124.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "suffix_resynthesize"
+      },
+      {
+        "actor": "typed_dsl",
+        "cost": {
+          "items": [
+            [
+              "typed_dsl.native_cost.option_calls",
+              1.0
+            ],
+            [
+              "typed_dsl.native_cost.program_expansions",
+              931.0
+            ]
+          ],
+          "schema": "afts.native-cost/v1"
+        },
+        "operator": "synthesize"
+      }
+    ],
+    "schema": "afts.native-cost-contract/v1"
+  },
+  "fit_summary_sha256": "a66f9302a6258db051853de79a5825d457e4abac7650dd302d24ce6a491c6e60",
+  "fit_task_count": 100,
+  "fit_task_ids_sha256": "96f21ba80aabed998e70575009729e0baab13529175ad275cf66043737d2e978",
+  "oracle_fields_read": 0,
+  "profile_id": "8f54b70c3f3c1b926fc873c58a7d7e6e4bbac3e7b4da9e943aef11c1320b95b8",
+  "reservation_rule": {
+    "abstentions_are_included": true,
+    "estimator": "dimensionwise_empirical_higher_quantile",
+    "quantile": 1.0,
+    "unseen_operator": "actor_worst_observed_fallback"
+  },
+  "schema": "afts.native-budget-profile/v1",
+  "source_commit": "f62a0fe5ea326a0b20bcccd6543575e4f6230925",
+  "support": {
+    "residual_repair:global_color_map": {
+      "observed_action_outcomes": 1,
+      "used_actor_worst_observed_fallback": false
+    },
+    "residual_repair:local_transition": {
+      "observed_action_outcomes": 1,
+      "used_actor_worst_observed_fallback": false
+    },
+    "scene_predicate_dsl:synthesize": {
+      "observed_action_outcomes": 100,
+      "used_actor_worst_observed_fallback": false
+    },
+    "sparse_ca_d4_bgpad:d4_bgpad_search": {
+      "observed_action_outcomes": 62,
+      "used_actor_worst_observed_fallback": false
+    },
+    "sparse_ca_d4_bgpad:local_transition_search": {
+      "observed_action_outcomes": 100,
+      "used_actor_worst_observed_fallback": false
+    },
+    "typed_dsl:shape_resynthesize": {
+      "observed_action_outcomes": 44,
+      "used_actor_worst_observed_fallback": false
+    },
+    "typed_dsl:suffix_resynthesize": {
+      "observed_action_outcomes": 89,
+      "used_actor_worst_observed_fallback": false
+    },
+    "typed_dsl:synthesize": {
+      "observed_action_outcomes": 100,
+      "used_actor_worst_observed_fallback": false
+    }
+  }
+}

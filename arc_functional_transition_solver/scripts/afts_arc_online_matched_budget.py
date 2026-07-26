@@ -15,7 +15,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import subprocess
 import sys
 import time
 from collections.abc import Callable, Iterable, Sequence
@@ -38,6 +37,20 @@ def _bootstrap() -> Path:
 REPOSITORY_ROOT = _bootstrap()
 
 from afts_arc.blind import BlindTask  # noqa: E402
+from afts_arc.experiment_safety import (  # noqa: E402
+    ARC_EXPERIMENT_SOURCE_PATHS,
+    ExperimentSafetyError,
+    TaskFingerprint,
+    atomic_write_json,
+    candidate_dag_id,
+    capture_git_source_provenance,
+    file_sha256,
+    runtime_metadata,
+    validate_native_budget_profile,
+    validate_pool_manifest,
+    validate_summary,
+    verify_source_provenance_unchanged,
+)
 from afts_arc.hybrid import (  # noqa: E402
     BudgetVector,
     CoverageAwareResidualPolicy,
@@ -78,17 +91,6 @@ def _sha256(value: object) -> str:
     return hashlib.sha256(canonical_json(value).encode("ascii")).hexdigest()
 
 
-def _git_head() -> str:
-    completed = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=REPOSITORY_ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return completed.stdout.strip()
-
-
 def _merge_candidates(
     groups: Iterable[Iterable[CandidateHypothesis]],
 ) -> tuple[CandidateHypothesis, ...]:
@@ -107,20 +109,15 @@ def _merge_candidates(
     return tuple(candidates[key] for key in sorted(candidates))
 
 
-def _numeric_cost_payload(value: object) -> dict[str, object]:
-    """Strip descriptive bool/string leaves from provider cost diagnostics."""
-
-    if not isinstance(value, dict):
-        return {}
-    cleaned: dict[str, object] = {}
-    for key, item in value.items():
-        if isinstance(item, dict):
-            nested = _numeric_cost_payload(item)
-            if nested:
-                cleaned[str(key)] = nested
-        elif isinstance(item, (int, float)) and not isinstance(item, bool):
-            cleaned[str(key)] = item
-    return cleaned
+def _strict_native_cost(result: ProviderResult, *, actor: str) -> NativeCostVector:
+    diagnostics = result.diagnostics
+    if "native_cost" not in diagnostics:
+        raise ExperimentSafetyError(
+            f"missing actual native cost for frozen action {actor}"
+        )
+    return NativeCostVector.from_mapping(
+        diagnostics["native_cost"], prefix=f"{actor}.native_cost"
+    )
 
 
 class RecordingProvider:
@@ -150,10 +147,22 @@ class RecordingProvider:
         if cached is not None:
             return cached
         act = getattr(self.delegate, "act", None)
-        if callable(act):
-            result = act(task, features, decision, blackboard, action)
-        else:
-            result = self.delegate.propose(task, features, decision)
+        try:
+            if callable(act):
+                result = act(task, features, decision, blackboard, action)
+            else:
+                result = self.delegate.propose(task, features, decision)
+        except Exception as exc:
+            self.cache[key] = ProviderResult.error(
+                self.name,
+                self.route,
+                "provider_exception",
+                {
+                    "exception_type": type(exc).__name__,
+                    "native_cost_status": "unknown",
+                },
+            )
+            raise
         if not isinstance(result, ProviderResult):
             raise TypeError("recording provider received a non-ProviderResult")
         self.cache[key] = result
@@ -165,10 +174,7 @@ class RecordingProvider:
                 operator,
                 result.candidates,
                 parent,
-                NativeCostVector.from_mapping(
-                    _numeric_cost_payload(result.diagnostics.get("native_cost", {})),
-                    prefix=f"{self.name}.native_cost",
-                ),
+                _strict_native_cost(result, actor=self.name),
             )
             for (operator, parent), result in sorted(
                 self.cache.items(), key=lambda item: (item[0][0], item[0][1] or "")
@@ -368,6 +374,9 @@ def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
         "status": report.status,
         "strict_budget_comparable": report.strict_budget_comparable,
         "native_budget_comparable": report.native_budget_comparable,
+        "declared_native_actual_observations_complete": (
+            report.strict_budget_comparable
+        ),
         "native_budget": (
             None
             if report.native_budget is None
@@ -412,7 +421,8 @@ def _numeric_native_cost(
     recorders: Sequence[RecordingProvider], report: OnlineSolveReport
 ) -> dict[str, float]:
     by_name = {provider.name: provider for provider in recorders}
-    totals: dict[str, float] = {"repair_attempts": 0.0}
+    repair_key = "residual_repair.native_cost.repair_attempts"
+    totals: dict[str, float] = {repair_key: 0.0}
 
     def add(prefix: str, value: object) -> None:
         if isinstance(value, dict):
@@ -424,7 +434,7 @@ def _numeric_native_cost(
     for result in report.states[-1].action_results:
         action = result.action
         if action.kind == "repair":
-            totals["repair_attempts"] += 1.0
+            totals[repair_key] += 1.0
         if action.kind != "propose":
             continue
         replay_cost = (
@@ -488,7 +498,13 @@ def _task_pool_manifest(
         "oracle_used_during_discovery": False,
         "oracle_used_during_pool_closure": False,
     }
-    return {"pool_id": _sha256(payload), **payload}
+    pool_id = _sha256(payload)
+    return {
+        "pool_id": pool_id,
+        "audit_manifest_id": pool_id,
+        "candidate_dag_id": candidate_dag_id(payload),
+        **payload,
+    }
 
 
 def _make_recorders(args: argparse.Namespace) -> tuple[RecordingProvider, ...]:
@@ -601,13 +617,20 @@ def run_task(
     pool_manifest = _task_pool_manifest(
         task, recorders, heterogeneous_pool, discovery, frozen_replays
     )
+    pool_integrity = validate_pool_manifest(
+        pool_manifest,
+        expected_task=TaskFingerprint(
+            task.task_id,
+            task.source_sha256,
+            blind.blind_content_sha256,
+        ),
+    )
+    if pool_integrity.candidate_dag_id != pool_manifest["candidate_dag_id"]:
+        raise AssertionError("candidate DAG identity changed during pool construction")
     pool_dir = output_dir / "pools"
     pool_dir.mkdir(parents=True, exist_ok=True)
     pool_path = pool_dir / f"{task.task_id}.{pool_manifest['pool_id'][:16]}.json"
-    pool_path.write_text(
-        json.dumps(pool_manifest, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    atomic_write_json(pool_path, pool_manifest)
 
     policy_results: dict[str, object] = {}
     metric_objects: dict[str, object] = {}
@@ -637,6 +660,7 @@ def run_task(
         "task_source_sha256": task.source_sha256,
         "blind_content_sha256": blind.blind_content_sha256,
         "pool_id": pool_manifest["pool_id"],
+        "candidate_dag_id": pool_manifest["candidate_dag_id"],
         "pool_manifest": str(pool_path.relative_to(output_dir)),
         "heterogeneous_pool_candidate_count": len(heterogeneous_pool),
         "policies": policy_results,
@@ -654,6 +678,8 @@ def _select_tasks(
 ) -> tuple[ARCTask, ...]:
     if task_ids:
         requested = tuple(item.strip() for item in task_ids.split(",") if item.strip())
+        if len(set(requested)) != len(requested):
+            raise ValueError("explicit task IDs must be unique")
         by_id = {task.task_id: task for task in tasks}
         missing = set(requested) - set(by_id)
         if missing:
@@ -678,6 +704,16 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("dataset_root", type=Path)
     parser.add_argument("output_dir", type=Path)
     parser.add_argument("--split", default="training")
+    parser.add_argument(
+        "--allow-nontraining-split",
+        action="store_true",
+        help="allow a noncanonical diagnostic run outside the training split",
+    )
+    parser.add_argument(
+        "--allow-dirty-source",
+        action="store_true",
+        help="allow a noncanonical diagnostic run from modified source",
+    )
     parser.add_argument("--limit", type=int, default=32)
     parser.add_argument("--sample-offset", type=int, default=0)
     parser.add_argument("--sample-seed", type=int, default=20260726)
@@ -705,6 +741,8 @@ def _parser() -> argparse.ArgumentParser:
 
 def _load_native_budget_profile(
     path: Path | None,
+    *,
+    heldout_fingerprints: Sequence[TaskFingerprint] = (),
 ) -> tuple[
     NativeCostContract | None, NativeCostVector | None, dict[str, object] | None
 ]:
@@ -712,17 +750,26 @@ def _load_native_budget_profile(
         return None, None, None
     resolved = path.resolve()
     payload = json.loads(resolved.read_text(encoding="utf-8"))
-    if payload.get("schema") != "afts.native-budget-profile/v1":
-        raise ValueError("unknown native budget profile schema")
+    integrity = validate_native_budget_profile(
+        payload, heldout_fingerprints=heldout_fingerprints
+    )
     contract = NativeCostContract.from_json_dict(payload.get("contract"))
     limit = NativeCostVector.from_json_dict(payload.get("budget_limit"))
+    for reservation in contract.reservations:
+        if not reservation.cost.fits_within(limit):
+            raise ExperimentSafetyError(
+                "native reservation does not fit within the profile budget limit"
+            )
     return (
         contract,
         limit,
         {
             "path": str(resolved),
-            "profile_id": payload.get("profile_id"),
+            "file_sha256": file_sha256(resolved),
+            "schema": integrity.schema,
+            "profile_id": integrity.profile_id,
             "contract_id": contract.contract_id,
+            "fit_overlap_guard": integrity.overlap_guard,
             "reservation_rule": payload.get("reservation_rule"),
             "budget_rule": payload.get("budget_rule"),
         },
@@ -731,6 +778,19 @@ def _load_native_budget_profile(
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    source_start = capture_git_source_provenance(
+        REPOSITORY_ROOT, paths=ARC_EXPERIMENT_SOURCE_PATHS
+    )
+    if source_start.dirty and not args.allow_dirty_source:
+        raise ExperimentSafetyError(
+            "refusing experiment from a dirty source tree; commit first or use "
+            "--allow-dirty-source for a noncanonical diagnostic"
+        )
+    if args.split != "training" and not args.allow_nontraining_split:
+        raise ExperimentSafetyError(
+            "non-training data are sealed in this development runner; use an "
+            "explicit noncanonical override only when authorized"
+        )
     split_root = (args.dataset_root / args.split).resolve()
     tasks = load_task_directory(split_root)
     selected = _select_tasks(
@@ -742,8 +802,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    if (output_dir / "summary.json").exists():
+        raise ExperimentSafetyError(
+            "refusing to replace an existing summary; choose a new output directory"
+        )
+    heldout_fingerprints = tuple(
+        TaskFingerprint(
+            task.task_id,
+            task.source_sha256,
+            BlindTask.from_task(task).blind_content_sha256,
+        )
+        for task in selected
+    )
     native_contract, native_limit, native_profile = _load_native_budget_profile(
-        args.native_budget_profile
+        args.native_budget_profile,
+        heldout_fingerprints=heldout_fingerprints,
     )
     config = OnlineControlConfig(
         budget_limit=BudgetVector(
@@ -830,10 +903,40 @@ def main(argv: Sequence[str] | None = None) -> int:
             timing["frozen_replay_seconds"] += float(
                 policy_result["frozen_replay_seconds"]
             )
+    source_end = capture_git_source_provenance(
+        REPOSITORY_ROOT, paths=ARC_EXPERIMENT_SOURCE_PATHS
+    )
+    verify_source_provenance_unchanged(source_start, source_end)
+    publication_blockers: list[str] = []
+    if source_start.dirty:
+        publication_blockers.append("dirty_source_override")
+    if args.split != "training":
+        publication_blockers.append("nontraining_split_override")
+    if failures:
+        publication_blockers.append("incomplete_task_execution")
+    if native_profile is not None and native_profile["fit_overlap_guard"] != "verified":
+        publication_blockers.append("native_profile_fit_overlap_guard_unavailable")
+    for task_result in task_results:
+        for name, policy_result in task_result["policies"].items():
+            if not policy_result["strict_budget_comparable"]:
+                publication_blockers.append(
+                    f"strict_budget_not_comparable:{task_result['task_id']}:{name}"
+                )
+            if (
+                native_profile is not None
+                and not policy_result["native_budget_comparable"]
+            ):
+                publication_blockers.append(
+                    f"native_budget_not_comparable:{task_result['task_id']}:{name}"
+                )
+    publication_blockers = sorted(set(publication_blockers))
     payload: dict[str, Any] = {
         "schema": SCHEMA_VERSION,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
-        "source_commit": _git_head(),
+        "source_commit": source_start.head,
+        "source_provenance": source_start.to_json_dict(),
+        "runtime": runtime_metadata(("numpy",)),
+        "argv": list(sys.argv[1:] if argv is None else argv),
         "training_started": False,
         "oracle_access": "posthoc_only_after_each_frozen_replay",
         "claim_scope": (
@@ -858,6 +961,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             "budget_limit": config.budget_limit.to_json_dict(),
             "provider_batch_size": config.provider_batch_size,
             "max_selected_hypotheses": config.max_selected_hypotheses,
+            "minimum_repair_agreement": config.minimum_repair_agreement,
+            "localized_residual_fraction": config.localized_residual_fraction,
             "native_budget_profile": native_profile,
             "native_budget_limit": (
                 None if native_limit is None else native_limit.to_json_dict()
@@ -869,6 +974,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "beam_width": args.dsl_beam_width,
                 "max_instruction_options": args.dsl_max_instruction_options,
                 "max_exact_programs": args.dsl_max_exact_programs,
+                "include_repair_seeds": True,
             },
             "sparse_ca": {
                 "max_rules_per_policy": args.ca_max_rules_per_policy,
@@ -885,13 +991,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         "policy_timing_aggregates": timing_aggregates,
         "tasks": task_results,
         "failures": failures,
+        "publication_eligibility": {
+            "eligible": not publication_blockers,
+            "blockers": publication_blockers,
+        },
         "elapsed_seconds": time.perf_counter() - started,
     }
     payload["result_id"] = _sha256(payload)
-    (output_dir / "summary.json").write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    validate_summary(payload, required_split=None)
+    atomic_write_json(output_dir / "summary.json", payload)
     print(
         json.dumps(
             {
