@@ -345,10 +345,21 @@ def _task_pool_manifest(
     recorders: Sequence[RecordingProvider],
     pool_candidates: Sequence[CandidateHypothesis],
     discovery: dict[str, OnlineSolveReport],
+    frozen_replays: dict[str, OnlineSolveReport],
 ) -> dict[str, object]:
     blind = BlindTask.from_task(task)
+    discovery_ids = {
+        candidate.hypothesis_id
+        for report in discovery.values()
+        for candidate in report.states[-1].candidates
+    }
+    replay_ids = {
+        candidate.hypothesis_id
+        for report in frozen_replays.values()
+        for candidate in report.states[-1].candidates
+    }
     payload = {
-        "schema": "afts.frozen-action-pool/v1",
+        "schema": "afts.frozen-action-pool/v2",
         "task_id": task.task_id,
         "task_source_sha256": task.source_sha256,
         "blind_content_sha256": blind.blind_content_sha256,
@@ -358,7 +369,18 @@ def _task_pool_manifest(
         "discovery_policies": {
             name: _report_summary(report) for name, report in sorted(discovery.items())
         },
+        "frozen_replay_policies": {
+            name: _report_summary(report)
+            for name, report in sorted(frozen_replays.items())
+        },
+        "pool_closure": {
+            "rule": "provider batches plus all oracle-free discovery/replay descendants",
+            "discovery_candidate_count": len(discovery_ids),
+            "replay_candidate_count": len(replay_ids),
+            "replay_only_candidate_count": len(replay_ids - discovery_ids),
+        },
         "oracle_used_during_discovery": False,
+        "oracle_used_during_pool_closure": False,
     }
     return {"pool_id": _sha256(payload), **payload}
 
@@ -429,14 +451,37 @@ def run_task(
         discovery_seconds[spec.name] = time.perf_counter() - started
         discovery[spec.name] = report
 
-    heterogeneous_pool = _merge_candidates(
+    discovered_pool = _merge_candidates(
         (
             (candidate for recorder in recorders for result in recorder.cache.values() for candidate in result.candidates),
             (candidate for report in discovery.values() for candidate in report.states[-1].candidates),
         )
     )
+    frozen_providers = tuple(recorder.frozen() for recorder in recorders)
+    frozen_replays: dict[str, OnlineSolveReport] = {}
+    replay_seconds_by_policy: dict[str, float] = {}
+    for spec in specs:
+        selected_providers = _provider_subset(frozen_providers, spec.provider_names)
+        started = time.perf_counter()
+        frozen_replays[spec.name] = OnlineFunctionalRouterSolver(
+            providers=selected_providers,
+            config=config,
+            policy=spec.factory(),
+        ).solve(blind)
+        replay_seconds_by_policy[spec.name] = time.perf_counter() - started
+
+    heterogeneous_pool = _merge_candidates(
+        (
+            discovered_pool,
+            (
+                candidate
+                for report in frozen_replays.values()
+                for candidate in report.states[-1].candidates
+            ),
+        )
+    )
     pool_manifest = _task_pool_manifest(
-        task, recorders, heterogeneous_pool, discovery
+        task, recorders, heterogeneous_pool, discovery, frozen_replays
     )
     pool_dir = output_dir / "pools"
     pool_dir.mkdir(parents=True, exist_ok=True)
@@ -446,25 +491,15 @@ def run_task(
         encoding="utf-8",
     )
 
-    frozen_providers = tuple(recorder.frozen() for recorder in recorders)
     policy_results: dict[str, object] = {}
     metric_objects: dict[str, object] = {}
     for spec in specs:
-        selected_providers = _provider_subset(
-            frozen_providers, spec.provider_names
-        )
-        started = time.perf_counter()
-        report = OnlineFunctionalRouterSolver(
-            providers=selected_providers,
-            config=config,
-            policy=spec.factory(),
-        ).solve(blind)
-        replay_seconds = time.perf_counter() - started
+        report = frozen_replays[spec.name]
         if spec.pool_scope == "heterogeneous_union":
             metric_pool = heterogeneous_pool
         else:
             metric_pool = _single_source_pool(
-                spec, recorders, discovery[spec.name]
+                spec, recorders, report
             )
         metrics = evaluate_online_report_with_oracle(
             report,
@@ -477,7 +512,7 @@ def run_task(
             **_report_summary(report),
             "metrics": metrics.to_json_dict(),
             "discovery_seconds": discovery_seconds[spec.name],
-            "frozen_replay_seconds": replay_seconds,
+            "frozen_replay_seconds": replay_seconds_by_policy[spec.name],
             "native_cost_vector": _numeric_native_cost(recorders, report),
         }
 
