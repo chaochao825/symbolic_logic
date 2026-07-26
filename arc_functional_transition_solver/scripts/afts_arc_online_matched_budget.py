@@ -2,7 +2,8 @@
 
 The script has two oracle-separated phases per task:
 
-1. Discover action-conditioned DSL/CA batches without consulting test outputs.
+1. Discover action-conditioned grid-DSL/scene-DSL/CA batches without consulting
+   test outputs.
 2. Freeze their ``(provider, operator, parent) -> candidates`` mapping, replay
    every policy under one controller budget, and only then score with oracles.
 
@@ -40,6 +41,7 @@ from afts_arc.blind import BlindTask  # noqa: E402
 from afts_arc.hybrid import (  # noqa: E402
     BudgetVector,
     CoverageAwareResidualPolicy,
+    DeliberationSketch,
     DeterministicRandomPolicy,
     DslProgramProvider,
     FixedSchedulePolicy,
@@ -49,8 +51,10 @@ from afts_arc.hybrid import (  # noqa: E402
     OnlineFunctionalRouterSolver,
     ResidualFirstPolicy,
     RoundRobinPolicy,
+    SceneProgramProvider,
     SparseCAProvider,
     StaticRoutePolicy,
+    StructuredDeliberationPolicy,
     aggregate_control_metrics,
     evaluate_online_report_with_oracle,
 )
@@ -65,7 +69,7 @@ from afts_arc.search import SearchConfig  # noqa: E402
 from afts_arc.task import ARCTask, load_task_directory  # noqa: E402
 
 
-SCHEMA_VERSION = "afts.online-matched-budget/v2"
+SCHEMA_VERSION = "afts.online-matched-budget/v3"
 
 
 def _sha256(value: object) -> str:
@@ -181,46 +185,87 @@ class PolicySpec:
 def _policy_specs() -> tuple[PolicySpec, ...]:
     dsl = "typed_dsl"
     ca = "sparse_ca_d4_bgpad"
+    scene = "scene_predicate_dsl"
     both = (dsl, ca)
+    expanded = (dsl, ca, scene)
     return (
         PolicySpec(
             "coverage_aware_v2",
             lambda: CoverageAwareResidualPolicy(name="coverage_aware_v2"),
             both,
+            "base_union",
+        ),
+        PolicySpec(
+            "coverage_aware_expanded",
+            lambda: CoverageAwareResidualPolicy(name="coverage_aware_expanded"),
+            expanded,
+            "heterogeneous_union",
+        ),
+        PolicySpec(
+            "summary_grounded",
+            lambda: StructuredDeliberationPolicy(
+                name="summary_grounded",
+                use_grounding=True,
+                use_adaptive_diversity=False,
+                use_borderline_ucb=False,
+            ),
+            expanded,
+            "heterogeneous_union",
+        ),
+        PolicySpec(
+            "adaptive_diversity",
+            lambda: StructuredDeliberationPolicy(
+                name="adaptive_diversity",
+                use_grounding=False,
+                use_adaptive_diversity=True,
+                use_borderline_ucb=False,
+            ),
+            expanded,
+            "heterogeneous_union",
+        ),
+        PolicySpec(
+            "structured_deliberation",
+            lambda: StructuredDeliberationPolicy(
+                name="structured_deliberation",
+                use_grounding=True,
+                use_adaptive_diversity=True,
+                use_borderline_ucb=True,
+            ),
+            expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
             "residual_first",
             lambda: ResidualFirstPolicy(name="residual_first"),
-            both,
+            expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
             "fixed_dsl_first",
             lambda: FixedSchedulePolicy(
-                (dsl, ca), name="fixed_dsl_first"
+                (dsl, ca, scene), name="fixed_dsl_first"
             ),
-            both,
+            expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
             "fixed_ca_first",
             lambda: FixedSchedulePolicy(
-                (ca, dsl), name="fixed_ca_first"
+                (ca, dsl, scene), name="fixed_ca_first"
             ),
-            both,
+            expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
             "round_robin",
-            lambda: RoundRobinPolicy((dsl, ca), name="round_robin"),
-            both,
+            lambda: RoundRobinPolicy((dsl, ca, scene), name="round_robin"),
+            expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
             "static_task_router",
             lambda: StaticRoutePolicy(name="static_task_router"),
-            both,
+            expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
@@ -228,7 +273,7 @@ def _policy_specs() -> tuple[PolicySpec, ...]:
             lambda: DeterministicRandomPolicy(
                 seed=0, name="random_seed_0"
             ),
-            both,
+            expanded,
             "heterogeneous_union",
         ),
         PolicySpec(
@@ -242,6 +287,12 @@ def _policy_specs() -> tuple[PolicySpec, ...]:
             lambda: ResidualFirstPolicy(name="ca_only"),
             (ca,),
             "ca_single_source",
+        ),
+        PolicySpec(
+            "scene_only",
+            lambda: ResidualFirstPolicy(name="scene_only"),
+            (scene,),
+            "scene_single_source",
         ),
     )
 
@@ -294,6 +345,9 @@ def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
             len(result.accepted_candidate_ids) for result in final.action_results
         ),
         "semantic_novel_candidate_count": sum(semantic_novelty.values()),
+        "deliberation_sketch": DeliberationSketch.from_blackboard(
+            final
+        ).to_json_dict(),
         "actions": [
             {
                 "kind": result.action.kind,
@@ -403,6 +457,9 @@ def _make_recorders(args: argparse.Namespace) -> tuple[RecordingProvider, ...]:
                 max_rules_per_policy=args.ca_max_rules_per_policy,
                 max_programs=args.ca_max_programs,
             )
+        ),
+        RecordingProvider(
+            SceneProgramProvider(max_exact_rules=args.scene_max_exact_rules)
         ),
     )
 
@@ -529,7 +586,12 @@ def run_task(
 
 
 def _select_tasks(
-    tasks: Sequence[ARCTask], *, seed: int, limit: int, task_ids: str | None
+    tasks: Sequence[ARCTask],
+    *,
+    seed: int,
+    offset: int,
+    limit: int,
+    task_ids: str | None,
 ) -> tuple[ARCTask, ...]:
     if task_ids:
         requested = tuple(item.strip() for item in task_ids.split(",") if item.strip())
@@ -544,7 +606,12 @@ def _select_tasks(
             f"{seed}:{task.task_id}".encode("ascii")
         ).hexdigest(),
     )
-    return tuple(ordered[:limit])
+    selected = tuple(ordered[offset : offset + limit])
+    if len(selected) != limit:
+        raise ValueError(
+            f"requested offset/limit yields {len(selected)} tasks, expected {limit}"
+        )
+    return selected
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -553,6 +620,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("output_dir", type=Path)
     parser.add_argument("--split", default="training")
     parser.add_argument("--limit", type=int, default=32)
+    parser.add_argument("--sample-offset", type=int, default=0)
     parser.add_argument("--sample-seed", type=int, default=20260726)
     parser.add_argument("--task-ids")
     parser.add_argument("--compute-units", type=int, default=11)
@@ -567,6 +635,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--dsl-max-exact-programs", type=int, default=16)
     parser.add_argument("--ca-max-rules-per-policy", type=int, default=2)
     parser.add_argument("--ca-max-programs", type=int, default=4)
+    parser.add_argument("--scene-max-exact-rules", type=int, default=64)
     return parser
 
 
@@ -577,6 +646,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     selected = _select_tasks(
         tasks,
         seed=args.sample_seed,
+        offset=args.sample_offset,
         limit=args.limit,
         task_ids=args.task_ids,
     )
@@ -675,6 +745,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "explicit_task_ids" if args.task_ids else "sha256_seeded_sample"
             ),
             "sample_seed": args.sample_seed,
+            "sample_offset": args.sample_offset,
             "requested_task_count": len(selected),
             "completed_task_count": len(task_results),
             "failed_task_count": len(failures),
@@ -695,6 +766,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             "sparse_ca": {
                 "max_rules_per_policy": args.ca_max_rules_per_policy,
                 "max_programs": args.ca_max_programs,
+            },
+            "scene_predicate_dsl": {
+                "max_exact_rules": args.scene_max_exact_rules,
+                "semantics_version": "afts-scene-predicate-dsl/v0.1",
             },
         },
         "policy_aggregates": aggregates,

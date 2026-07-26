@@ -19,6 +19,7 @@ from .control import (
     StaticRoutePolicy,
 )
 from .online import OnlineControlConfig, OnlineFunctionalRouterSolver, OnlineSolveReport
+from .deliberation import DeliberationSketch, StructuredDeliberationPolicy
 from .control_evaluation import (
     AggregateControlMetrics,
     TaskControlMetrics,
@@ -34,6 +35,7 @@ from .providers import (
     OptionalCallbackProvider,
     SparseCAProvider,
 )
+from .scene_dsl import SceneProgramProvider, SceneRule, execute_scene_rule
 from .repair import generate_repairs, global_color_map_repair, local_transition_repair
 from .router import (
     RouteAssignment,
@@ -66,6 +68,7 @@ __all__ = [
     "DslProgramProvider",
     "ControlAction",
     "DeterministicRandomPolicy",
+    "DeliberationSketch",
     "FixedSchedulePolicy",
     "FunctionalRouterConfig",
     "FunctionalRouterSolver",
@@ -85,15 +88,19 @@ __all__ = [
     "ResidualFirstPolicy",
     "ResidualSignal",
     "RoundRobinPolicy",
+    "SceneProgramProvider",
+    "SceneRule",
     "SolveReport",
     "SparseCAProvider",
     "StaticRoutePolicy",
+    "StructuredDeliberationPolicy",
     "TaskFeatures",
     "TaskControlMetrics",
     "aggregate_control_metrics",
     "evaluate_hypotheses",
     "evaluate_hypothesis",
     "evaluate_online_report_with_oracle",
+    "execute_scene_rule",
     "extract_task_features",
     "generate_repairs",
     "global_color_map_repair",

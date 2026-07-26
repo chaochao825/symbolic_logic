@@ -1698,9 +1698,24 @@ class ResidualActionCompiler:
                     getattr(provider, "supports_residual_actions", False)
                 ):
                     continue
-                operator, reasons, bonus = self._provider_operator(
-                    route, best_signal, blackboard.features
+                supports_residual = bool(
+                    getattr(provider, "supports_residual_actions", False)
                 )
+                if best_signal is not None and not supports_residual:
+                    # An untried independent representation source must remain
+                    # callable after another provider has produced a residual.
+                    # Compiling that residual into a route-specific repair
+                    # operator would be ill-typed for a root-only provider.
+                    operator = DEFAULT_PROVIDER_OPERATOR[route]
+                    reasons = (
+                        "independent_representation_exploration",
+                        "cross_representation_control",
+                    )
+                    bonus = 0
+                else:
+                    operator, reasons, bonus = self._provider_operator(
+                        route, best_signal, blackboard.features
+                    )
                 parent_sensitive = getattr(
                     provider, "parent_sensitive_operators", None
                 )
