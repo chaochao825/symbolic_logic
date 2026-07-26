@@ -283,6 +283,32 @@ class OnlineControllerTests(unittest.TestCase):
         self.assertFalse(lineage[0].parent_candidate_ids)
         self.assertEqual(lineage[1].parent_candidate_ids, (lineage[0].candidate_id,))
 
+    def test_unambiguous_color_map_outranks_local_repair(self) -> None:
+        task = _blind(
+            (
+                ([[0, 0, 0, 1]], [[0, 0, 0, 2]]),
+                ([[0, 0, 1, 0]], [[0, 0, 2, 0]]),
+            ),
+            ([[1, 0, 0, 0]],),
+        )
+        near = _hypothesis("color-map-near", lambda grid: grid, route="dsl_program")
+        report = OnlineFunctionalRouterSolver(
+            providers=(
+                FrozenCandidatePoolProvider(
+                    (near,), "color-map-pool", "dsl_program"
+                ),
+            ),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=2, provider_calls=1, repairs=1),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        repair = report.states[-1].action_results[1]
+        self.assertEqual(repair.action.kind, "repair")
+        self.assertEqual(repair.action.operator, "global_color_map")
+        self.assertEqual(report.status, "solved")
+
     def test_localized_ambiguous_color_residual_selects_local_repair(self) -> None:
         source = [[0, 2, 0], [0, 1, 0], [0, 0, 1]]
         target = [[0, 2, 0], [0, 3, 0], [0, 0, 1]]
@@ -432,11 +458,32 @@ class OnlineControllerTests(unittest.TestCase):
                 max_selected_hypotheses=1,
             ),
         ).solve(task)
-        proposal = report.states[-1].action_results[0]
-        self.assertEqual(proposal.status, "abstained")
-        self.assertEqual(proposal.reason, "frozen_action_unavailable")
+        results = report.states[-1].action_results
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].action.kind, "stop")
+        self.assertEqual(results[0].reason, "no_legal_untried_action")
         self.assertFalse(report.states[-1].candidates)
-        self.assertTrue(report.strict_budget_comparable)
+        self.assertEqual(report.states[-1].budget.used, BudgetVector())
+
+    def test_frozen_empty_action_batch_is_masked_without_spending_budget(self) -> None:
+        task = _blind((([[1]], [[2]]),), ([[1]],))
+        provider = FrozenCandidatePoolProvider.from_action_batches(
+            (FrozenActionBatch("synthesize", ()),),
+            "empty-action-pool",
+            "dsl_program",
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(provider,),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        results = report.states[-1].action_results
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].action.kind, "stop")
+        self.assertEqual(report.states[-1].budget.used, BudgetVector())
 
     def test_shape_resynthesize_executes_a_parent_conditioned_dsl_search(self) -> None:
         task = _blind(

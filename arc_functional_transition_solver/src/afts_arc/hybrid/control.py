@@ -988,6 +988,28 @@ class FrozenCandidatePoolProvider:
                 return True
         return False
 
+    def has_unseen_action_candidates(
+        self,
+        blackboard: Blackboard,
+        operator: str,
+        parent_hypothesis_id: str | None,
+    ) -> bool:
+        """Return whether the exact typed action key can emit new content."""
+
+        key = (operator, parent_hypothesis_id)
+        matching = tuple(
+            batch
+            for batch in self.action_batches
+            if (batch.operator, batch.parent_hypothesis_id) == key
+        )
+        return any(
+            any(
+                item.hypothesis_id not in blackboard.seen_candidate_ids
+                for item in batch.candidates
+            )
+            for batch in matching
+        )
+
     def act(
         self,
         task: BlindTask,
@@ -1642,7 +1664,10 @@ class ResidualActionCompiler:
                             evidence_signal_ids=(signal.signal_id,),
                             reason_codes=(reason, "demo_residual_compiled"),
                             budget=repair_slice,
-                            priority=-100 + rank,
+                            priority=(
+                                -120 if operator == "global_color_map" else -100
+                            )
+                            + rank,
                         )
                     )
 
@@ -1688,6 +1713,13 @@ class ResidualActionCompiler:
                     )
                     else best_signal.hypothesis_id
                 )
+                has_unseen_action = getattr(
+                    provider, "has_unseen_action_candidates", None
+                )
+                if callable(has_unseen_action) and not has_unseen_action(
+                    blackboard, operator, parent_id
+                ):
+                    continue
                 evidence = () if best_signal is None else (best_signal.signal_id,)
                 key = ("propose", provider_name, operator, parent_id)
                 if key in attempted:
