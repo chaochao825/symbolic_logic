@@ -39,6 +39,7 @@ REPOSITORY_ROOT = _bootstrap()
 from afts_arc.blind import BlindTask  # noqa: E402
 from afts_arc.hybrid import (  # noqa: E402
     BudgetVector,
+    CoverageAwareResidualPolicy,
     DeterministicRandomPolicy,
     DslProgramProvider,
     FixedSchedulePolicy,
@@ -64,7 +65,7 @@ from afts_arc.search import SearchConfig  # noqa: E402
 from afts_arc.task import ARCTask, load_task_directory  # noqa: E402
 
 
-SCHEMA_VERSION = "afts.online-matched-budget/v1"
+SCHEMA_VERSION = "afts.online-matched-budget/v2"
 
 
 def _sha256(value: object) -> str:
@@ -114,6 +115,9 @@ class RecordingProvider:
             getattr(delegate, "supports_repeated_batches", False)
         )
         self.max_control_calls = int(getattr(delegate, "max_control_calls", 1))
+        self.parent_sensitive_operators = getattr(
+            delegate, "parent_sensitive_operators", None
+        )
         self.cache: dict[tuple[str, str | None], ProviderResult] = {}
 
     def act(self, task, features, decision, blackboard, action) -> ProviderResult:
@@ -179,6 +183,12 @@ def _policy_specs() -> tuple[PolicySpec, ...]:
     ca = "sparse_ca_d4_bgpad"
     both = (dsl, ca)
     return (
+        PolicySpec(
+            "coverage_aware_v2",
+            lambda: CoverageAwareResidualPolicy(name="coverage_aware_v2"),
+            both,
+            "heterogeneous_union",
+        ),
         PolicySpec(
             "residual_first",
             lambda: ResidualFirstPolicy(name="residual_first"),
@@ -248,6 +258,27 @@ def _provider_subset(
 
 def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
     final = report.states[-1]
+    evaluations = {
+        item.hypothesis.hypothesis_id: item for item in final.evaluations
+    }
+    seen_semantics: set[tuple[object, ...]] = set()
+    semantic_novelty: dict[str, int] = {}
+    for result in final.action_results:
+        novel = 0
+        for hypothesis_id in result.accepted_candidate_ids:
+            evaluation = evaluations.get(hypothesis_id)
+            if evaluation is None:
+                continue
+            signature = (
+                evaluation.demo_outputs,
+                evaluation.query_outputs,
+                evaluation.hard_verified,
+                evaluation.rejection_reason,
+            )
+            if signature not in seen_semantics:
+                seen_semantics.add(signature)
+                novel += 1
+        semantic_novelty[result.result_id] = novel
     return {
         "status": report.status,
         "strict_budget_comparable": report.strict_budget_comparable,
@@ -256,6 +287,13 @@ def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
         "selected_hypothesis_ids": [
             item.hypothesis.hypothesis_id for item in report.selected[:2]
         ],
+        "emitted_candidate_count": sum(
+            len(result.emitted_candidate_ids) for result in final.action_results
+        ),
+        "accepted_candidate_count": sum(
+            len(result.accepted_candidate_ids) for result in final.action_results
+        ),
+        "semantic_novel_candidate_count": sum(semantic_novelty.values()),
         "actions": [
             {
                 "kind": result.action.kind,
@@ -266,6 +304,7 @@ def _report_summary(report: OnlineSolveReport) -> dict[str, object]:
                 "status": result.status,
                 "reason": result.reason,
                 "accepted_candidate_ids": list(result.accepted_candidate_ids),
+                "semantic_novel_candidate_count": semantic_novelty[result.result_id],
                 "budget_fidelity": result.budget_fidelity,
             }
             for result in final.action_results
@@ -570,6 +609,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         name: aggregate_control_metrics(items).to_json_dict()
         for name, items in metrics_by_policy.items()
     }
+    native_cost_aggregates: dict[str, dict[str, float]] = {}
+    timing_aggregates: dict[str, dict[str, float]] = {}
+    for task_result in task_results:
+        policies = task_result["policies"]
+        for name, policy_result in policies.items():
+            native = native_cost_aggregates.setdefault(name, {})
+            for key, value in policy_result["native_cost_vector"].items():
+                native[key] = native.get(key, 0.0) + float(value)
+            timing = timing_aggregates.setdefault(
+                name, {"discovery_seconds": 0.0, "frozen_replay_seconds": 0.0}
+            )
+            timing["discovery_seconds"] += float(policy_result["discovery_seconds"])
+            timing["frozen_replay_seconds"] += float(
+                policy_result["frozen_replay_seconds"]
+            )
     payload: dict[str, Any] = {
         "schema": SCHEMA_VERSION,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -609,6 +663,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             },
         },
         "policy_aggregates": aggregates,
+        "policy_native_cost_aggregates": native_cost_aggregates,
+        "policy_timing_aggregates": timing_aggregates,
         "tasks": task_results,
         "failures": failures,
         "elapsed_seconds": time.perf_counter() - started,

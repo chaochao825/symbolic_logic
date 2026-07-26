@@ -872,6 +872,9 @@ class FrozenCandidatePoolProvider:
     strict_budget_contract: bool = field(default=True, init=False)
     supports_residual_actions: bool = field(default=True, init=False)
     supports_repeated_batches: bool = field(default=True, init=False)
+    parent_sensitive_operators: frozenset[str] = field(
+        default=frozenset(), init=False
+    )
 
     def __post_init__(self) -> None:
         if not self.name or self.route not in ROUTES:
@@ -918,6 +921,15 @@ class FrozenCandidatePoolProvider:
             )
         )
         object.__setattr__(self, "candidates", canonical)
+        object.__setattr__(
+            self,
+            "parent_sensitive_operators",
+            frozenset(
+                batch.operator
+                for batch in batches
+                if batch.parent_hypothesis_id is not None
+            ),
+        )
         object.__setattr__(
             self,
             "action_batches",
@@ -1071,6 +1083,131 @@ class ResidualFirstPolicy:
         non_stop = tuple(item for item in available if item.kind != "stop")
         pool = non_stop or available
         return min(pool, key=lambda item: (item.priority, item.action_id))
+
+
+@dataclass(frozen=True, slots=True)
+class CoverageAwareResidualPolicy:
+    """Stateful exploration policy with demo-only representation preferences.
+
+    The policy reserves early calls for compatible, previously untried sources,
+    then uses semantic action novelty and typed residual priority to choose among
+    repairs or repeated proposal actions.  It never reads a hidden test output.
+    """
+
+    name: str = "coverage_aware_residual_v2"
+
+    @staticmethod
+    def _compatible(blackboard: Blackboard, action: ControlAction) -> bool:
+        if action.route == "sparse_ca":
+            return blackboard.features.all_same_shape
+        return True
+
+    @staticmethod
+    def _route_rank(blackboard: Blackboard, action: ControlAction) -> int:
+        route = action.route or ""
+        features = blackboard.features
+        if features.shape_change:
+            preferred = ("dsl_program", "code_llm", "masked_diffusion")
+        elif features.d4_consistent:
+            preferred = ("dsl_program", "sparse_ca", "difflogic_hard")
+        elif features.all_same_shape:
+            preferred = ("sparse_ca", "dsl_program", "difflogic_hard")
+        else:
+            preferred = blackboard.route_decision.route_order
+        try:
+            return preferred.index(route)
+        except ValueError:
+            return len(preferred) + blackboard.route_decision.priority_for(route)
+
+    @staticmethod
+    def _semantic_novelty_by_result(blackboard: Blackboard) -> dict[str, int]:
+        evaluations = {
+            item.hypothesis.hypothesis_id: item for item in blackboard.evaluations
+        }
+        seen: set[tuple[object, ...]] = set()
+        novelty: dict[str, int] = {}
+        for result in blackboard.action_results:
+            count = 0
+            for hypothesis_id in result.accepted_candidate_ids:
+                evaluation = evaluations.get(hypothesis_id)
+                if evaluation is None:
+                    continue
+                signature = (
+                    evaluation.demo_outputs,
+                    evaluation.query_outputs,
+                    evaluation.hard_verified,
+                    evaluation.rejection_reason,
+                )
+                if signature not in seen:
+                    seen.add(signature)
+                    count += 1
+            novelty[result.result_id] = count
+        return novelty
+
+    def select(
+        self,
+        blackboard: Blackboard,
+        actions: Sequence[ControlAction],
+    ) -> ControlAction:
+        available = tuple(actions)
+        if not available:
+            raise ValueError("policy requires at least one compiled action")
+        proposals = tuple(
+            item
+            for item in available
+            if item.kind == "propose" and self._compatible(blackboard, item)
+        )
+        calls: dict[str, int] = {}
+        for result in blackboard.action_results:
+            if result.action.kind == "propose":
+                calls[result.action.actor] = calls.get(result.action.actor, 0) + 1
+
+        untried = tuple(item for item in proposals if calls.get(item.actor, 0) == 0)
+        if untried:
+            return min(
+                untried,
+                key=lambda item: (
+                    self._route_rank(blackboard, item),
+                    item.priority,
+                    item.actor,
+                    item.action_id,
+                ),
+            )
+
+        repairs = tuple(item for item in available if item.kind == "repair")
+        if repairs:
+            return min(repairs, key=lambda item: (item.priority, item.action_id))
+
+        if proposals:
+            novelty = self._semantic_novelty_by_result(blackboard)
+            latest_by_operator: dict[tuple[str, str], ActionResult] = {}
+            for result in blackboard.action_results:
+                if result.action.kind == "propose":
+                    latest_by_operator[(result.action.actor, result.action.operator)] = (
+                        result
+                    )
+
+            def proposal_key(action: ControlAction) -> tuple[object, ...]:
+                previous = latest_by_operator.get((action.actor, action.operator))
+                no_semantic_gain = (
+                    previous is not None and novelty.get(previous.result_id, 0) == 0
+                )
+                return (
+                    no_semantic_gain,
+                    calls.get(action.actor, 0),
+                    self._route_rank(blackboard, action),
+                    not bool(action.evidence_signal_ids),
+                    action.priority,
+                    action.actor,
+                    action.action_id,
+                )
+
+            return min(proposals, key=proposal_key)
+
+        stops = tuple(item for item in available if item.kind == "stop")
+        if not stops:
+            raise ValueError("compiled action set has no executable action or STOP")
+        return min(stops, key=lambda item: item.action_id)
 
 
 @dataclass(frozen=True, slots=True)
@@ -1539,7 +1676,18 @@ class ResidualActionCompiler:
                 operator, reasons, bonus = self._provider_operator(
                     route, best_signal, blackboard.features
                 )
-                parent_id = None if best_signal is None else best_signal.hypothesis_id
+                parent_sensitive = getattr(
+                    provider, "parent_sensitive_operators", None
+                )
+                parent_id = (
+                    None
+                    if best_signal is None
+                    or (
+                        parent_sensitive is not None
+                        and operator not in parent_sensitive
+                    )
+                    else best_signal.hypothesis_id
+                )
                 evidence = () if best_signal is None else (best_signal.signal_id,)
                 key = ("propose", provider_name, operator, parent_id)
                 if key in attempted:

@@ -20,6 +20,7 @@ from ..blind import BlindTask
 from ..dsl import Instruction, Program, execute_program, primitive_registry
 from ..grid import Grid
 from ..search import (
+    ProgramEvaluation,
     SearchConfig,
     evaluate_program,
     instruction_proposals,
@@ -138,6 +139,54 @@ class DslProgramProvider:
     supports_residual_actions: bool = field(default=True, init=False)
     supports_repeated_batches: bool = field(default=False, init=False)
     max_control_calls: int = field(default=3, init=False)
+    parent_sensitive_operators: frozenset[str] = field(
+        default=frozenset({"shape_resynthesize", "suffix_resynthesize"}),
+        init=False,
+    )
+
+    @staticmethod
+    def _semantically_diverse(
+        evaluations: Sequence[ProgramEvaluation],
+        *,
+        limit: int,
+        exact_lane: bool,
+    ) -> tuple[tuple[ProgramEvaluation, ...], int]:
+        """Keep the best program for each observable demo/query behavior."""
+
+        if limit < 1:
+            return (), 0
+        if exact_lane:
+            ranked = sorted(
+                evaluations,
+                key=lambda item: (
+                    _program_description_bits(item.program),
+                    item.program.program_id,
+                ),
+            )
+        else:
+            ranked = sorted(
+                evaluations,
+                key=lambda item: (
+                    -item.exact_demo_count,
+                    -item.shape_match_count,
+                    -item.agreement,
+                    _program_description_bits(item.program),
+                    item.program.program_id,
+                ),
+            )
+        selected: list[ProgramEvaluation] = []
+        seen_semantics: set[tuple[object, ...]] = set()
+        duplicate_count = 0
+        for evaluation in ranked:
+            signature = evaluation.semantic_signature()
+            if signature in seen_semantics:
+                duplicate_count += 1
+                continue
+            seen_semantics.add(signature)
+            selected.append(evaluation)
+            if len(selected) >= limit:
+                break
+        return tuple(selected), duplicate_count
 
     def propose(
         self,
@@ -147,7 +196,7 @@ class DslProgramProvider:
     ) -> ProviderResult:
         if not isinstance(task, BlindTask):
             raise TypeError("DSL provider accepts BlindTask only")
-        hypotheses: dict[str, CandidateHypothesis] = {}
+        seed_evaluations: list[ProgramEvaluation] = []
         if self.include_repair_seeds:
             for op in (
                 "identity",
@@ -159,17 +208,45 @@ class DslProgramProvider:
                 "transpose",
                 "anti_transpose",
             ):
-                candidate = _dsl_hypothesis(Program.create((Instruction.create(op),)))
-                hypotheses[candidate.hypothesis_id] = candidate
+                seed_evaluations.append(
+                    evaluate_program(Program.create((Instruction.create(op),)), task)
+                )
         result = search_programs(task, config=self.search_config)
-        for evaluation in result.exact_evaluations:
-            candidate = _dsl_hypothesis(evaluation.program)
-            hypotheses[candidate.hypothesis_id] = candidate
+        exact_by_program = {
+            evaluation.program.program_id: evaluation
+            for evaluation in (*result.exact_evaluations, *seed_evaluations)
+            if evaluation.all_demo_exact
+        }
+        near_by_program = {
+            evaluation.program.program_id: evaluation
+            for evaluation in seed_evaluations
+            if not evaluation.all_demo_exact
+        }
+        candidate_limit = decision.budget_for(self.route)
+        exact, exact_semantic_duplicates = self._semantically_diverse(
+            tuple(exact_by_program.values()),
+            limit=candidate_limit,
+            exact_lane=True,
+        )
+        near, near_semantic_duplicates = self._semantically_diverse(
+            tuple(near_by_program.values()),
+            limit=max(0, candidate_limit - len(exact)),
+            exact_lane=False,
+        )
         ordered = tuple(
-            sorted(
-                hypotheses.values(),
-                key=lambda item: (item.description_bits, item.hypothesis_id),
-            )[: decision.budget_for(self.route)]
+            _dsl_hypothesis(
+                evaluation.program,
+                control_metadata={
+                    "demo_exact": evaluation.all_demo_exact,
+                    "emission_lane": (
+                        "demo_exact" if evaluation.all_demo_exact else "near_miss_seed"
+                    ),
+                    "demo_exact_count": evaluation.exact_demo_count,
+                    "demo_shape_match_count": evaluation.shape_match_count,
+                    "demo_agreement": evaluation.agreement,
+                },
+            )
+            for evaluation in (*exact, *near)
         )
         return ProviderResult.ok(
             self.name,
@@ -180,6 +257,15 @@ class DslProgramProvider:
                 "expansions": result.expansions,
                 "semantic_duplicates": result.semantic_duplicates,
                 "repair_seed_count": int(self.include_repair_seeds) * 8,
+                "repair_seed_demo_exact_count": sum(
+                    item.all_demo_exact for item in seed_evaluations
+                ),
+                "emission_policy": "demo_exact_first_semantic_diversity_v2",
+                "emitted_demo_exact_count": len(exact),
+                "emitted_near_miss_count": len(near),
+                "emission_semantic_duplicates_removed": (
+                    exact_semantic_duplicates + near_semantic_duplicates
+                ),
                 "search_config": {
                     "max_depth": self.search_config.max_depth,
                     "beam_width": self.search_config.beam_width,
@@ -431,6 +517,9 @@ class SparseCAProvider:
     supports_residual_actions: bool = field(default=True, init=False)
     supports_repeated_batches: bool = field(default=False, init=False)
     max_control_calls: int = field(default=2, init=False)
+    parent_sensitive_operators: frozenset[str] = field(
+        default=frozenset(), init=False
+    )
 
     def __post_init__(self) -> None:
         allowed = {"none", "d4", "bgpad", "d4_bgpad"}

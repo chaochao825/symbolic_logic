@@ -9,6 +9,7 @@ from afts_arc.hybrid import (
     BudgetVector,
     CandidateHypothesis,
     ControlAction,
+    CoverageAwareResidualPolicy,
     DslProgramProvider,
     FixedSchedulePolicy,
     FrozenActionBatch,
@@ -107,6 +108,117 @@ class OverrunningStrictProvider:
 
 
 class OnlineControllerTests(unittest.TestCase):
+    def test_dsl_initial_batch_emits_demo_exact_before_repair_seeds(self) -> None:
+        task = _blind(
+            (
+                (
+                    [[1, 2, 3], [4, 5, 6]],
+                    [[6, 5, 4], [3, 2, 1]],
+                ),
+            ),
+            ([[1, 0, 2], [3, 4, 5]],),
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(
+                DslProgramProvider(
+                    search_config=SearchConfig(
+                        max_depth=1,
+                        beam_width=16,
+                        max_instruction_options=32,
+                        max_exact_programs=8,
+                    ),
+                    include_repair_seeds=True,
+                ),
+            ),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=1, provider_calls=1, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+        ).solve(task)
+        proposal = report.states[-1].action_results[0]
+        self.assertEqual(proposal.status, "ok")
+        self.assertEqual(len(proposal.accepted_candidate_ids), 1)
+        candidate = report.states[-1].candidates[0]
+        self.assertEqual(candidate.metadata["emission_lane"], "demo_exact")
+        self.assertTrue(candidate.metadata["demo_exact"])
+        self.assertTrue(report.selected[0].demo_exact)
+
+    def test_coverage_policy_reserves_an_untried_compatible_source(self) -> None:
+        task = _blind(
+            (([[1, 1]], [[2, 2]]),),
+            ([[1, 1, 1]],),
+        )
+        wrong = _hypothesis("ca-wrong", lambda grid: grid, route="sparse_ca")
+        correct = _hypothesis(
+            "dsl-recolor",
+            lambda grid: tuple(
+                tuple(2 if cell == 1 else cell for cell in row) for row in grid
+            ),
+            route="dsl_program",
+        )
+        providers = (
+            FrozenCandidatePoolProvider(
+                (wrong,), "ca-pool", "sparse_ca"
+            ),
+            FrozenCandidatePoolProvider.from_action_batches(
+                (
+                    FrozenActionBatch(
+                        "suffix_resynthesize",
+                        (correct,),
+                        parent_hypothesis_id=wrong.hypothesis_id,
+                    ),
+                ),
+                "dsl-pool",
+                "dsl_program",
+            ),
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=providers,
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=2, provider_calls=2, repairs=1),
+                provider_batch_size=1,
+                max_selected_hypotheses=1,
+            ),
+            policy=CoverageAwareResidualPolicy(),
+        ).solve(task)
+        actions = report.states[-1].action_results
+        self.assertEqual([item.action.actor for item in actions[:2]], ["ca-pool", "dsl-pool"])
+        self.assertEqual(actions[1].action.parent_hypothesis_id, wrong.hypothesis_id)
+        self.assertEqual(report.status, "solved")
+
+    def test_parent_insensitive_frozen_provider_does_not_fork_action_key(self) -> None:
+        task = _blind((([[1]], [[2]]),), ([[1]],))
+        first = _hypothesis("ca-first", lambda grid: grid, route="sparse_ca")
+        second = _hypothesis(
+            "ca-second",
+            lambda grid: tuple(tuple(2 for _ in row) for row in grid),
+            route="sparse_ca",
+            bits=9,
+        )
+        report = OnlineFunctionalRouterSolver(
+            providers=(
+                FrozenCandidatePoolProvider(
+                    (first, second), "ca-stream", "sparse_ca"
+                ),
+            ),
+            config=OnlineControlConfig(
+                budget_limit=_budget(steps=2, provider_calls=2, repairs=0),
+                provider_batch_size=1,
+                max_selected_hypotheses=2,
+            ),
+            policy=CoverageAwareResidualPolicy(),
+        ).solve(task)
+        proposals = tuple(
+            item
+            for item in report.states[-1].action_results
+            if item.action.kind == "propose"
+        )
+        self.assertEqual(len(proposals), 2)
+        self.assertTrue(
+            all(item.action.parent_hypothesis_id is None for item in proposals)
+        )
+
     def test_residual_policy_beats_fixed_run_all_at_identical_ncu(self) -> None:
         task = _blind(
             (

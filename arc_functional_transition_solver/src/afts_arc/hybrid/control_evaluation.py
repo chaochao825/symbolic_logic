@@ -26,6 +26,10 @@ class TaskControlMetrics:
     strict_pool_metrics: bool
     pool_candidate_count: int
     observed_candidate_count: int
+    emitted_candidate_count: int
+    accepted_candidate_count: int
+    observed_semantic_candidate_count: int
+    semantic_duplicate_candidate_count: int
     selected_count: int
     pool_oracle_covered: bool
     pool_selectable_oracle_covered: bool
@@ -38,9 +42,12 @@ class TaskControlMetrics:
     selection_utilization: float | None
     correct_repair_candidate_count: int
     repair_recovered_task: bool
+    correct_action_conditioned_candidate_count: int
+    action_conditioned_recovered_task: bool
     compute_units: int
     correct_repair_candidates_per_compute_unit: float
     recovered_tasks_per_compute_unit: float
+    action_conditioned_recovered_tasks_per_compute_unit: float
 
     @property
     def oracle_covered(self) -> bool:
@@ -70,6 +77,14 @@ class TaskControlMetrics:
             "strict_pool_metrics": self.strict_pool_metrics,
             "pool_candidate_count": self.pool_candidate_count,
             "observed_candidate_count": self.observed_candidate_count,
+            "emitted_candidate_count": self.emitted_candidate_count,
+            "accepted_candidate_count": self.accepted_candidate_count,
+            "observed_semantic_candidate_count": (
+                self.observed_semantic_candidate_count
+            ),
+            "semantic_duplicate_candidate_count": (
+                self.semantic_duplicate_candidate_count
+            ),
             "selected_count": self.selected_count,
             "pool_oracle_covered": self.pool_oracle_covered,
             "pool_selectable_oracle_covered": self.pool_selectable_oracle_covered,
@@ -84,12 +99,21 @@ class TaskControlMetrics:
             "selection_utilization": self.selection_utilization,
             "correct_repair_candidate_count": self.correct_repair_candidate_count,
             "repair_recovered_task": self.repair_recovered_task,
+            "correct_action_conditioned_candidate_count": (
+                self.correct_action_conditioned_candidate_count
+            ),
+            "action_conditioned_recovered_task": (
+                self.action_conditioned_recovered_task
+            ),
             "compute_units": self.compute_units,
             "correct_repair_candidates_per_compute_unit": (
                 self.correct_repair_candidates_per_compute_unit
             ),
             "recovered_tasks_per_compute_unit": (
                 self.recovered_tasks_per_compute_unit
+            ),
+            "action_conditioned_recovered_tasks_per_compute_unit": (
+                self.action_conditioned_recovered_tasks_per_compute_unit
             ),
         }
 
@@ -110,9 +134,12 @@ class AggregateControlMetrics:
     selection_utilization: float | None
     correct_repair_candidate_count: int
     repair_recovered_tasks: int
+    correct_action_conditioned_candidate_count: int
+    action_conditioned_recovered_tasks: int
     compute_units: int
     correct_repair_candidates_per_compute_unit: float
     recovered_tasks_per_compute_unit: float
+    action_conditioned_recovered_tasks_per_compute_unit: float
 
     @property
     def oracle_covered_tasks(self) -> int:
@@ -150,12 +177,21 @@ class AggregateControlMetrics:
             "selection_utilization": self.selection_utilization,
             "correct_repair_candidate_count": self.correct_repair_candidate_count,
             "repair_recovered_tasks": self.repair_recovered_tasks,
+            "correct_action_conditioned_candidate_count": (
+                self.correct_action_conditioned_candidate_count
+            ),
+            "action_conditioned_recovered_tasks": (
+                self.action_conditioned_recovered_tasks
+            ),
             "compute_units": self.compute_units,
             "correct_repair_candidates_per_compute_unit": (
                 self.correct_repair_candidates_per_compute_unit
             ),
             "recovered_tasks_per_compute_unit": (
                 self.recovered_tasks_per_compute_unit
+            ),
+            "action_conditioned_recovered_tasks_per_compute_unit": (
+                self.action_conditioned_recovered_tasks_per_compute_unit
             ),
         }
 
@@ -245,11 +281,45 @@ def evaluate_online_report_with_oracle(
     correct_repairs = sum(
         selectable_correct(item) for item in report.repaired_evaluations
     )
+    action_conditioned = tuple(
+        item
+        for item in report.initial_evaluations
+        if item.hypothesis.parent_hypothesis_ids
+    )
+    root_candidates = tuple(
+        item
+        for item in report.initial_evaluations
+        if not item.hypothesis.parent_hypothesis_ids
+    )
+    correct_action_conditioned = sum(
+        selectable_correct(item) for item in action_conditioned
+    )
+    root_correct = any(selectable_correct(item) for item in root_candidates)
+    action_conditioned_recovered_task = bool(
+        correct_action_conditioned and not root_correct
+    )
     initial_correct = any(
         selectable_correct(item) for item in report.initial_evaluations
     )
     repair_recovered_task = bool(correct_repairs and not initial_correct)
     compute = report.states[-1].budget.used.compute_units
+    emitted_count = sum(
+        len(item.emitted_candidate_ids)
+        for item in report.states[-1].action_results
+    )
+    accepted_count = sum(
+        len(item.accepted_candidate_ids)
+        for item in report.states[-1].action_results
+    )
+    observed_semantics = {
+        (
+            item.demo_outputs,
+            item.query_outputs,
+            item.hard_verified,
+            item.rejection_reason,
+        )
+        for item in observed
+    }
     return TaskControlMetrics(
         task_id=task.task_id,
         blind_content_sha256=blind.blind_content_sha256,
@@ -257,6 +327,12 @@ def evaluate_online_report_with_oracle(
         strict_pool_metrics=strict_pool_metrics,
         pool_candidate_count=len(pool_evaluations),
         observed_candidate_count=len(observed),
+        emitted_candidate_count=emitted_count,
+        accepted_candidate_count=accepted_count,
+        observed_semantic_candidate_count=len(observed_semantics),
+        semantic_duplicate_candidate_count=max(
+            0, len(observed) - len(observed_semantics)
+        ),
         selected_count=len(report.selected),
         pool_oracle_covered=pool_oracle_covered,
         pool_selectable_oracle_covered=pool_selectable_covered,
@@ -281,12 +357,17 @@ def evaluate_online_report_with_oracle(
         ),
         correct_repair_candidate_count=correct_repairs,
         repair_recovered_task=repair_recovered_task,
+        correct_action_conditioned_candidate_count=correct_action_conditioned,
+        action_conditioned_recovered_task=action_conditioned_recovered_task,
         compute_units=compute,
         correct_repair_candidates_per_compute_unit=(
             correct_repairs / compute if compute else 0.0
         ),
         recovered_tasks_per_compute_unit=(
             int(repair_recovered_task) / compute if compute else 0.0
+        ),
+        action_conditioned_recovered_tasks_per_compute_unit=(
+            int(action_conditioned_recovered_task) / compute if compute else 0.0
         ),
     )
 
@@ -307,6 +388,12 @@ def aggregate_control_metrics(
     passed = sum(item.pass_at_k for item in items)
     repairs = sum(item.correct_repair_candidate_count for item in items)
     recovered_tasks = sum(item.repair_recovered_task for item in items)
+    action_conditioned_candidates = sum(
+        item.correct_action_conditioned_candidate_count for item in items
+    )
+    action_conditioned_recovered_tasks = sum(
+        item.action_conditioned_recovered_task for item in items
+    )
     compute = sum(item.compute_units for item in items)
     return AggregateControlMetrics(
         task_count=task_count,
@@ -329,11 +416,16 @@ def aggregate_control_metrics(
         ),
         correct_repair_candidate_count=repairs,
         repair_recovered_tasks=recovered_tasks,
+        correct_action_conditioned_candidate_count=action_conditioned_candidates,
+        action_conditioned_recovered_tasks=action_conditioned_recovered_tasks,
         compute_units=compute,
         correct_repair_candidates_per_compute_unit=(
             repairs / compute if compute else 0.0
         ),
         recovered_tasks_per_compute_unit=(
             recovered_tasks / compute if compute else 0.0
+        ),
+        action_conditioned_recovered_tasks_per_compute_unit=(
+            action_conditioned_recovered_tasks / compute if compute else 0.0
         ),
     )

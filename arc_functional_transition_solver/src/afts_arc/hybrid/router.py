@@ -201,7 +201,18 @@ def route_task(task: BlindTask) -> tuple[TaskFeatures, RouteDecision]:
         "difflogic_hard": 8,
         "masked_diffusion": 32,
     }
-    if features.object_relation_evidence:
+    if features.d4_consistent:
+        # A shared whole-grid D4 transform is a direct symbolic program.  CA's
+        # D4 augmentation only changes the patch coordinate system and should
+        # not outrank the exact geometric representation.
+        order = (
+            "dsl_program",
+            "sparse_ca",
+            "difflogic_hard",
+            "masked_diffusion",
+            "code_llm",
+        )
+    elif features.object_relation_evidence:
         order = (
             "dsl_program",
             "code_llm",
