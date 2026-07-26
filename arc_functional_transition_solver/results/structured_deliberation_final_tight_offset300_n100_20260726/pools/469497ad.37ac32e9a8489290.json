@@ -1,0 +1,2448 @@
+{
+  "blind_content_sha256": "37216b0302967b4ebea36c98232768e6b53a1e926871b5f9a60278931e5221d7",
+  "candidate_count": 2,
+  "candidates": [
+    {
+      "description_bits": 6,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "rotate270"
+      ],
+      "hypothesis_id": "108a33d0ed870c400bb911e9",
+      "metadata": {
+        "demo_agreement": 0.04275862068965517,
+        "demo_exact": false,
+        "demo_exact_count": 0,
+        "demo_shape_match_count": 0,
+        "emission_lane": "near_miss_seed",
+        "node_count": 1
+      },
+      "name": "dsl:1da497f4362109ae68ce914a94122e612a37eef97b2742cb39e589635f80c4f1",
+      "parent_hypothesis_ids": [],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "rotate270"
+            }
+          ],
+          "program_id": "1da497f4362109ae68ce914a94122e612a37eef97b2742cb39e589635f80c4f1"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 6,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "anti_transpose"
+      ],
+      "hypothesis_id": "ea18b66f1415c3e95707c2af",
+      "metadata": {
+        "demo_agreement": 0.044137931034482755,
+        "demo_exact": false,
+        "demo_exact_count": 0,
+        "demo_shape_match_count": 0,
+        "emission_lane": "near_miss_seed",
+        "node_count": 1
+      },
+      "name": "dsl:0b9c2c48c3f8621253340f2ba47b9b1f6d0b0d6a35771009256a5ef193a90888",
+      "parent_hypothesis_ids": [],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "anti_transpose"
+            }
+          ],
+          "program_id": "0b9c2c48c3f8621253340f2ba47b9b1f6d0b0d6a35771009256a5ef193a90888"
+        }
+      },
+      "verification_mode": "replayable"
+    }
+  ],
+  "discovery_policies": {
+    "adaptive_diversity": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "cb7dd7a8d368a77b61148249",
+        "state_id": "3cc2cdbb025c4bf774c69792"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "ca_only": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": "unsupported_shape_change",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "8b3ad6fbd2bfdc2a1b2b0552",
+        "state_id": "94d9b8834453afd5b7a970d6"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "coverage_aware_expanded": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "cb7dd7a8d368a77b61148249",
+        "state_id": "3cc2cdbb025c4bf774c69792"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "coverage_aware_v2": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "bdf62c683e69e5f262506549",
+        "state_id": "2f4eef06e531bf961425d2f8"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "dsl_only": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "bdf62c683e69e5f262506549",
+        "state_id": "2f4eef06e531bf961425d2f8"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "fixed_ca_first": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": "unsupported_shape_change",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5d85419506d00868512bc047",
+        "state_id": "ea08beddf3815019c8ff252d"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "fixed_dsl_first": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "bdf62c683e69e5f262506549",
+        "state_id": "2f4eef06e531bf961425d2f8"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "random_seed_0": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": "unsupported_shape_change",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "f083ebe9051966bba20b3398",
+        "state_id": "43cc6b0289e72b670ba9254d"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "residual_first": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "bdf62c683e69e5f262506549",
+        "state_id": "2f4eef06e531bf961425d2f8"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "round_robin": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "unsupported_shape_change",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "c7fca95ab71363138131402d",
+        "state_id": "e8a802581de3714c52e8fe2a"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "scene_only": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "8270af51d218e6cf42e6c617",
+        "state_id": "d61b958fa38af494a8f4af0e"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "static_task_router": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "3d4efb71cece14c6a6f5dd57",
+        "state_id": "6363aed056caf3c7a6592856"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "structured_deliberation": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "cb7dd7a8d368a77b61148249",
+        "state_id": "3cc2cdbb025c4bf774c69792"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "summary_grounded": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "bdf62c683e69e5f262506549",
+        "state_id": "2f4eef06e531bf961425d2f8"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    }
+  },
+  "frozen_replay_policies": {
+    "adaptive_diversity": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "564eec49bc162d44ed640daf",
+        "state_id": "f9db823b7d08145a738ef3b6"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "ca_only": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "7ab5ccfbc09976c7f9ad4c8a",
+        "state_id": "7547648e2ecd2f78f1bd0e21"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "coverage_aware_expanded": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5a3e6ae6d756b933293100e1",
+        "state_id": "e27168b0e50287aee1113075"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "coverage_aware_v2": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5a3e6ae6d756b933293100e1",
+        "state_id": "e27168b0e50287aee1113075"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "dsl_only": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5a3e6ae6d756b933293100e1",
+        "state_id": "e27168b0e50287aee1113075"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "fixed_ca_first": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "89d5041bb2c7fc5cf9bbb04e",
+        "state_id": "a7bb69aed9a16006c4ca0052"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "fixed_dsl_first": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5a3e6ae6d756b933293100e1",
+        "state_id": "e27168b0e50287aee1113075"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "random_seed_0": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "d630194e031b36de39c6df97",
+        "state_id": "6ac51bace6b41031e873afa8"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "residual_first": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5a3e6ae6d756b933293100e1",
+        "state_id": "e27168b0e50287aee1113075"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "round_robin": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "564eec49bc162d44ed640daf",
+        "state_id": "f9db823b7d08145a738ef3b6"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "scene_only": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "e86b300e1c8ba655481657f0",
+        "state_id": "4015535a1b3f4aba77aa7872"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "static_task_router": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "901bbe7a84f8e34279f8f627",
+        "state_id": "35cbe489bc82b8a78cee3ab8"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "structured_deliberation": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5a3e6ae6d756b933293100e1",
+        "state_id": "e27168b0e50287aee1113075"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "summary_grounded": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "108a33d0ed870c400bb911e9",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:dense",
+          "evidence:object_relation",
+          "shape:change",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:shape_mismatch"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 2,
+        "sketch_id": "5a3e6ae6d756b933293100e1",
+        "state_id": "e27168b0e50287aee1113075"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 2,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    }
+  },
+  "oracle_used_during_discovery": false,
+  "oracle_used_during_pool_closure": false,
+  "pool_closure": {
+    "discovery_candidate_count": 2,
+    "replay_candidate_count": 2,
+    "replay_only_candidate_count": 0,
+    "rule": "provider batches plus all oracle-free discovery/replay descendants"
+  },
+  "pool_id": "37ac32e9a8489290326aed7e1eaa916d5cb5a1caee854618873a5147812eb0ba",
+  "providers": [
+    {
+      "actions": [
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "action_operator": "shape_resynthesize",
+            "improving_program_count": 0,
+            "instruction_option_count": 32,
+            "native_cost": {
+              "demo_program_executions": 192,
+              "program_trials": 64,
+              "query_program_executions": 64
+            },
+            "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+            "parent_representation": "dsl_program",
+            "program_trials": 64
+          },
+          "operator": "shape_resynthesize",
+          "parent_hypothesis_id": "ea18b66f1415c3e95707c2af",
+          "reason": "no_residual_improving_program",
+          "status": "abstained"
+        },
+        {
+          "candidate_ids": [
+            "ea18b66f1415c3e95707c2af",
+            "108a33d0ed870c400bb911e9"
+          ],
+          "diagnostics": {
+            "action_operator": "synthesize",
+            "candidate_slot_limit": 2,
+            "emission_policy": "demo_exact_first_semantic_diversity_v2",
+            "emission_semantic_duplicates_removed": 0,
+            "emitted_demo_exact_count": 0,
+            "emitted_near_miss_count": 8,
+            "exact_program_count": 0,
+            "expansions": 838,
+            "native_cost": {
+              "program_expansions": 838
+            },
+            "repair_seed_count": 8,
+            "repair_seed_demo_exact_count": 0,
+            "search_config": {
+              "beam_width": 32,
+              "max_depth": 2,
+              "max_exact_programs": 16,
+              "max_instruction_options": 32
+            },
+            "semantic_duplicates": 653
+          },
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "status": "ok"
+        }
+      ],
+      "provider": "typed_dsl",
+      "route": "dsl_program",
+      "strict_live_budget_contract": false
+    },
+    {
+      "actions": [
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "policies": [
+              "d4",
+              "d4_bgpad"
+            ]
+          },
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "unsupported_shape_change",
+          "status": "abstained"
+        },
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "policies": [
+              "none",
+              "bgpad"
+            ]
+          },
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": "unsupported_shape_change",
+          "status": "abstained"
+        }
+      ],
+      "provider": "sparse_ca_d4_bgpad",
+      "route": "sparse_ca",
+      "strict_live_budget_contract": false
+    },
+    {
+      "actions": [
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "exact_rule_count": 0,
+            "exact_semantic_duplicates_removed": 0,
+            "native_cost": {
+              "demo_scene_rule_executions": 8190,
+              "scene_parses": 16,
+              "scene_rule_trials": 2730
+            },
+            "scene_dsl_version": "afts-scene-predicate-dsl/v0.1"
+          },
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "status": "abstained"
+        }
+      ],
+      "provider": "scene_predicate_dsl",
+      "route": "dsl_program",
+      "strict_live_budget_contract": false
+    }
+  ],
+  "schema": "afts.frozen-action-pool/v2",
+  "task_id": "469497ad",
+  "task_source_sha256": "97c7824f8e6375e1788c1a9a62587514061c90bc1d61b8d4d2c695d1aa59bf83"
+}

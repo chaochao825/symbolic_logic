@@ -1,0 +1,5942 @@
+{
+  "blind_content_sha256": "9c225a054467a98bab86650d8bc799a3eac6715c80d89eab5b1de0da846e04b8",
+  "candidate_count": 6,
+  "candidates": [
+    {
+      "description_bits": 13,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "recolor"
+      ],
+      "hypothesis_id": "0f2fbd2359850d171cd86d00",
+      "metadata": {
+        "control_operator": "suffix_resynthesize",
+        "evidence_signal_ids": [
+          "256c0d63229bac11c4c469dd"
+        ],
+        "improved_over_parent": true,
+        "node_count": 1
+      },
+      "name": "dsl:fed4b3c79e09c07082f2e1f607a849d99be72d34007d2446b920841099f2c8be",
+      "parent_hypothesis_ids": [
+        "f33fc84a64021466fec9f557"
+      ],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {
+                "new": 0,
+                "old": 1
+              },
+              "op": "recolor"
+            }
+          ],
+          "program_id": "fed4b3c79e09c07082f2e1f607a849d99be72d34007d2446b920841099f2c8be"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 21,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "flip_horizontal",
+        "render_foreground_bbox"
+      ],
+      "hypothesis_id": "5c29f868533e2c5fc00f95f0",
+      "metadata": {
+        "control_operator": "suffix_resynthesize",
+        "evidence_signal_ids": [
+          "256c0d63229bac11c4c469dd"
+        ],
+        "improved_over_parent": true,
+        "node_count": 2
+      },
+      "name": "dsl:f12f7c7e36346dfda483f33afa722c6658a5ec65f1b78e29aae1a080641148eb",
+      "parent_hypothesis_ids": [
+        "f33fc84a64021466fec9f557"
+      ],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "flip_horizontal"
+            },
+            {
+              "arguments": {
+                "background": 0,
+                "color": 2
+              },
+              "op": "render_foreground_bbox"
+            }
+          ],
+          "program_id": "f12f7c7e36346dfda483f33afa722c6658a5ec65f1b78e29aae1a080641148eb"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 6,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "rotate90"
+      ],
+      "hypothesis_id": "5c3b9103b81baecc4b105a5a",
+      "metadata": {
+        "demo_agreement": 0.5444444444444444,
+        "demo_exact": false,
+        "demo_exact_count": 0,
+        "demo_shape_match_count": 10,
+        "emission_lane": "near_miss_seed",
+        "node_count": 1
+      },
+      "name": "dsl:8a3e212209df3497e40bb32fa96f3ff120370e3406958829e318e3de0bb2984e",
+      "parent_hypothesis_ids": [],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "rotate90"
+            }
+          ],
+          "program_id": "8a3e212209df3497e40bb32fa96f3ff120370e3406958829e318e3de0bb2984e"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 4544,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "sparse_ca",
+        "augmentation:bgpad",
+        "moore_r2",
+        "control:local_transition_search"
+      ],
+      "hypothesis_id": "7499bf93dc804b23c4729bfd",
+      "metadata": {
+        "control_operator": "local_transition_search",
+        "evidence_signal_ids": [],
+        "foreground_query_cell_count": 6,
+        "foreground_query_support": 0.0,
+        "gate_upper_bounds": {
+          "binary4_gate_upper_bound": 8213,
+          "binary4_state_bits_per_cell": 4,
+          "onehot_boundary_input_states": 11,
+          "onehot_gate_upper_bound": 2310,
+          "onehot_state_bits_per_cell": 10
+        },
+        "minimum_foreground_support": 0.5,
+        "minimum_query_support": 0.5,
+        "query_cell_count": 18,
+        "query_support": 0.0,
+        "support_gate_passed": false,
+        "training_cells": 250,
+        "unsupported_foreground_query_cells": 6,
+        "unsupported_query_cells": 18
+      },
+      "name": "sparse_ca:bgpad:moore_r2",
+      "parent_hypothesis_ids": [],
+      "route": "sparse_ca",
+      "source": "sparse_categorical_ca",
+      "source_version": "afts-hybrid-ca/v1",
+      "spec": {
+        "backend_source_sha256": "abbee248cce8d174743ff86dac0e7d43205d8f4ef33b1ca9fa4155f022a57996",
+        "entries": [
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1,
+              1,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              1,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              1,
+              1,
+              0,
+              0,
+              10,
+              1,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              1,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              0,
+              1,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              1,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              1,
+              0,
+              10,
+              0,
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              1,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              1,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              0,
+              0,
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              0,
+              1,
+              0,
+              10,
+              0,
+              1,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              1,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              0,
+              1,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              1,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              1,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              1,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              10,
+              0,
+              0,
+              0,
+              1,
+              10,
+              0,
+              0,
+              1,
+              1
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              10,
+              0,
+              0,
+              0,
+              0,
+              10,
+              0,
+              1,
+              0,
+              1
+            ]
+          }
+        ],
+        "model_description_bits": 4542,
+        "neighborhood": "moore_r2",
+        "offsets": [
+          [
+            0,
+            0
+          ],
+          [
+            -2,
+            -2
+          ],
+          [
+            -2,
+            -1
+          ],
+          [
+            -2,
+            0
+          ],
+          [
+            -2,
+            1
+          ],
+          [
+            -2,
+            2
+          ],
+          [
+            -1,
+            -2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            0
+          ],
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            2
+          ],
+          [
+            0,
+            -2
+          ],
+          [
+            0,
+            -1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            -2
+          ],
+          [
+            1,
+            -1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            -2
+          ],
+          [
+            2,
+            -1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            2
+          ]
+        ],
+        "policy": "bgpad",
+        "seen_pattern_count": 207,
+        "seen_patterns_sha256": "a5d726ec5ecb34873ce18b8fbb8eb0e308c11f3168695b7bb0c78bc1c1d3355f",
+        "support_policy": {
+          "minimum_foreground_support": 0.5,
+          "minimum_query_support": 0.5
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 6,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "flip_horizontal"
+      ],
+      "hypothesis_id": "f33fc84a64021466fec9f557",
+      "metadata": {
+        "demo_agreement": 0.5555555555555556,
+        "demo_exact": false,
+        "demo_exact_count": 0,
+        "demo_shape_match_count": 10,
+        "emission_lane": "near_miss_seed",
+        "node_count": 1
+      },
+      "name": "dsl:2cf41836d5083e807c874483cb19bcb4bfd5cf3b3538e234e67ffe65f6430568",
+      "parent_hypothesis_ids": [],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "flip_horizontal"
+            }
+          ],
+          "program_id": "2cf41836d5083e807c874483cb19bcb4bfd5cf3b3538e234e67ffe65f6430568"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 4544,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "sparse_ca",
+        "augmentation:none",
+        "moore_r2",
+        "control:local_transition_search"
+      ],
+      "hypothesis_id": "fc497f0044d2aa1731cfe123",
+      "metadata": {
+        "control_operator": "local_transition_search",
+        "evidence_signal_ids": [],
+        "foreground_query_cell_count": 6,
+        "foreground_query_support": 0.0,
+        "gate_upper_bounds": {
+          "binary4_gate_upper_bound": 7433,
+          "binary4_state_bits_per_cell": 4,
+          "onehot_boundary_input_states": 11,
+          "onehot_gate_upper_bound": 2310,
+          "onehot_state_bits_per_cell": 10
+        },
+        "minimum_foreground_support": 0.5,
+        "minimum_query_support": 0.5,
+        "query_cell_count": 18,
+        "query_support": 0.0,
+        "support_gate_passed": false,
+        "training_cells": 90,
+        "unsupported_foreground_query_cells": 6,
+        "unsupported_query_cells": 18
+      },
+      "name": "sparse_ca:none:moore_r2",
+      "parent_hypothesis_ids": [],
+      "route": "sparse_ca",
+      "source": "sparse_categorical_ca",
+      "source_version": "afts-hybrid-ca/v1",
+      "spec": {
+        "backend_source_sha256": "abbee248cce8d174743ff86dac0e7d43205d8f4ef33b1ca9fa4155f022a57996",
+        "entries": [
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              0,
+              1,
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              1,
+              1,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              1,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              1,
+              1,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              1,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              0,
+              1,
+              0,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              0,
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              1,
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 0,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              1,
+              1,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              1,
+              10
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              0,
+              0,
+              10,
+              10,
+              0,
+              0,
+              1,
+              10,
+              10,
+              0,
+              1,
+              1
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 2,
+            "pattern": [
+              1,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              1,
+              0,
+              10,
+              10,
+              0,
+              0,
+              0,
+              10,
+              10,
+              1,
+              0,
+              1
+            ]
+          }
+        ],
+        "model_description_bits": 4542,
+        "neighborhood": "moore_r2",
+        "offsets": [
+          [
+            0,
+            0
+          ],
+          [
+            -2,
+            -2
+          ],
+          [
+            -2,
+            -1
+          ],
+          [
+            -2,
+            0
+          ],
+          [
+            -2,
+            1
+          ],
+          [
+            -2,
+            2
+          ],
+          [
+            -1,
+            -2
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            0
+          ],
+          [
+            -1,
+            1
+          ],
+          [
+            -1,
+            2
+          ],
+          [
+            0,
+            -2
+          ],
+          [
+            0,
+            -1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            -2
+          ],
+          [
+            1,
+            -1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            -2
+          ],
+          [
+            2,
+            -1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            2
+          ]
+        ],
+        "policy": "none",
+        "seen_pattern_count": 90,
+        "seen_patterns_sha256": "a5610fd704b03081f268e6c1781992e9ccb90663f2abbcfe5d5221d36977b31f",
+        "support_policy": {
+          "minimum_foreground_support": 0.5,
+          "minimum_query_support": 0.5
+        }
+      },
+      "verification_mode": "replayable"
+    }
+  ],
+  "discovery_policies": {
+    "adaptive_diversity": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "5699339e71e2c98e1153d23c",
+        "state_id": "2b91ea742427b8c62dcb9883"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "ca_only": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "no_candidates",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 1,
+        "sketch_id": "23da8daa71d6371a48ecb005",
+        "state_id": "df81a4a84cd32d64e4343d17"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 1,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "coverage_aware_expanded": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "483316417d6445d89f9c5b95",
+        "state_id": "e8ccf4a17f397d58154ab6c5"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "coverage_aware_v2": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "no_candidates",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "38da7ab61b2f84a0b5c45a5a",
+        "state_id": "95efb4c6d429ae16906c0a83"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "dsl_only": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            3
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "c084c9da0f198be201f4b6c5",
+        "state_id": "41dbb5ae57466e2a9314d29b"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "fixed_ca_first": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "no_candidates",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "88ba12199658239a8635c7d5",
+        "state_id": "eef303a7335434da014498db"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "fixed_dsl_first": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            3
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "05e5d95ccc39c4fcba9bc8f7",
+        "state_id": "e6c89fe1fd540f914bfb45ef"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "random_seed_0": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "no_candidates",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 1,
+        "sketch_id": "8ac5f08b7db110e67c3e92a6",
+        "state_id": "86cb94bbb4fb65605a7aada6"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 1,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "residual_first": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            3
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "c084c9da0f198be201f4b6c5",
+        "state_id": "41dbb5ae57466e2a9314d29b"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "round_robin": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "b7d1ac941cce8679f8c73d1e",
+        "state_id": "6979c1c9d4a8e6da14662126"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "scene_only": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "3fb3507023ac1df50f74b290",
+        "state_id": "0b3746f472ce7f83229ac54f"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "static_task_router": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "13354bed5774b5fb71dc030f",
+        "state_id": "a30982f4d015393c4b99b214"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "structured_deliberation": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "no_candidates",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 1,
+        "sketch_id": "4d63bf4bb8c549e534b8e78d",
+        "state_id": "94d68aa03178ce094371a904"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 1,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "summary_grounded": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "no_candidates",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 1,
+        "sketch_id": "4d63bf4bb8c549e534b8e78d",
+        "state_id": "94d68aa03178ce094371a904"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 1,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    }
+  },
+  "frozen_replay_policies": {
+    "adaptive_diversity": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "4f7f57c15f9d5bc93321c60b",
+        "state_id": "e097ed431850d872c2e44d58"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "ca_only": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 4,
+        "compute_units": 6,
+        "controller_steps": 2,
+        "provider_calls": 2,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 1,
+        "sketch_id": "1a8df12aa145d637ce8bffaf",
+        "state_id": "98e049706360ee043914a20e"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 1,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "coverage_aware_expanded": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "453353401fbfa8168710ad0f",
+        "state_id": "07cc661f4379625e5fd6ea3c"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "coverage_aware_v2": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "b5e7f62d7e097384c422ba02",
+        "state_id": "7059e53d8028dc1a15cd8530"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "dsl_only": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            3
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "ae1b2d56aebffa7d3c61d25f",
+        "state_id": "8aee2ca401b9b83269ed183c"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "fixed_ca_first": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "e322124b63ffe22030ad17b0",
+        "state_id": "5cc9c7b98dbfbe2a3e6e7a97"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "fixed_dsl_first": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            3
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "9f985f95eba9ddf6c0d09386",
+        "state_id": "b133c337a1f44580254556d1"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "random_seed_0": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "138f8ff8b325e3d932a39cf7",
+        "state_id": "ffbd124c4472d3e9e7c22b0c"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "residual_first": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "typed_dsl",
+            3
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "ae1b2d56aebffa7d3c61d25f",
+        "state_id": "8aee2ca401b9b83269ed183c"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "round_robin": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            1
+          ],
+          [
+            "typed_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 3,
+        "sketch_id": "4f7f57c15f9d5bc93321c60b",
+        "state_id": "e097ed431850d872c2e44d58"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 3,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "scene_only": {
+      "accepted_candidate_count": 0,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 0,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "explore",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ]
+        ],
+        "residual_tokens": [],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 0,
+        "sketch_id": "2455259ab7e93ed32f524fa1",
+        "state_id": "6c226f3eb57b5670ac88ce16"
+      },
+      "emitted_candidate_count": 0,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 0,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "static_task_router": {
+      "accepted_candidate_count": 4,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "5c3b9103b81baecc4b105a5a",
+            "f33fc84a64021466fec9f557"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "0f2fbd2359850d171cd86d00",
+            "5c29f868533e2c5fc00f95f0"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_high_support_local_rule",
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 4,
+        "demo_exact_verified_count": 0,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "refine",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "typed_dsl",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:localized"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 4,
+        "sketch_id": "ba64c2ef6f61fbfa2f8d776c",
+        "state_id": "0640db589e04568d0865f98c"
+      },
+      "emitted_candidate_count": 4,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 4,
+      "status": "abstained",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "structured_deliberation": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 1,
+        "sketch_id": "fcabf026946a6e949b1b7780",
+        "state_id": "67a3af3e6a282113ee2f583a"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 1,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "summary_grounded": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [],
+          "actor": "scene_predicate_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "frozen_action_exhausted",
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 6,
+        "compute_units": 9,
+        "controller_steps": 3,
+        "provider_calls": 3,
+        "repair_attempts": 0
+      },
+      "deliberation_sketch": {
+        "accepted_candidate_count": 2,
+        "demo_exact_verified_count": 2,
+        "factual_tokens": [
+          "change:local",
+          "evidence:object_relation",
+          "shape:stable",
+          "support:low"
+        ],
+        "phase": "answer",
+        "provider_calls": [
+          [
+            "scene_predicate_dsl",
+            1
+          ],
+          [
+            "sparse_ca_d4_bgpad",
+            2
+          ]
+        ],
+        "residual_tokens": [
+          "residual:low_query_support"
+        ],
+        "schema": "afts.structured-deliberation/v1",
+        "semantic_cluster_count": 1,
+        "sketch_id": "fcabf026946a6e949b1b7780",
+        "state_id": "67a3af3e6a282113ee2f583a"
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [],
+      "semantic_novel_candidate_count": 1,
+      "status": "abstained",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    }
+  },
+  "oracle_used_during_discovery": false,
+  "oracle_used_during_pool_closure": false,
+  "pool_closure": {
+    "discovery_candidate_count": 6,
+    "replay_candidate_count": 6,
+    "replay_only_candidate_count": 0,
+    "rule": "provider batches plus all oracle-free discovery/replay descendants"
+  },
+  "pool_id": "284642d8f65ed1413455ae92e10e796d5c3761fff7579b755814dee9d4c833b1",
+  "providers": [
+    {
+      "actions": [
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "action_operator": "suffix_resynthesize",
+            "improving_program_count": 0,
+            "instruction_option_count": 32,
+            "native_cost": {
+              "demo_program_executions": 620,
+              "program_trials": 62,
+              "query_program_executions": 124
+            },
+            "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+            "parent_representation": "dsl_program",
+            "program_trials": 62
+          },
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "0f2fbd2359850d171cd86d00",
+          "reason": "no_residual_improving_program",
+          "status": "abstained"
+        },
+        {
+          "candidate_ids": [
+            "5c29f868533e2c5fc00f95f0",
+            "0f2fbd2359850d171cd86d00"
+          ],
+          "diagnostics": {
+            "action_operator": "suffix_resynthesize",
+            "improving_program_count": 8,
+            "instruction_option_count": 32,
+            "native_cost": {
+              "demo_program_executions": 620,
+              "program_trials": 62,
+              "query_program_executions": 124
+            },
+            "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+            "parent_representation": "dsl_program",
+            "program_trials": 62
+          },
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "f33fc84a64021466fec9f557",
+          "reason": null,
+          "status": "ok"
+        },
+        {
+          "candidate_ids": [
+            "f33fc84a64021466fec9f557",
+            "5c3b9103b81baecc4b105a5a"
+          ],
+          "diagnostics": {
+            "action_operator": "synthesize",
+            "candidate_slot_limit": 2,
+            "emission_policy": "demo_exact_first_semantic_diversity_v2",
+            "emission_semantic_duplicates_removed": 0,
+            "emitted_demo_exact_count": 0,
+            "emitted_near_miss_count": 8,
+            "exact_program_count": 0,
+            "expansions": 683,
+            "native_cost": {
+              "program_expansions": 683
+            },
+            "repair_seed_count": 8,
+            "repair_seed_demo_exact_count": 0,
+            "search_config": {
+              "beam_width": 32,
+              "max_depth": 2,
+              "max_exact_programs": 16,
+              "max_instruction_options": 32
+            },
+            "semantic_duplicates": 480
+          },
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "status": "ok"
+        }
+      ],
+      "provider": "typed_dsl",
+      "route": "dsl_program",
+      "strict_live_budget_contract": false
+    },
+    {
+      "actions": [
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "bounded_program_exact_candidates": 0,
+            "bounded_program_status": "no_exact_program",
+            "policy_status": {
+              "d4": "no_deterministic_local_rule",
+              "d4_bgpad": "no_deterministic_local_rule"
+            }
+          },
+          "operator": "d4_bgpad_search",
+          "parent_hypothesis_id": null,
+          "reason": "no_candidates",
+          "status": "abstained"
+        },
+        {
+          "candidate_ids": [
+            "7499bf93dc804b23c4729bfd",
+            "fc497f0044d2aa1731cfe123"
+          ],
+          "diagnostics": {
+            "action_operator": "local_transition_search",
+            "bounded_program_exact_candidates": 0,
+            "bounded_program_status": "no_exact_program",
+            "candidate_slot_limit": 2,
+            "native_cost": {
+              "bounded_program_trials_enabled": true,
+              "max_rules_per_policy": 2,
+              "policy_fits": 2
+            },
+            "parent_hypothesis_id": null,
+            "policy_status": {
+              "bgpad": "insufficient_query_support",
+              "none": "insufficient_query_support"
+            },
+            "selected_policy_family": [
+              "none",
+              "bgpad"
+            ]
+          },
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "status": "ok"
+        }
+      ],
+      "provider": "sparse_ca_d4_bgpad",
+      "route": "sparse_ca",
+      "strict_live_budget_contract": false
+    },
+    {
+      "actions": [
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "exact_rule_count": 0,
+            "exact_semantic_duplicates_removed": 0,
+            "native_cost": {
+              "demo_scene_rule_executions": 18300,
+              "scene_parses": 96,
+              "scene_rule_trials": 1830
+            },
+            "scene_dsl_version": "afts-scene-predicate-dsl/v0.1"
+          },
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": "no_demo_exact_scene_rule",
+          "status": "abstained"
+        }
+      ],
+      "provider": "scene_predicate_dsl",
+      "route": "dsl_program",
+      "strict_live_budget_contract": false
+    }
+  ],
+  "schema": "afts.frozen-action-pool/v2",
+  "task_id": "794b24be",
+  "task_source_sha256": "6ddc4c61702d1933bc5b5b3706dd09a4d9439276e42eae3711b111f184486ee8"
+}
