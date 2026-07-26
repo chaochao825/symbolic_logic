@@ -1,0 +1,2315 @@
+{
+  "claim_scope": "strict action-frozen NCU comparison; native cost vectors are descriptive",
+  "controller_config": {
+    "budget_limit": {
+      "candidate_slots": 7,
+      "compute_units": 11,
+      "controller_steps": 4,
+      "provider_calls": 3,
+      "repair_attempts": 1
+    },
+    "max_selected_hypotheses": 2,
+    "provider_batch_size": 2
+  },
+  "created_at_utc": "2026-07-26T15:00:13.218189+00:00",
+  "dataset": {
+    "completed_task_count": 1,
+    "failed_task_count": 0,
+    "requested_task_count": 1,
+    "root": "/home/wangmeiqi/codex_runs/datasets/ARC-AGI-1/data",
+    "sample_offset": 0,
+    "sample_seed": 20260726,
+    "selection": "sha256_seeded_sample",
+    "split": "training",
+    "task_ids": [
+      "1fad071e"
+    ]
+  },
+  "elapsed_seconds": 2.8445822540670633,
+  "failures": [],
+  "oracle_access": "posthoc_only_after_each_frozen_replay",
+  "policy_aggregates": {
+    "adaptive_diversity": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "ca_only": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 3,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "coverage_aware_expanded": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 6,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "coverage_aware_v2": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 6,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "dsl_only": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 6,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "fixed_ca_first": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "fixed_dsl_first": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "random_seed_0": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "residual_first": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "round_robin": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "scene_only": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 3,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "static_task_router": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "structured_deliberation": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "summary_grounded": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    }
+  },
+  "policy_native_cost_aggregates": {
+    "adaptive_diversity": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "ca_only": {
+      "repair_attempts": 0.0
+    },
+    "coverage_aware_expanded": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "coverage_aware_v2": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "dsl_only": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "fixed_ca_first": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.program_expansions": 590.0
+    },
+    "fixed_dsl_first": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "random_seed_0": {
+      "repair_attempts": 0.0,
+      "scene_predicate_dsl.native_cost.demo_scene_rule_executions": 8145.0,
+      "scene_predicate_dsl.native_cost.scene_parses": 48.0,
+      "scene_predicate_dsl.native_cost.scene_rule_trials": 2715.0,
+      "typed_dsl.native_cost.program_expansions": 590.0
+    },
+    "residual_first": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "round_robin": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "scene_only": {
+      "repair_attempts": 0.0,
+      "scene_predicate_dsl.native_cost.demo_scene_rule_executions": 8145.0,
+      "scene_predicate_dsl.native_cost.scene_parses": 48.0,
+      "scene_predicate_dsl.native_cost.scene_rule_trials": 2715.0
+    },
+    "static_task_router": {
+      "repair_attempts": 0.0,
+      "scene_predicate_dsl.native_cost.demo_scene_rule_executions": 8145.0,
+      "scene_predicate_dsl.native_cost.scene_parses": 48.0,
+      "scene_predicate_dsl.native_cost.scene_rule_trials": 2715.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "structured_deliberation": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "summary_grounded": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 590.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    }
+  },
+  "policy_timing_aggregates": {
+    "adaptive_diversity": {
+      "discovery_seconds": 0.006087602116167545,
+      "frozen_replay_seconds": 0.006448218133300543
+    },
+    "ca_only": {
+      "discovery_seconds": 0.0012285790871828794,
+      "frozen_replay_seconds": 0.0015329441521316767
+    },
+    "coverage_aware_expanded": {
+      "discovery_seconds": 0.36240956210531294,
+      "frozen_replay_seconds": 0.005189004121348262
+    },
+    "coverage_aware_v2": {
+      "discovery_seconds": 2.320185055024922,
+      "frozen_replay_seconds": 0.005252385977655649
+    },
+    "dsl_only": {
+      "discovery_seconds": 0.00463533797301352,
+      "frozen_replay_seconds": 0.005033351946622133
+    },
+    "fixed_ca_first": {
+      "discovery_seconds": 0.005246229935437441,
+      "frozen_replay_seconds": 0.005622498923912644
+    },
+    "fixed_dsl_first": {
+      "discovery_seconds": 0.005636009154841304,
+      "frozen_replay_seconds": 0.0060135480016469955
+    },
+    "random_seed_0": {
+      "discovery_seconds": 0.005148386117070913,
+      "frozen_replay_seconds": 0.00496132206171751
+    },
+    "residual_first": {
+      "discovery_seconds": 0.005735578015446663,
+      "frozen_replay_seconds": 0.006061831023544073
+    },
+    "round_robin": {
+      "discovery_seconds": 0.005720955086871982,
+      "frozen_replay_seconds": 0.006018797867000103
+    },
+    "scene_only": {
+      "discovery_seconds": 0.0013183089904487133,
+      "frozen_replay_seconds": 0.0013441869523376226
+    },
+    "static_task_router": {
+      "discovery_seconds": 0.005313811125233769,
+      "frozen_replay_seconds": 0.005665757926180959
+    },
+    "structured_deliberation": {
+      "discovery_seconds": 0.00560752721503377,
+      "frozen_replay_seconds": 0.0062519151251763105
+    },
+    "summary_grounded": {
+      "discovery_seconds": 0.006007703021168709,
+      "frozen_replay_seconds": 0.006469082087278366
+    }
+  },
+  "provider_config": {
+    "dsl": {
+      "beam_width": 32,
+      "max_depth": 2,
+      "max_exact_programs": 16,
+      "max_instruction_options": 32
+    },
+    "scene_predicate_dsl": {
+      "max_exact_rules": 64,
+      "semantics_version": "afts-scene-predicate-dsl/v0.1"
+    },
+    "sparse_ca": {
+      "max_programs": 4,
+      "max_rules_per_policy": 2
+    }
+  },
+  "result_id": "aa50e1d9847a8bdd61eb4196fb37682c0565508804e7b7d81d3907292e0369d3",
+  "schema": "afts.online-matched-budget/v3",
+  "source_commit": "ab9442facfc92bb04ebfd3c3289f9d6396803f8a",
+  "tasks": [
+    {
+      "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+      "heterogeneous_pool_candidate_count": 2,
+      "policies": {
+        "adaptive_diversity": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ],
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "66461f12be907454aab9e450",
+            "state_id": "c085e704d06e0084a2e77276"
+          },
+          "discovery_seconds": 0.006087602116167545,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.006448218133300543,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "ca_only": {
+          "accepted_candidate_count": 0,
+          "actions": [
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "local_transition_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 2,
+            "compute_units": 3,
+            "controller_steps": 1,
+            "provider_calls": 1,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 0,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "explore",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ]
+            ],
+            "residual_tokens": [],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 0,
+            "sketch_id": "43e1f2bf44093854f0e03810",
+            "state_id": "911ed8d3fce402bbc98ef2e4"
+          },
+          "discovery_seconds": 0.0012285790871828794,
+          "emitted_candidate_count": 0,
+          "frozen_replay_seconds": 0.0015329441521316767,
+          "metrics": {
+            "accepted_candidate_count": 0,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 3,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 0,
+            "exploration_recall": null,
+            "observed_candidate_count": 0,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 0,
+            "pass_at_k": false,
+            "pool_candidate_count": 0,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "ca_single_source",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "coverage_aware_expanded": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "voluntary_stop_available",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 4,
+            "compute_units": 6,
+            "controller_steps": 2,
+            "provider_calls": 2,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "3bb3c4be0cf1e97c2797a8f7",
+            "state_id": "c61d2a99452511f6397b0a76"
+          },
+          "discovery_seconds": 0.36240956210531294,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.005189004121348262,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 6,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "voluntary_stop_available",
+          "strict_budget_comparable": true
+        },
+        "coverage_aware_v2": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "voluntary_stop_available",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 4,
+            "compute_units": 6,
+            "controller_steps": 2,
+            "provider_calls": 2,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "3bb3c4be0cf1e97c2797a8f7",
+            "state_id": "c61d2a99452511f6397b0a76"
+          },
+          "discovery_seconds": 2.320185055024922,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.005252385977655649,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 6,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "base_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "voluntary_stop_available",
+          "strict_budget_comparable": true
+        },
+        "dsl_only": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 4,
+            "compute_units": 6,
+            "controller_steps": 2,
+            "provider_calls": 2,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "c43b32d8b604408d4e96037a",
+            "state_id": "489441619e21e70b166a5868"
+          },
+          "discovery_seconds": 0.00463533797301352,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.005033351946622133,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 6,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "dsl_single_source",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "fixed_ca_first": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "local_transition_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                2
+              ],
+              [
+                "typed_dsl",
+                1
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "c791319edcfc50a1a63d66de",
+            "state_id": "9a716358e13133cbf939e36e"
+          },
+          "discovery_seconds": 0.005246229935437441,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.005622498923912644,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.program_expansions": 590.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "fixed_dsl_first": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ],
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "3ee3f6f94b6205bd51a9fda0",
+            "state_id": "00f11b255620e9564f65ba9a"
+          },
+          "discovery_seconds": 0.005636009154841304,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.0060135480016469955,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "random_seed_0": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "local_transition_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "scene_predicate_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "scene_predicate_dsl",
+                1
+              ],
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ],
+              [
+                "typed_dsl",
+                1
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "3a0659d23716908a12d34f43",
+            "state_id": "657de5f88c79849349f68c90"
+          },
+          "discovery_seconds": 0.005148386117070913,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.00496132206171751,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "scene_predicate_dsl.native_cost.demo_scene_rule_executions": 8145.0,
+            "scene_predicate_dsl.native_cost.scene_parses": 48.0,
+            "scene_predicate_dsl.native_cost.scene_rule_trials": 2715.0,
+            "typed_dsl.native_cost.program_expansions": 590.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "residual_first": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ],
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "3ee3f6f94b6205bd51a9fda0",
+            "state_id": "00f11b255620e9564f65ba9a"
+          },
+          "discovery_seconds": 0.005735578015446663,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.006061831023544073,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "round_robin": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ],
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "66461f12be907454aab9e450",
+            "state_id": "c085e704d06e0084a2e77276"
+          },
+          "discovery_seconds": 0.005720955086871982,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.006018797867000103,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "scene_only": {
+          "accepted_candidate_count": 0,
+          "actions": [
+            {
+              "accepted_candidate_ids": [],
+              "actor": "scene_predicate_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 2,
+            "compute_units": 3,
+            "controller_steps": 1,
+            "provider_calls": 1,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 0,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "explore",
+            "provider_calls": [
+              [
+                "scene_predicate_dsl",
+                1
+              ]
+            ],
+            "residual_tokens": [],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 0,
+            "sketch_id": "34d26d80af3b47c158cc1e35",
+            "state_id": "2bd805bf159935cbebddac85"
+          },
+          "discovery_seconds": 0.0013183089904487133,
+          "emitted_candidate_count": 0,
+          "frozen_replay_seconds": 0.0013441869523376226,
+          "metrics": {
+            "accepted_candidate_count": 0,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 3,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 0,
+            "exploration_recall": null,
+            "observed_candidate_count": 0,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 0,
+            "pass_at_k": false,
+            "pool_candidate_count": 0,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "scene_single_source",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "scene_predicate_dsl.native_cost.demo_scene_rule_executions": 8145.0,
+            "scene_predicate_dsl.native_cost.scene_parses": 48.0,
+            "scene_predicate_dsl.native_cost.scene_rule_trials": 2715.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "static_task_router": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [],
+              "actor": "scene_predicate_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "scene_predicate_dsl",
+                1
+              ],
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "cb58ae3fd1cc4dd8e9878622",
+            "state_id": "1690afcc596a4583510e2215"
+          },
+          "discovery_seconds": 0.005313811125233769,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.005665757926180959,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "scene_predicate_dsl.native_cost.demo_scene_rule_executions": 8145.0,
+            "scene_predicate_dsl.native_cost.scene_parses": 48.0,
+            "scene_predicate_dsl.native_cost.scene_rule_trials": 2715.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "structured_deliberation": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ],
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "3ee3f6f94b6205bd51a9fda0",
+            "state_id": "00f11b255620e9564f65ba9a"
+          },
+          "discovery_seconds": 0.00560752721503377,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.0062519151251763105,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "summary_grounded": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "5e4d7c9c794d73e0b3493f53",
+                "ae6b6db9cefc318b308fe342"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "5e4d7c9c794d73e0b3493f53",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "deliberation_sketch": {
+            "accepted_candidate_count": 2,
+            "demo_exact_verified_count": 0,
+            "factual_tokens": [
+              "change:dense",
+              "evidence:object_relation",
+              "shape:change",
+              "support:low"
+            ],
+            "phase": "refine",
+            "provider_calls": [
+              [
+                "sparse_ca_d4_bgpad",
+                1
+              ],
+              [
+                "typed_dsl",
+                2
+              ]
+            ],
+            "residual_tokens": [
+              "residual:shape_mismatch"
+            ],
+            "schema": "afts.structured-deliberation/v1",
+            "semantic_cluster_count": 2,
+            "sketch_id": "3ee3f6f94b6205bd51a9fda0",
+            "state_id": "00f11b255620e9564f65ba9a"
+          },
+          "discovery_seconds": 0.006007703021168709,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.006469082087278366,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "d7564e4cf1baeabe6eee7e74e8cd9c77f3fbb731540252be614e4bad0480d6af",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": null,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 2,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "1fad071e"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 590.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        }
+      },
+      "pool_id": "4de29bd5c9ad7c186523fd214953c43e74e10cebbfe563f6c7c822b10cd93145",
+      "pool_manifest": "pools/1fad071e.4de29bd5c9ad7c18.json",
+      "task_id": "1fad071e",
+      "task_source_sha256": "eda07774c6929f0068393e56e7894deb5c5d59a9faefe70babcc67bed5119e90"
+    }
+  ],
+  "training_started": false
+}
