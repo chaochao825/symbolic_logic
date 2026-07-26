@@ -128,6 +128,13 @@ python arc_functional_transition_solver/scripts/afts_arc_online_matched_budget.p
   --split training --limit 32 --sample-seed 20260726
 ```
 
+The first frozen evaluation is recorded in
+`notes/results/online-control-frozen-v1-20260726.md`, with its content-addressed
+32-task and 100-task summaries and pool manifests under `results/`.  The result
+shows DSL/CA pool complementarity but does not support the current
+residual-first controller or unique-repair hypothesis; see the report for the
+claim boundary and next gate.
+
 Unconfigured neural/code providers return explicit abstention receipts. The
 default CLI never resumes M04a or DiffLogic training; programmatically supplied
 callbacks are explicit trusted integration boundaries rather than implicit
