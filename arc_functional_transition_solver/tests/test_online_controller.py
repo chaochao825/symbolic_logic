@@ -465,7 +465,7 @@ class OnlineControllerTests(unittest.TestCase):
         self.assertFalse(report.states[-1].candidates)
         self.assertEqual(report.states[-1].budget.used, BudgetVector())
 
-    def test_frozen_empty_action_batch_is_masked_without_spending_budget(self) -> None:
+    def test_frozen_empty_action_batch_is_replayed_and_charged_once(self) -> None:
         task = _blind((([[1]], [[2]]),), ([[1]],))
         provider = FrozenCandidatePoolProvider.from_action_batches(
             (FrozenActionBatch("synthesize", ()),),
@@ -481,9 +481,20 @@ class OnlineControllerTests(unittest.TestCase):
             ),
         ).solve(task)
         results = report.states[-1].action_results
-        self.assertEqual(len(results), 1)
-        self.assertEqual(results[0].action.kind, "stop")
-        self.assertEqual(report.states[-1].budget.used, BudgetVector())
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].action.kind, "propose")
+        self.assertEqual(results[0].status, "abstained")
+        self.assertEqual(results[0].reason, "frozen_action_exhausted")
+        self.assertEqual(results[1].action.kind, "stop")
+        self.assertEqual(
+            report.states[-1].budget.used,
+            BudgetVector(
+                compute_units=2,
+                controller_steps=1,
+                provider_calls=1,
+                candidate_slots=1,
+            ),
+        )
 
     def test_shape_resynthesize_executes_a_parent_conditioned_dsl_search(self) -> None:
         task = _blind(

@@ -111,8 +111,8 @@ The defensible research opportunity is the conjunction:
 ## Frozen hypotheses and ablations
 
 H1 -- summary grounding: a content-addressed task sketch plus phase-compatible
-action scoring improves pass-versus-NCU area under tight budgets, without changing
-the candidate pool.
+action scoring improves pass@2 at a frozen tight cap or reduces NCU-to-success,
+without changing the candidate pool.
 
 H2 -- adaptive diversity: rewarding untried representation families when the
 observed demo-verification rate is low improves observed selectable-pool recall
@@ -147,7 +147,8 @@ The first slice is deliberately generic and bounded.  A rule contains:
 - parse predicates: background, 4/8 connectivity, single- or multicolor objects;
 - selectors: all, area extrema, singleton, hole/no-hole, filled rectangle,
   border/interior, literal color, or literal area;
-- actions: keep, erase, crop, recolor, fill/outline bounding box, or fill holes.
+- actions: keep, erase, crop, recolor, fill/outline bounding box, or fill only
+  background cells inside a bounding box.
 
 Rules are enumerated from demonstration/query-input parse domains and
 demonstration-output colors, retained only when every demonstration is exact,
@@ -163,14 +164,16 @@ to reproduce Hilbert-Geo's full language.
   until code, policy weights, action space, budgets, and task IDs are frozen.
 - Primary cap: 11 NCU, four steps, three provider calls, one repair, seven slots,
   provider batch size two.
-- Tight-budget sensitivity is configured before the final launch; it is not used
-  to tune after viewing final outcomes.
+- Frozen tight cap: 6 NCU, three steps, two provider calls, zero repairs, four
+  slots, provider batch size two.  It is fixed before the final launch and is
+  not tuned after viewing final outcomes.
 - Every controller comparison uses the same action-frozen pool.  Provider ablation
   is reported separately because changing the language necessarily changes the
   pool.
+- A frozen action that yielded no candidates is replayed once as an abstention
+  and consumes its full reservation; empty searches are never free lookahead.
 - Primary metrics: selectable pool coverage, observed selectable coverage,
-  pass@2, NCU, pass-vs-NCU AUC, pool utilization, unique provider contribution,
-  and unique repair recovery.
+  pass@2, aggregate NCU, NCU-to-success, tight-cap sensitivity, pool utilization,
+  unique provider contribution, and unique repair recovery.
 - A positive method result requires new disjoint-block pass@2, not merely more raw
   candidates, lower NCU, or recovery already present in another provider.
-

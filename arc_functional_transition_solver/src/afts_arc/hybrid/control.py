@@ -1002,6 +1002,22 @@ class FrozenCandidatePoolProvider:
             for batch in self.action_batches
             if (batch.operator, batch.parent_hypothesis_id) == key
         )
+        attempted = any(
+            result.action.kind == "propose"
+            and result.action.actor == self.name
+            and (result.action.operator, result.action.parent_hypothesis_id) == key
+            for result in blackboard.action_results
+        )
+        # Empty frozen batches are action outcomes, not absent actions.  Replay
+        # them once so an abstention/failure consumes the same reservation as
+        # live discovery; otherwise a frozen controller gets a free lookahead
+        # and silently skips unsuccessful provider calls.
+        if (
+            matching
+            and not attempted
+            and any(not batch.candidates for batch in matching)
+        ):
+            return True
         return any(
             any(
                 item.hypothesis_id not in blackboard.seen_candidate_ids
