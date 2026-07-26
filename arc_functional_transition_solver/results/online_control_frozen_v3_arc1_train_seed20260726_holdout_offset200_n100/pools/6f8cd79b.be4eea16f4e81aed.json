@@ -1,0 +1,2243 @@
+{
+  "blind_content_sha256": "7debb0dd26702757d09dd03a3c348b849bfe604952b0c5bca6dbe132ed783af0",
+  "candidate_count": 7,
+  "candidates": [
+    {
+      "description_bits": 242,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "sparse_ca",
+        "augmentation:none",
+        "von_neumann_r1",
+        "control:local_transition_search"
+      ],
+      "hypothesis_id": "2127cba480ae6c5e3e38be00",
+      "metadata": {
+        "control_operator": "local_transition_search",
+        "evidence_signal_ids": [],
+        "foreground_query_cell_count": 0,
+        "foreground_query_support": 1.0,
+        "gate_upper_bounds": {
+          "binary4_gate_upper_bound": 392,
+          "binary4_state_bits_per_cell": 4,
+          "onehot_boundary_input_states": 11,
+          "onehot_gate_upper_bound": 280,
+          "onehot_state_bits_per_cell": 10
+        },
+        "minimum_foreground_support": 0.5,
+        "minimum_query_support": 0.5,
+        "query_cell_count": 42,
+        "query_support": 1.0,
+        "support_gate_passed": true,
+        "training_cells": 71,
+        "unsupported_foreground_query_cells": 0,
+        "unsupported_query_cells": 0
+      },
+      "name": "sparse_ca:none:von_neumann_r1",
+      "parent_hypothesis_ids": [],
+      "route": "sparse_ca",
+      "source": "sparse_categorical_ca",
+      "source_version": "afts-hybrid-ca/v1",
+      "spec": {
+        "backend_source_sha256": "abbee248cce8d174743ff86dac0e7d43205d8f4ef33b1ca9fa4155f022a57996",
+        "entries": [
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              0,
+              10,
+              0
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              0,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              10,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              10,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              0,
+              10,
+              0
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              10,
+              0,
+              0
+            ]
+          }
+        ],
+        "model_description_bits": 240,
+        "neighborhood": "von_neumann_r1",
+        "offsets": [
+          [
+            0,
+            0
+          ],
+          [
+            -1,
+            0
+          ],
+          [
+            0,
+            -1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "policy": "none",
+        "seen_pattern_count": 9,
+        "seen_patterns_sha256": "585fecbcab7c9494057bf573794eb8d7cd8b3c6e2b3efaa9c7d2479ab6476f91",
+        "support_policy": {
+          "minimum_foreground_support": 0.5,
+          "minimum_query_support": 0.5
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 79,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "recolor",
+        "residual_repair:von_neumann_r1"
+      ],
+      "hypothesis_id": "838674d35394cb034e8bc099",
+      "metadata": {
+        "query_support": 1.0,
+        "repair_description_bits": 62
+      },
+      "name": "repair:local:von_neumann_r1:d64296d8bc9bcf9f1ec023a2",
+      "parent_hypothesis_ids": [
+        "d64296d8bc9bcf9f1ec023a2"
+      ],
+      "route": "residual_repair",
+      "source": "residual_repair",
+      "source_version": "afts-residual-repair/v1",
+      "spec": {
+        "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+        "repair": {
+          "entries": [
+            {
+              "output": 0,
+              "pattern": [
+                8,
+                8,
+                8,
+                8,
+                8
+              ]
+            }
+          ],
+          "minimum_exception_support": 2,
+          "neighborhood": "von_neumann_r1",
+          "offsets": [
+            [
+              0,
+              0
+            ],
+            [
+              -1,
+              0
+            ],
+            [
+              0,
+              -1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "strategy": "local_transition"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 6,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "rotate180"
+      ],
+      "hypothesis_id": "ae6b6db9cefc318b308fe342",
+      "metadata": {
+        "demo_agreement": 0.29577464788732394,
+        "demo_exact": false,
+        "demo_exact_count": 0,
+        "demo_shape_match_count": 4,
+        "emission_lane": "near_miss_seed",
+        "node_count": 1
+      },
+      "name": "dsl:1f2ad33214950b7ced91ea3ad93a57524aeba2f6869d41884b0ebfdcc4001be1",
+      "parent_hypothesis_ids": [],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "rotate180"
+            }
+          ],
+          "program_id": "1f2ad33214950b7ced91ea3ad93a57524aeba2f6869d41884b0ebfdcc4001be1"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 17,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "recolor"
+      ],
+      "hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+      "metadata": {
+        "control_operator": "suffix_resynthesize",
+        "evidence_signal_ids": [
+          "2854c20fa79291c184ab76e1"
+        ],
+        "improved_over_parent": true,
+        "node_count": 1
+      },
+      "name": "dsl:42faee9b75447b009f15a37ac99fd3bd593335217199f75118c3d410c6c47fee",
+      "parent_hypothesis_ids": [
+        "ae6b6db9cefc318b308fe342"
+      ],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {
+                "new": 8,
+                "old": 0
+              },
+              "op": "recolor"
+            }
+          ],
+          "program_id": "42faee9b75447b009f15a37ac99fd3bd593335217199f75118c3d410c6c47fee"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 397,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "sparse_ca",
+        "augmentation:none",
+        "moore_r1",
+        "control:local_transition_search"
+      ],
+      "hypothesis_id": "e234ad0b35497ac756d5b663",
+      "metadata": {
+        "control_operator": "local_transition_search",
+        "evidence_signal_ids": [],
+        "foreground_query_cell_count": 0,
+        "foreground_query_support": 1.0,
+        "gate_upper_bounds": {
+          "binary4_gate_upper_bound": 608,
+          "binary4_state_bits_per_cell": 4,
+          "onehot_boundary_input_states": 11,
+          "onehot_gate_upper_bound": 312,
+          "onehot_state_bits_per_cell": 10
+        },
+        "minimum_foreground_support": 0.5,
+        "minimum_query_support": 0.5,
+        "query_cell_count": 42,
+        "query_support": 1.0,
+        "support_gate_passed": true,
+        "training_cells": 71,
+        "unsupported_foreground_query_cells": 0,
+        "unsupported_query_cells": 0
+      },
+      "name": "sparse_ca:none:moore_r1",
+      "parent_hypothesis_ids": [],
+      "route": "sparse_ca",
+      "source": "sparse_categorical_ca",
+      "source_version": "afts-hybrid-ca/v1",
+      "spec": {
+        "backend_source_sha256": "abbee248cce8d174743ff86dac0e7d43205d8f4ef33b1ca9fa4155f022a57996",
+        "entries": [
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              0,
+              10,
+              0,
+              10,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              0,
+              0,
+              10,
+              0,
+              10,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              0,
+              0,
+              10,
+              0,
+              10,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              0,
+              0,
+              10,
+              0,
+              10,
+              10,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              0,
+              10,
+              0,
+              0,
+              10
+            ]
+          },
+          {
+            "output": 8,
+            "pattern": [
+              0,
+              10,
+              10,
+              10,
+              10,
+              0,
+              10,
+              0,
+              0
+            ]
+          }
+        ],
+        "model_description_bits": 395,
+        "neighborhood": "moore_r1",
+        "offsets": [
+          [
+            0,
+            0
+          ],
+          [
+            -1,
+            -1
+          ],
+          [
+            -1,
+            0
+          ],
+          [
+            -1,
+            1
+          ],
+          [
+            0,
+            -1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            -1
+          ],
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "policy": "none",
+        "seen_pattern_count": 9,
+        "seen_patterns_sha256": "5e0c0f8156712732486ca9dc4f9dcf53000584e25b230fa9f6beb0c028d263f1",
+        "support_policy": {
+          "minimum_foreground_support": 0.5,
+          "minimum_query_support": 0.5
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 25,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "rotate180",
+        "recolor"
+      ],
+      "hypothesis_id": "e515e0b96dc8e848f4389177",
+      "metadata": {
+        "control_operator": "suffix_resynthesize",
+        "evidence_signal_ids": [
+          "2854c20fa79291c184ab76e1"
+        ],
+        "improved_over_parent": true,
+        "node_count": 2
+      },
+      "name": "dsl:03cef8d465d931e75fd822a5288d13e8a458dc33af6d3dd8fbd59fab01c2858e",
+      "parent_hypothesis_ids": [
+        "ae6b6db9cefc318b308fe342"
+      ],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "rotate180"
+            },
+            {
+              "arguments": {
+                "new": 8,
+                "old": 0
+              },
+              "op": "recolor"
+            }
+          ],
+          "program_id": "03cef8d465d931e75fd822a5288d13e8a458dc33af6d3dd8fbd59fab01c2858e"
+        }
+      },
+      "verification_mode": "replayable"
+    },
+    {
+      "description_bits": 6,
+      "explicit_demo_output_keys": null,
+      "explicit_query_output_keys": null,
+      "functional_trace": [
+        "anti_transpose"
+      ],
+      "hypothesis_id": "ea18b66f1415c3e95707c2af",
+      "metadata": {
+        "demo_agreement": 0.29577464788732394,
+        "demo_exact": false,
+        "demo_exact_count": 0,
+        "demo_shape_match_count": 1,
+        "emission_lane": "near_miss_seed",
+        "node_count": 1
+      },
+      "name": "dsl:0b9c2c48c3f8621253340f2ba47b9b1f6d0b0d6a35771009256a5ef193a90888",
+      "parent_hypothesis_ids": [],
+      "route": "dsl_program",
+      "source": "typed_dsl",
+      "source_version": "afts-hybrid-dsl/v1",
+      "spec": {
+        "program": {
+          "dsl_semantics_version": "afts-grid-dsl/v0.6",
+          "instructions": [
+            {
+              "arguments": {},
+              "op": "anti_transpose"
+            }
+          ],
+          "program_id": "0b9c2c48c3f8621253340f2ba47b9b1f6d0b0d6a35771009256a5ef193a90888"
+        }
+      },
+      "verification_mode": "replayable"
+    }
+  ],
+  "discovery_policies": {
+    "ca_only": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [
+        "2127cba480ae6c5e3e38be00"
+      ],
+      "semantic_novel_candidate_count": 1,
+      "status": "solved",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": false
+    },
+    "coverage_aware_v2": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "dsl_only": {
+      "accepted_candidate_count": 5,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 5,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "fixed_ca_first": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "fixed_dsl_first": {
+      "accepted_candidate_count": 5,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 5,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "random_seed_0": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "residual_first": {
+      "accepted_candidate_count": 5,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 5,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "round_robin": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    },
+    "static_task_router": {
+      "accepted_candidate_count": 5,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "typed_dsl",
+          "budget_fidelity": "controller_only",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": "no_residual_improving_program",
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 5,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": false
+    }
+  },
+  "frozen_replay_policies": {
+    "ca_only": {
+      "accepted_candidate_count": 2,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 2,
+        "compute_units": 3,
+        "controller_steps": 1,
+        "provider_calls": 1,
+        "repair_attempts": 0
+      },
+      "emitted_candidate_count": 2,
+      "selected_hypothesis_ids": [
+        "2127cba480ae6c5e3e38be00"
+      ],
+      "semantic_novel_candidate_count": 1,
+      "status": "solved",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "coverage_aware_v2": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "dsl_only": {
+      "accepted_candidate_count": 5,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "no_legal_untried_action",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 5,
+        "compute_units": 8,
+        "controller_steps": 3,
+        "provider_calls": 2,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 5,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "no_legal_untried_action",
+      "strict_budget_comparable": true
+    },
+    "fixed_ca_first": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "fixed_dsl_first": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "random_seed_0": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "residual_first": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "round_robin": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    },
+    "static_task_router": {
+      "accepted_candidate_count": 7,
+      "actions": [
+        {
+          "accepted_candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 2,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "actor": "typed_dsl",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "route": "dsl_program",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "actor": "sparse_ca_d4_bgpad",
+          "budget_fidelity": "strict_replayable",
+          "kind": "propose",
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "route": "sparse_ca",
+          "semantic_novel_candidate_count": 1,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [
+            "838674d35394cb034e8bc099"
+          ],
+          "actor": "residual_repair",
+          "budget_fidelity": "strict_replayable",
+          "kind": "repair",
+          "operator": "local_transition",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": null,
+          "route": "residual_repair",
+          "semantic_novel_candidate_count": 0,
+          "status": "ok"
+        },
+        {
+          "accepted_candidate_ids": [],
+          "actor": "controller",
+          "budget_fidelity": "not_applicable",
+          "kind": "stop",
+          "operator": "stop",
+          "parent_hypothesis_id": null,
+          "reason": "compute_budget_exhausted",
+          "route": null,
+          "semantic_novel_candidate_count": 0,
+          "status": "stopped"
+        }
+      ],
+      "budget_used": {
+        "candidate_slots": 7,
+        "compute_units": 11,
+        "controller_steps": 4,
+        "provider_calls": 3,
+        "repair_attempts": 1
+      },
+      "emitted_candidate_count": 7,
+      "selected_hypothesis_ids": [
+        "838674d35394cb034e8bc099"
+      ],
+      "semantic_novel_candidate_count": 4,
+      "status": "solved",
+      "stop_reason": "compute_budget_exhausted",
+      "strict_budget_comparable": true
+    }
+  },
+  "oracle_used_during_discovery": false,
+  "oracle_used_during_pool_closure": false,
+  "pool_closure": {
+    "discovery_candidate_count": 7,
+    "replay_candidate_count": 7,
+    "replay_only_candidate_count": 0,
+    "rule": "provider batches plus all oracle-free discovery/replay descendants"
+  },
+  "pool_id": "be4eea16f4e81aed8815812433b656aec43bc0608729785249a88dcbe5186dc3",
+  "providers": [
+    {
+      "actions": [
+        {
+          "candidate_ids": [
+            "d64296d8bc9bcf9f1ec023a2",
+            "e515e0b96dc8e848f4389177"
+          ],
+          "diagnostics": {
+            "action_operator": "suffix_resynthesize",
+            "improving_program_count": 2,
+            "instruction_option_count": 20,
+            "native_cost": {
+              "demo_program_executions": 152,
+              "program_trials": 38,
+              "query_program_executions": 38
+            },
+            "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+            "parent_representation": "dsl_program",
+            "program_trials": 38
+          },
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "ae6b6db9cefc318b308fe342",
+          "reason": null,
+          "status": "ok"
+        },
+        {
+          "candidate_ids": [],
+          "diagnostics": {
+            "action_operator": "suffix_resynthesize",
+            "improving_program_count": 0,
+            "instruction_option_count": 20,
+            "native_cost": {
+              "demo_program_executions": 152,
+              "program_trials": 38,
+              "query_program_executions": 38
+            },
+            "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+            "parent_representation": "dsl_program",
+            "program_trials": 38
+          },
+          "operator": "suffix_resynthesize",
+          "parent_hypothesis_id": "d64296d8bc9bcf9f1ec023a2",
+          "reason": "no_residual_improving_program",
+          "status": "abstained"
+        },
+        {
+          "candidate_ids": [
+            "ae6b6db9cefc318b308fe342",
+            "ea18b66f1415c3e95707c2af"
+          ],
+          "diagnostics": {
+            "action_operator": "synthesize",
+            "candidate_slot_limit": 2,
+            "emission_policy": "demo_exact_first_semantic_diversity_v2",
+            "emission_semantic_duplicates_removed": 6,
+            "emitted_demo_exact_count": 0,
+            "emitted_near_miss_count": 2,
+            "exact_program_count": 0,
+            "expansions": 96,
+            "native_cost": {
+              "program_expansions": 96
+            },
+            "repair_seed_count": 8,
+            "repair_seed_demo_exact_count": 0,
+            "search_config": {
+              "beam_width": 32,
+              "max_depth": 2,
+              "max_exact_programs": 16,
+              "max_instruction_options": 32
+            },
+            "semantic_duplicates": 87
+          },
+          "operator": "synthesize",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "status": "ok"
+        }
+      ],
+      "provider": "typed_dsl",
+      "route": "dsl_program",
+      "strict_live_budget_contract": false
+    },
+    {
+      "actions": [
+        {
+          "candidate_ids": [
+            "2127cba480ae6c5e3e38be00",
+            "e234ad0b35497ac756d5b663"
+          ],
+          "diagnostics": {
+            "action_operator": "local_transition_search",
+            "bounded_program_exact_candidates": 0,
+            "bounded_program_status": "no_exact_program",
+            "candidate_slot_limit": 2,
+            "native_cost": {
+              "bounded_program_trials_enabled": true,
+              "max_rules_per_policy": 2,
+              "policy_fits": 2
+            },
+            "parent_hypothesis_id": null,
+            "policy_status": {
+              "bgpad": "selected",
+              "none": "selected"
+            },
+            "selected_policy_family": [
+              "none",
+              "bgpad"
+            ]
+          },
+          "operator": "local_transition_search",
+          "parent_hypothesis_id": null,
+          "reason": null,
+          "status": "ok"
+        }
+      ],
+      "provider": "sparse_ca_d4_bgpad",
+      "route": "sparse_ca",
+      "strict_live_budget_contract": false
+    }
+  ],
+  "schema": "afts.frozen-action-pool/v2",
+  "task_id": "6f8cd79b",
+  "task_source_sha256": "ff1a565006284c7b6aa3adfbbaf3dc2233ea301c7204c8e1adda119cf24214f0"
+}

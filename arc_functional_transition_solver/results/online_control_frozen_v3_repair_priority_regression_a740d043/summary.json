@@ -1,0 +1,1425 @@
+{
+  "claim_scope": "strict action-frozen NCU comparison; native cost vectors are descriptive",
+  "controller_config": {
+    "budget_limit": {
+      "candidate_slots": 7,
+      "compute_units": 11,
+      "controller_steps": 4,
+      "provider_calls": 3,
+      "repair_attempts": 1
+    },
+    "max_selected_hypotheses": 2,
+    "provider_batch_size": 2
+  },
+  "created_at_utc": "2026-07-26T07:20:09.901202+00:00",
+  "dataset": {
+    "completed_task_count": 1,
+    "failed_task_count": 0,
+    "requested_task_count": 1,
+    "root": "/home/wangmeiqi/codex_runs/datasets/ARC-AGI-1/data",
+    "sample_seed": 20260726,
+    "selection": "explicit_task_ids",
+    "split": "training",
+    "task_ids": [
+      "a740d043"
+    ]
+  },
+  "elapsed_seconds": 1.288168674102053,
+  "failures": [],
+  "oracle_access": "posthoc_only_after_each_frozen_replay",
+  "policy_aggregates": {
+    "ca_only": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 3,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": null,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": null,
+      "pool_oracle_covered_tasks": 0,
+      "pool_selectable_oracle_covered_tasks": 0,
+      "raw_pool_coverage_utilization": null,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "coverage_aware_v2": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 11,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 1,
+      "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+      "exploration_recall": 1.0,
+      "observed_oracle_covered_tasks": 1,
+      "observed_selectable_oracle_covered_tasks": 1,
+      "pass_rate": 1.0,
+      "passed_tasks": 1,
+      "pool_coverage_utilization": 1.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 1.0,
+      "recovered_tasks_per_compute_unit": 0.09090909090909091,
+      "repair_recovered_tasks": 1,
+      "selection_utilization": 1.0,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "dsl_only": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 11,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 1,
+      "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+      "exploration_recall": 1.0,
+      "observed_oracle_covered_tasks": 1,
+      "observed_selectable_oracle_covered_tasks": 1,
+      "pass_rate": 1.0,
+      "passed_tasks": 1,
+      "pool_coverage_utilization": 1.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 1.0,
+      "recovered_tasks_per_compute_unit": 0.09090909090909091,
+      "repair_recovered_tasks": 1,
+      "selection_utilization": 1.0,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "fixed_ca_first": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 9,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 0,
+      "correct_repair_candidates_per_compute_unit": 0.0,
+      "exploration_recall": 0.0,
+      "observed_oracle_covered_tasks": 0,
+      "observed_selectable_oracle_covered_tasks": 0,
+      "pass_rate": 0.0,
+      "passed_tasks": 0,
+      "pool_coverage_utilization": 0.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 0.0,
+      "recovered_tasks_per_compute_unit": 0.0,
+      "repair_recovered_tasks": 0,
+      "selection_utilization": null,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "fixed_dsl_first": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 11,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 1,
+      "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+      "exploration_recall": 1.0,
+      "observed_oracle_covered_tasks": 1,
+      "observed_selectable_oracle_covered_tasks": 1,
+      "pass_rate": 1.0,
+      "passed_tasks": 1,
+      "pool_coverage_utilization": 1.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 1.0,
+      "recovered_tasks_per_compute_unit": 0.09090909090909091,
+      "repair_recovered_tasks": 1,
+      "selection_utilization": 1.0,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "random_seed_0": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 11,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 1,
+      "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+      "exploration_recall": 1.0,
+      "observed_oracle_covered_tasks": 1,
+      "observed_selectable_oracle_covered_tasks": 1,
+      "pass_rate": 1.0,
+      "passed_tasks": 1,
+      "pool_coverage_utilization": 1.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 1.0,
+      "recovered_tasks_per_compute_unit": 0.09090909090909091,
+      "repair_recovered_tasks": 1,
+      "selection_utilization": 1.0,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "residual_first": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 11,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 1,
+      "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+      "exploration_recall": 1.0,
+      "observed_oracle_covered_tasks": 1,
+      "observed_selectable_oracle_covered_tasks": 1,
+      "pass_rate": 1.0,
+      "passed_tasks": 1,
+      "pool_coverage_utilization": 1.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 1.0,
+      "recovered_tasks_per_compute_unit": 0.09090909090909091,
+      "repair_recovered_tasks": 1,
+      "selection_utilization": 1.0,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "round_robin": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 11,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 1,
+      "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+      "exploration_recall": 1.0,
+      "observed_oracle_covered_tasks": 1,
+      "observed_selectable_oracle_covered_tasks": 1,
+      "pass_rate": 1.0,
+      "passed_tasks": 1,
+      "pool_coverage_utilization": 1.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 1.0,
+      "recovered_tasks_per_compute_unit": 0.09090909090909091,
+      "repair_recovered_tasks": 1,
+      "selection_utilization": 1.0,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    },
+    "static_task_router": {
+      "action_conditioned_recovered_tasks": 0,
+      "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+      "compute_units": 11,
+      "correct_action_conditioned_candidate_count": 0,
+      "correct_repair_candidate_count": 1,
+      "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+      "exploration_recall": 1.0,
+      "observed_oracle_covered_tasks": 1,
+      "observed_selectable_oracle_covered_tasks": 1,
+      "pass_rate": 1.0,
+      "passed_tasks": 1,
+      "pool_coverage_utilization": 1.0,
+      "pool_oracle_covered_tasks": 1,
+      "pool_selectable_oracle_covered_tasks": 1,
+      "raw_pool_coverage_utilization": 1.0,
+      "recovered_tasks_per_compute_unit": 0.09090909090909091,
+      "repair_recovered_tasks": 1,
+      "selection_utilization": 1.0,
+      "strict_pool_task_count": 1,
+      "task_count": 1
+    }
+  },
+  "policy_native_cost_aggregates": {
+    "ca_only": {
+      "repair_attempts": 0.0
+    },
+    "coverage_aware_v2": {
+      "repair_attempts": 1.0,
+      "typed_dsl.native_cost.demo_program_executions": 378.0,
+      "typed_dsl.native_cost.program_expansions": 714.0,
+      "typed_dsl.native_cost.program_trials": 126.0,
+      "typed_dsl.native_cost.query_program_executions": 126.0
+    },
+    "dsl_only": {
+      "repair_attempts": 1.0,
+      "typed_dsl.native_cost.demo_program_executions": 378.0,
+      "typed_dsl.native_cost.program_expansions": 714.0,
+      "typed_dsl.native_cost.program_trials": 126.0,
+      "typed_dsl.native_cost.query_program_executions": 126.0
+    },
+    "fixed_ca_first": {
+      "repair_attempts": 0.0,
+      "typed_dsl.native_cost.program_expansions": 714.0
+    },
+    "fixed_dsl_first": {
+      "repair_attempts": 1.0,
+      "typed_dsl.native_cost.demo_program_executions": 378.0,
+      "typed_dsl.native_cost.program_expansions": 714.0,
+      "typed_dsl.native_cost.program_trials": 126.0,
+      "typed_dsl.native_cost.query_program_executions": 126.0
+    },
+    "random_seed_0": {
+      "repair_attempts": 1.0,
+      "typed_dsl.native_cost.demo_program_executions": 378.0,
+      "typed_dsl.native_cost.program_expansions": 714.0,
+      "typed_dsl.native_cost.program_trials": 126.0,
+      "typed_dsl.native_cost.query_program_executions": 126.0
+    },
+    "residual_first": {
+      "repair_attempts": 1.0,
+      "typed_dsl.native_cost.demo_program_executions": 378.0,
+      "typed_dsl.native_cost.program_expansions": 714.0,
+      "typed_dsl.native_cost.program_trials": 126.0,
+      "typed_dsl.native_cost.query_program_executions": 126.0
+    },
+    "round_robin": {
+      "repair_attempts": 1.0,
+      "typed_dsl.native_cost.demo_program_executions": 192.0,
+      "typed_dsl.native_cost.program_expansions": 714.0,
+      "typed_dsl.native_cost.program_trials": 64.0,
+      "typed_dsl.native_cost.query_program_executions": 64.0
+    },
+    "static_task_router": {
+      "repair_attempts": 1.0,
+      "typed_dsl.native_cost.demo_program_executions": 378.0,
+      "typed_dsl.native_cost.program_expansions": 714.0,
+      "typed_dsl.native_cost.program_trials": 126.0,
+      "typed_dsl.native_cost.query_program_executions": 126.0
+    }
+  },
+  "policy_timing_aggregates": {
+    "ca_only": {
+      "discovery_seconds": 0.0010627799201756716,
+      "frozen_replay_seconds": 0.0011704028584063053
+    },
+    "coverage_aware_v2": {
+      "discovery_seconds": 1.1035028360784054,
+      "frozen_replay_seconds": 0.010852414881810546
+    },
+    "dsl_only": {
+      "discovery_seconds": 0.01031299913302064,
+      "frozen_replay_seconds": 0.010611423989757895
+    },
+    "fixed_ca_first": {
+      "discovery_seconds": 0.0042779091745615005,
+      "frozen_replay_seconds": 0.004604316083714366
+    },
+    "fixed_dsl_first": {
+      "discovery_seconds": 0.010314980987459421,
+      "frozen_replay_seconds": 0.010626469971612096
+    },
+    "random_seed_0": {
+      "discovery_seconds": 0.008417034056037664,
+      "frozen_replay_seconds": 0.011010526213794947
+    },
+    "residual_first": {
+      "discovery_seconds": 0.010265992023050785,
+      "frozen_replay_seconds": 0.010952402139082551
+    },
+    "round_robin": {
+      "discovery_seconds": 0.009634403977543116,
+      "frozen_replay_seconds": 0.010385405039414763
+    },
+    "static_task_router": {
+      "discovery_seconds": 0.00990613317117095,
+      "frozen_replay_seconds": 0.010596076026558876
+    }
+  },
+  "provider_config": {
+    "dsl": {
+      "beam_width": 32,
+      "max_depth": 2,
+      "max_exact_programs": 16,
+      "max_instruction_options": 32
+    },
+    "sparse_ca": {
+      "max_programs": 4,
+      "max_rules_per_policy": 2
+    }
+  },
+  "result_id": "0ad6bf988376b4cb0d071f90323f405703d5cff55d6b13621e5246437174777d",
+  "schema": "afts.online-matched-budget/v2",
+  "source_commit": "b2ef41590cff97b547bf440cd518e74b36049a53",
+  "tasks": [
+    {
+      "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+      "heterogeneous_pool_candidate_count": 5,
+      "policies": {
+        "ca_only": {
+          "accepted_candidate_count": 0,
+          "actions": [
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "local_transition_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 2,
+            "compute_units": 3,
+            "controller_steps": 1,
+            "provider_calls": 1,
+            "repair_attempts": 0
+          },
+          "discovery_seconds": 0.0010627799201756716,
+          "emitted_candidate_count": 0,
+          "frozen_replay_seconds": 0.0011704028584063053,
+          "metrics": {
+            "accepted_candidate_count": 0,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 3,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 0,
+            "exploration_recall": null,
+            "observed_candidate_count": 0,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 0,
+            "pass_at_k": false,
+            "pool_candidate_count": 0,
+            "pool_coverage_utilization": null,
+            "pool_oracle_covered": false,
+            "pool_scope": "ca_single_source",
+            "pool_selectable_oracle_covered": false,
+            "raw_pool_coverage_utilization": null,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 0,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "coverage_aware_v2": {
+          "accepted_candidate_count": 5,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "0b9daf2224552964bc04a012",
+                "b6fcfbaa84689db344cf8f97"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "e1060e3de65e30b1dd5864eb",
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "fc0d4b8543f4942c2dfbc3d5"
+              ],
+              "actor": "residual_repair",
+              "budget_fidelity": "strict_replayable",
+              "kind": "repair",
+              "operator": "global_color_map",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": null,
+              "route": "residual_repair",
+              "semantic_novel_candidate_count": 1,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "suffix_resynthesize",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "compute_budget_exhausted",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 7,
+            "compute_units": 11,
+            "controller_steps": 4,
+            "provider_calls": 3,
+            "repair_attempts": 1
+          },
+          "discovery_seconds": 1.1035028360784054,
+          "emitted_candidate_count": 5,
+          "frozen_replay_seconds": 0.010852414881810546,
+          "metrics": {
+            "accepted_candidate_count": 5,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 11,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 1,
+            "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+            "emitted_candidate_count": 5,
+            "exploration_recall": 1.0,
+            "observed_candidate_count": 5,
+            "observed_oracle_covered": true,
+            "observed_selectable_oracle_covered": true,
+            "observed_semantic_candidate_count": 5,
+            "pass_at_k": true,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 1.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 1.0,
+            "recovered_tasks_per_compute_unit": 0.09090909090909091,
+            "repair_recovered_task": true,
+            "selected_count": 1,
+            "selection_utilization": 1.0,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 1.0,
+            "typed_dsl.native_cost.demo_program_executions": 378.0,
+            "typed_dsl.native_cost.program_expansions": 714.0,
+            "typed_dsl.native_cost.program_trials": 126.0,
+            "typed_dsl.native_cost.query_program_executions": 126.0
+          },
+          "selected_hypothesis_ids": [
+            "fc0d4b8543f4942c2dfbc3d5"
+          ],
+          "semantic_novel_candidate_count": 5,
+          "status": "solved",
+          "stop_reason": "compute_budget_exhausted",
+          "strict_budget_comparable": true
+        },
+        "dsl_only": {
+          "accepted_candidate_count": 5,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "0b9daf2224552964bc04a012",
+                "b6fcfbaa84689db344cf8f97"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "e1060e3de65e30b1dd5864eb",
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "fc0d4b8543f4942c2dfbc3d5"
+              ],
+              "actor": "residual_repair",
+              "budget_fidelity": "strict_replayable",
+              "kind": "repair",
+              "operator": "global_color_map",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": null,
+              "route": "residual_repair",
+              "semantic_novel_candidate_count": 1,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "suffix_resynthesize",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "compute_budget_exhausted",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 7,
+            "compute_units": 11,
+            "controller_steps": 4,
+            "provider_calls": 3,
+            "repair_attempts": 1
+          },
+          "discovery_seconds": 0.01031299913302064,
+          "emitted_candidate_count": 5,
+          "frozen_replay_seconds": 0.010611423989757895,
+          "metrics": {
+            "accepted_candidate_count": 5,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 11,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 1,
+            "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+            "emitted_candidate_count": 5,
+            "exploration_recall": 1.0,
+            "observed_candidate_count": 5,
+            "observed_oracle_covered": true,
+            "observed_selectable_oracle_covered": true,
+            "observed_semantic_candidate_count": 5,
+            "pass_at_k": true,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 1.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "dsl_single_source",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 1.0,
+            "recovered_tasks_per_compute_unit": 0.09090909090909091,
+            "repair_recovered_task": true,
+            "selected_count": 1,
+            "selection_utilization": 1.0,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 1.0,
+            "typed_dsl.native_cost.demo_program_executions": 378.0,
+            "typed_dsl.native_cost.program_expansions": 714.0,
+            "typed_dsl.native_cost.program_trials": 126.0,
+            "typed_dsl.native_cost.query_program_executions": 126.0
+          },
+          "selected_hypothesis_ids": [
+            "fc0d4b8543f4942c2dfbc3d5"
+          ],
+          "semantic_novel_candidate_count": 5,
+          "status": "solved",
+          "stop_reason": "compute_budget_exhausted",
+          "strict_budget_comparable": true
+        },
+        "fixed_ca_first": {
+          "accepted_candidate_count": 2,
+          "actions": [
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "local_transition_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "no_legal_untried_action",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 6,
+            "compute_units": 9,
+            "controller_steps": 3,
+            "provider_calls": 3,
+            "repair_attempts": 0
+          },
+          "discovery_seconds": 0.0042779091745615005,
+          "emitted_candidate_count": 2,
+          "frozen_replay_seconds": 0.004604316083714366,
+          "metrics": {
+            "accepted_candidate_count": 2,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 9,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 0,
+            "correct_repair_candidates_per_compute_unit": 0.0,
+            "emitted_candidate_count": 2,
+            "exploration_recall": 0.0,
+            "observed_candidate_count": 2,
+            "observed_oracle_covered": false,
+            "observed_selectable_oracle_covered": false,
+            "observed_semantic_candidate_count": 2,
+            "pass_at_k": false,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 0.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 0.0,
+            "recovered_tasks_per_compute_unit": 0.0,
+            "repair_recovered_task": false,
+            "selected_count": 0,
+            "selection_utilization": null,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 0.0,
+            "typed_dsl.native_cost.program_expansions": 714.0
+          },
+          "selected_hypothesis_ids": [],
+          "semantic_novel_candidate_count": 2,
+          "status": "abstained",
+          "stop_reason": "no_legal_untried_action",
+          "strict_budget_comparable": true
+        },
+        "fixed_dsl_first": {
+          "accepted_candidate_count": 5,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "0b9daf2224552964bc04a012",
+                "b6fcfbaa84689db344cf8f97"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "e1060e3de65e30b1dd5864eb",
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "suffix_resynthesize",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [
+                "fc0d4b8543f4942c2dfbc3d5"
+              ],
+              "actor": "residual_repair",
+              "budget_fidelity": "strict_replayable",
+              "kind": "repair",
+              "operator": "global_color_map",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": null,
+              "route": "residual_repair",
+              "semantic_novel_candidate_count": 1,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "compute_budget_exhausted",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 7,
+            "compute_units": 11,
+            "controller_steps": 4,
+            "provider_calls": 3,
+            "repair_attempts": 1
+          },
+          "discovery_seconds": 0.010314980987459421,
+          "emitted_candidate_count": 5,
+          "frozen_replay_seconds": 0.010626469971612096,
+          "metrics": {
+            "accepted_candidate_count": 5,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 11,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 1,
+            "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+            "emitted_candidate_count": 5,
+            "exploration_recall": 1.0,
+            "observed_candidate_count": 5,
+            "observed_oracle_covered": true,
+            "observed_selectable_oracle_covered": true,
+            "observed_semantic_candidate_count": 5,
+            "pass_at_k": true,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 1.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 1.0,
+            "recovered_tasks_per_compute_unit": 0.09090909090909091,
+            "repair_recovered_task": true,
+            "selected_count": 1,
+            "selection_utilization": 1.0,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 1.0,
+            "typed_dsl.native_cost.demo_program_executions": 378.0,
+            "typed_dsl.native_cost.program_expansions": 714.0,
+            "typed_dsl.native_cost.program_trials": 126.0,
+            "typed_dsl.native_cost.query_program_executions": 126.0
+          },
+          "selected_hypothesis_ids": [
+            "fc0d4b8543f4942c2dfbc3d5"
+          ],
+          "semantic_novel_candidate_count": 5,
+          "status": "solved",
+          "stop_reason": "compute_budget_exhausted",
+          "strict_budget_comparable": true
+        },
+        "random_seed_0": {
+          "accepted_candidate_count": 5,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "0b9daf2224552964bc04a012",
+                "b6fcfbaa84689db344cf8f97"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "e1060e3de65e30b1dd5864eb",
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "fc0d4b8543f4942c2dfbc3d5"
+              ],
+              "actor": "residual_repair",
+              "budget_fidelity": "strict_replayable",
+              "kind": "repair",
+              "operator": "global_color_map",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": null,
+              "route": "residual_repair",
+              "semantic_novel_candidate_count": 1,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "suffix_resynthesize",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "compute_budget_exhausted",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 7,
+            "compute_units": 11,
+            "controller_steps": 4,
+            "provider_calls": 3,
+            "repair_attempts": 1
+          },
+          "discovery_seconds": 0.008417034056037664,
+          "emitted_candidate_count": 5,
+          "frozen_replay_seconds": 0.011010526213794947,
+          "metrics": {
+            "accepted_candidate_count": 5,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 11,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 1,
+            "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+            "emitted_candidate_count": 5,
+            "exploration_recall": 1.0,
+            "observed_candidate_count": 5,
+            "observed_oracle_covered": true,
+            "observed_selectable_oracle_covered": true,
+            "observed_semantic_candidate_count": 5,
+            "pass_at_k": true,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 1.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 1.0,
+            "recovered_tasks_per_compute_unit": 0.09090909090909091,
+            "repair_recovered_task": true,
+            "selected_count": 1,
+            "selection_utilization": 1.0,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 1.0,
+            "typed_dsl.native_cost.demo_program_executions": 378.0,
+            "typed_dsl.native_cost.program_expansions": 714.0,
+            "typed_dsl.native_cost.program_trials": 126.0,
+            "typed_dsl.native_cost.query_program_executions": 126.0
+          },
+          "selected_hypothesis_ids": [
+            "fc0d4b8543f4942c2dfbc3d5"
+          ],
+          "semantic_novel_candidate_count": 5,
+          "status": "solved",
+          "stop_reason": "compute_budget_exhausted",
+          "strict_budget_comparable": true
+        },
+        "residual_first": {
+          "accepted_candidate_count": 5,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "0b9daf2224552964bc04a012",
+                "b6fcfbaa84689db344cf8f97"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "e1060e3de65e30b1dd5864eb",
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "fc0d4b8543f4942c2dfbc3d5"
+              ],
+              "actor": "residual_repair",
+              "budget_fidelity": "strict_replayable",
+              "kind": "repair",
+              "operator": "global_color_map",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": null,
+              "route": "residual_repair",
+              "semantic_novel_candidate_count": 1,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "suffix_resynthesize",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "compute_budget_exhausted",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 7,
+            "compute_units": 11,
+            "controller_steps": 4,
+            "provider_calls": 3,
+            "repair_attempts": 1
+          },
+          "discovery_seconds": 0.010265992023050785,
+          "emitted_candidate_count": 5,
+          "frozen_replay_seconds": 0.010952402139082551,
+          "metrics": {
+            "accepted_candidate_count": 5,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 11,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 1,
+            "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+            "emitted_candidate_count": 5,
+            "exploration_recall": 1.0,
+            "observed_candidate_count": 5,
+            "observed_oracle_covered": true,
+            "observed_selectable_oracle_covered": true,
+            "observed_semantic_candidate_count": 5,
+            "pass_at_k": true,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 1.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 1.0,
+            "recovered_tasks_per_compute_unit": 0.09090909090909091,
+            "repair_recovered_task": true,
+            "selected_count": 1,
+            "selection_utilization": 1.0,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 1.0,
+            "typed_dsl.native_cost.demo_program_executions": 378.0,
+            "typed_dsl.native_cost.program_expansions": 714.0,
+            "typed_dsl.native_cost.program_trials": 126.0,
+            "typed_dsl.native_cost.query_program_executions": 126.0
+          },
+          "selected_hypothesis_ids": [
+            "fc0d4b8543f4942c2dfbc3d5"
+          ],
+          "semantic_novel_candidate_count": 5,
+          "status": "solved",
+          "stop_reason": "compute_budget_exhausted",
+          "strict_budget_comparable": true
+        },
+        "round_robin": {
+          "accepted_candidate_count": 5,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "sparse_ca_d4_bgpad",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "d4_bgpad_search",
+              "parent_hypothesis_id": null,
+              "reason": "frozen_action_exhausted",
+              "route": "sparse_ca",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [
+                "0b9daf2224552964bc04a012",
+                "b6fcfbaa84689db344cf8f97"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "e1060e3de65e30b1dd5864eb",
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "fc0d4b8543f4942c2dfbc3d5"
+              ],
+              "actor": "residual_repair",
+              "budget_fidelity": "strict_replayable",
+              "kind": "repair",
+              "operator": "global_color_map",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": null,
+              "route": "residual_repair",
+              "semantic_novel_candidate_count": 1,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "compute_budget_exhausted",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 7,
+            "compute_units": 11,
+            "controller_steps": 4,
+            "provider_calls": 3,
+            "repair_attempts": 1
+          },
+          "discovery_seconds": 0.009634403977543116,
+          "emitted_candidate_count": 5,
+          "frozen_replay_seconds": 0.010385405039414763,
+          "metrics": {
+            "accepted_candidate_count": 5,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 11,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 1,
+            "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+            "emitted_candidate_count": 5,
+            "exploration_recall": 1.0,
+            "observed_candidate_count": 5,
+            "observed_oracle_covered": true,
+            "observed_selectable_oracle_covered": true,
+            "observed_semantic_candidate_count": 5,
+            "pass_at_k": true,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 1.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 1.0,
+            "recovered_tasks_per_compute_unit": 0.09090909090909091,
+            "repair_recovered_task": true,
+            "selected_count": 1,
+            "selection_utilization": 1.0,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 1.0,
+            "typed_dsl.native_cost.demo_program_executions": 192.0,
+            "typed_dsl.native_cost.program_expansions": 714.0,
+            "typed_dsl.native_cost.program_trials": 64.0,
+            "typed_dsl.native_cost.query_program_executions": 64.0
+          },
+          "selected_hypothesis_ids": [
+            "fc0d4b8543f4942c2dfbc3d5"
+          ],
+          "semantic_novel_candidate_count": 5,
+          "status": "solved",
+          "stop_reason": "compute_budget_exhausted",
+          "strict_budget_comparable": true
+        },
+        "static_task_router": {
+          "accepted_candidate_count": 5,
+          "actions": [
+            {
+              "accepted_candidate_ids": [
+                "b8c430c1bf3a0b331fd3c41d",
+                "e1060e3de65e30b1dd5864eb"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "synthesize",
+              "parent_hypothesis_id": null,
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [
+                "0b9daf2224552964bc04a012",
+                "b6fcfbaa84689db344cf8f97"
+              ],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "shape_resynthesize",
+              "parent_hypothesis_id": "e1060e3de65e30b1dd5864eb",
+              "reason": null,
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 2,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "typed_dsl",
+              "budget_fidelity": "strict_replayable",
+              "kind": "propose",
+              "operator": "suffix_resynthesize",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": "frozen_action_exhausted",
+              "route": "dsl_program",
+              "semantic_novel_candidate_count": 0,
+              "status": "abstained"
+            },
+            {
+              "accepted_candidate_ids": [
+                "fc0d4b8543f4942c2dfbc3d5"
+              ],
+              "actor": "residual_repair",
+              "budget_fidelity": "strict_replayable",
+              "kind": "repair",
+              "operator": "global_color_map",
+              "parent_hypothesis_id": "b6fcfbaa84689db344cf8f97",
+              "reason": null,
+              "route": "residual_repair",
+              "semantic_novel_candidate_count": 1,
+              "status": "ok"
+            },
+            {
+              "accepted_candidate_ids": [],
+              "actor": "controller",
+              "budget_fidelity": "not_applicable",
+              "kind": "stop",
+              "operator": "stop",
+              "parent_hypothesis_id": null,
+              "reason": "compute_budget_exhausted",
+              "route": null,
+              "semantic_novel_candidate_count": 0,
+              "status": "stopped"
+            }
+          ],
+          "budget_used": {
+            "candidate_slots": 7,
+            "compute_units": 11,
+            "controller_steps": 4,
+            "provider_calls": 3,
+            "repair_attempts": 1
+          },
+          "discovery_seconds": 0.00990613317117095,
+          "emitted_candidate_count": 5,
+          "frozen_replay_seconds": 0.010596076026558876,
+          "metrics": {
+            "accepted_candidate_count": 5,
+            "action_conditioned_recovered_task": false,
+            "action_conditioned_recovered_tasks_per_compute_unit": 0.0,
+            "blind_content_sha256": "411bdbd33efdc24c85c0b2ef0b62bcedb2037f1ce761fecbf2f24add5636869f",
+            "compute_units": 11,
+            "correct_action_conditioned_candidate_count": 0,
+            "correct_repair_candidate_count": 1,
+            "correct_repair_candidates_per_compute_unit": 0.09090909090909091,
+            "emitted_candidate_count": 5,
+            "exploration_recall": 1.0,
+            "observed_candidate_count": 5,
+            "observed_oracle_covered": true,
+            "observed_selectable_oracle_covered": true,
+            "observed_semantic_candidate_count": 5,
+            "pass_at_k": true,
+            "pool_candidate_count": 5,
+            "pool_coverage_utilization": 1.0,
+            "pool_oracle_covered": true,
+            "pool_scope": "heterogeneous_union",
+            "pool_selectable_oracle_covered": true,
+            "raw_pool_coverage_utilization": 1.0,
+            "recovered_tasks_per_compute_unit": 0.09090909090909091,
+            "repair_recovered_task": true,
+            "selected_count": 1,
+            "selection_utilization": 1.0,
+            "semantic_duplicate_candidate_count": 0,
+            "strict_pool_metrics": true,
+            "task_id": "a740d043"
+          },
+          "native_cost_vector": {
+            "repair_attempts": 1.0,
+            "typed_dsl.native_cost.demo_program_executions": 378.0,
+            "typed_dsl.native_cost.program_expansions": 714.0,
+            "typed_dsl.native_cost.program_trials": 126.0,
+            "typed_dsl.native_cost.query_program_executions": 126.0
+          },
+          "selected_hypothesis_ids": [
+            "fc0d4b8543f4942c2dfbc3d5"
+          ],
+          "semantic_novel_candidate_count": 5,
+          "status": "solved",
+          "stop_reason": "compute_budget_exhausted",
+          "strict_budget_comparable": true
+        }
+      },
+      "pool_id": "0db81e2c172c6bc95c8dbded266fa8aebb489a7ac2ee32f64f491c59cdff2353",
+      "pool_manifest": "pools/a740d043.0db81e2c172c6bc9.json",
+      "task_id": "a740d043",
+      "task_source_sha256": "02c529189d9253d143af7f8c0b87b84e39a53b7a533c521e0ce916e40e77e368"
+    }
+  ],
+  "training_started": false
+}

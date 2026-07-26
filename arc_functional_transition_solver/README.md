@@ -135,6 +135,16 @@ shows DSL/CA pool complementarity but does not support the current
 residual-first controller or unique-repair hypothesis; see the report for the
 claim boundary and next gate.
 
+The v2/v3 follow-up is recorded in
+`notes/results/online-control-frozen-v2-v3-20260726.md`.  Exact-first emission
+and action-aware frozen replay reach all 14 selectable pool tasks on an
+untouched disjoint 100-task block.  A same-task paired ablation keeps the
+candidate pool identical while reducing coverage-aware control cost from 945
+to 630 NCU.  All heterogeneous schedules nevertheless pass the same 14 tasks,
+and residual repair adds no unique union coverage; the report therefore treats
+candidate-language expansion, physical-cost accounting, and uniquely useful
+typed repair as the next research gates.
+
 Unconfigured neural/code providers return explicit abstention receipts. The
 default CLI never resumes M04a or DiffLogic training; programmatically supplied
 callbacks are explicit trusted integration boundaries rather than implicit
