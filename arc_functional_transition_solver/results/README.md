@@ -14,6 +14,7 @@ Directory existence is not evidence that an experiment ran successfully.
 | `m04a_r*_remote_control` and `run_m04a_*` | CONTROL MATERIAL, NOT RESULT | Operational scripts/receipts. Public bundles retain hashes but omit files containing machine-specific infrastructure metadata. |
 | `m04a_r7_posthoc_evaluation_20260715.json` | READ-ONLY DIAGNOSTIC | Reconstructed frozen masked-validation metrics. It is not formal campaign evidence or ARC solve rate. |
 | `m04a_r7_failure_receipt.json` | EXACT FAILURE RECEIPT | Campaign terminal state; SHA-256 is pinned in the analysis report. |
+| `object_code_gate_v1_*_20260728` | VERIFIED NEGATIVE GATE | Two disjoint public-training 100-task audits. v0.1 adds 1/200 unique selectable coverage and 0/65 novel natural repairs; controller remains frozen. |
 
 The public publication bundle is closed by `PUBLICATION_MANIFEST.json`:
 
