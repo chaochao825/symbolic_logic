@@ -431,6 +431,7 @@ class OnlineFunctionalRouterSolver:
         providers: Sequence[CandidateProvider] | None = None,
         config: OnlineControlConfig | None = None,
         policy: ControlPolicy | None = None,
+        compiler: object | None = None,
         masked_diffusion_callback: ExternalCallback | None = None,
         code_model_callback: ExternalCallback | None = None,
         difflogic_hard_callback: ExternalCallback | None = None,
@@ -470,11 +471,17 @@ class OnlineFunctionalRouterSolver:
         names = tuple(provider.name for provider in self.providers)
         if len(set(names)) != len(names):
             raise ValueError("provider names must be unique")
-        self.compiler = ResidualActionCompiler(
-            ResidualCompilerConfig(
-                provider_batch_size=self.config.provider_batch_size,
-                minimum_repair_agreement=self.config.minimum_repair_agreement,
-                localized_residual_fraction=self.config.localized_residual_fraction,
+        if compiler is not None and not callable(getattr(compiler, "compile", None)):
+            raise TypeError("compiler must expose a callable compile method")
+        self.compiler = (
+            compiler
+            if compiler is not None
+            else ResidualActionCompiler(
+                ResidualCompilerConfig(
+                    provider_batch_size=self.config.provider_batch_size,
+                    minimum_repair_agreement=self.config.minimum_repair_agreement,
+                    localized_residual_fraction=self.config.localized_residual_fraction,
+                )
             )
         )
 

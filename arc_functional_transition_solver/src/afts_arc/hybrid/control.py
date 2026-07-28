@@ -38,7 +38,18 @@ PROVIDER_OPERATORS: dict[str, frozenset[str]] = {
         {"synthesize", "shape_resynthesize", "suffix_resynthesize"}
     ),
     "code_llm": frozenset(
-        {"open_hypothesis", "exception_resynthesize", "counterfactual_judge"}
+        {
+            "open_hypothesis",
+            "exception_resynthesize",
+            "counterfactual_judge",
+            # Opt-in object/code frontier actions.  The legacy compiler never
+            # emits these, so existing action trajectories and hashes are
+            # unchanged; a versioned compiler may select them explicitly.
+            "object_rematch",
+            "canvas_reinfer",
+            "fill_ast_hole",
+            "reparse_background",
+        }
     ),
     "sparse_ca": frozenset({"local_transition_search", "d4_bgpad_search"}),
     "difflogic_hard": frozenset({"hard_circuit_search"}),
