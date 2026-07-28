@@ -103,6 +103,26 @@ def _d4_task() -> BlindTask:
     return _blind(((source, target),), (query,))
 
 
+def _persistent_role_task() -> BlindTask:
+    source = [
+        [0, 0, 0, 0, 0],
+        [0, 3, 8, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 2, 0],
+        [0, 0, 0, 0, 0],
+    ]
+    target = [row[:] for row in source]
+    target[3][4] = 8
+    query = [
+        [0, 0, 3, 8, 0],
+        [0, 0, 0, 0, 0],
+        [0, 2, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+    ]
+    return _blind(((source, target),), (query,))
+
+
 def _budget(steps: int, slots: int = 4) -> BudgetVector:
     return BudgetVector(
         compute_units=steps * (1 + slots),
@@ -126,6 +146,19 @@ class ObjectCodeTests(unittest.TestCase):
         self.assertTrue(
             any(
                 isinstance(score.program, RoleStampProgram)
+                for score in result.exact_scores
+            )
+        )
+
+    def test_role_enumeration_keeps_persistent_anchors_for_copy_canvas(self) -> None:
+        task = _persistent_role_task()
+        programs = enumerate_object_code_programs(task)
+        self.assertTrue(any(isinstance(item, RoleStampProgram) for item in programs))
+        result = synthesize_object_code_programs(task)
+        self.assertTrue(
+            any(
+                isinstance(score.program, RoleStampProgram)
+                and score.program.canvas_mode == "copy"
                 for score in result.exact_scores
             )
         )

@@ -47,7 +47,7 @@ if TYPE_CHECKING:
 
 
 OBJECT_CODE_DSL_VERSION = "afts-object-code-dsl/v0.1"
-OBJECT_CODE_PROVIDER_VERSION = "afts-hybrid-object-code/v0.1"
+OBJECT_CODE_PROVIDER_VERSION = "afts-hybrid-object-code/v0.2"
 FAILURE_CERTIFICATE_VERSION = "afts-object-code-failure-certificate/v0.1"
 
 ROLE_STAMP_CANVASES = ("blank", "erase_roles", "copy", "crop")
@@ -650,26 +650,55 @@ def enumerate_object_code_programs(task: BlindTask) -> tuple[ObjectCodeProgram, 
     )
     programs: list[ObjectCodeProgram] = []
     for background in _candidate_backgrounds(task):
+        # Role persistence is a canvas decision, not a parsing prerequisite.
+        # Prefer disappearing roles for the blank/erase lanes, but retain a
+        # bounded set of persistent roles so the copy lane is reachable.
         source_colors = tuple(
-            color
-            for color in colors
-            if color != background
-            and all(counts[color] == 1 for counts in demo_input_counts)
-            and all(counts[color] == 0 for counts in demo_output_counts)
+            sorted(
+                (
+                    color
+                    for color in colors
+                    if color != background
+                    and all(counts[color] == 1 for counts in demo_input_counts)
+                ),
+                key=lambda color: (
+                    not all(counts[color] == 0 for counts in demo_output_counts),
+                    sum(counts[color] for counts in demo_output_counts),
+                    color,
+                ),
+            )[:3]
         )
         target_colors = tuple(
-            color
-            for color in colors
-            if color != background
-            and all(counts[color] >= 1 for counts in demo_input_counts)
-            and all(counts[color] == 0 for counts in demo_output_counts)
+            sorted(
+                (
+                    color
+                    for color in colors
+                    if color != background
+                    and all(counts[color] >= 1 for counts in demo_input_counts)
+                ),
+                key=lambda color: (
+                    not all(counts[color] == 0 for counts in demo_output_counts),
+                    sum(counts[color] for counts in demo_output_counts),
+                    -sum(counts[color] for counts in demo_input_counts),
+                    color,
+                ),
+            )[:4]
         )
         payload_colors = tuple(
-            color
-            for color in colors
-            if color != background
-            and all(counts[color] >= 1 for counts in demo_input_counts)
-            and all(counts[color] >= 1 for counts in demo_output_counts)
+            sorted(
+                (
+                    color
+                    for color in colors
+                    if color != background
+                    and all(counts[color] >= 1 for counts in demo_input_counts)
+                    and all(counts[color] >= 1 for counts in demo_output_counts)
+                ),
+                key=lambda color: (
+                    -sum(counts[color] for counts in demo_output_counts),
+                    -sum(counts[color] for counts in demo_input_counts),
+                    color,
+                ),
+            )[:4]
         )
         for payload_color in payload_colors:
             for source_color in source_colors:
