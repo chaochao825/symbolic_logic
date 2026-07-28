@@ -88,7 +88,10 @@ Controller and neural work remain frozen unless all conditions hold:
 - no implementation, replay, provenance, leakage, or cost-contract failure.
 
 Observed program trials and demonstration executions must be identical between a
-repair and its cold restart. Both reserve the same worst-case query replay count;
+repair and its cold restart. Because synthesis normally executes query inputs only
+for demo-exact programs, the lower-usage side is deterministically padded without
+using predictions until both sides also consume their identical query-execution
+reservation. Artifact replay and oracle scoring are reported as audit overhead;
 no scalar cost comparison is made across unrelated provider types.
 Natural cases whose typed frontier is empty remain in the recovery-rate
 denominator as zero recoveries; only executable pairs contribute to the separate

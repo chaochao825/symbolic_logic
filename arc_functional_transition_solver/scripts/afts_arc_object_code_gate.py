@@ -401,6 +401,24 @@ def _repair_result_manifest(
     }
 
 
+def _consume_query_padding(
+    programs: Sequence[object],
+    query_inputs: Sequence[Grid],
+    execution_count: int,
+) -> int:
+    """Execute deterministic, prediction-blind padding for a native cost match."""
+
+    if type(execution_count) is not int or execution_count < 0:
+        raise ExperimentSafetyError("query padding count must be non-negative")
+    schedule = tuple((program, grid) for program in programs for grid in query_inputs)
+    if execution_count and not schedule:
+        raise ExperimentSafetyError("non-zero query padding has an empty schedule")
+    for index in range(execution_count):
+        program, grid = schedule[index % len(schedule)]
+        execute_object_code_program(program, grid)
+    return execution_count
+
+
 def _natural_repairs(
     task: ARCTask,
     blind: BlindTask,
@@ -441,15 +459,17 @@ def _natural_repairs(
             base["status"] = "empty_typed_frontier"
             pending.append((base, None, None))
             continue
+        typed_programs = tuple(frontier[:trials])
+        cold_programs = tuple(all_programs[:trials])
         typed = synthesize_object_code_programs(
             blind,
             max_program_trials=trials,
-            programs=frontier[:trials],
+            programs=typed_programs,
         )
         cold = synthesize_object_code_programs(
             blind,
             max_program_trials=trials,
-            programs=tuple(all_programs[:trials]),
+            programs=cold_programs,
         )
         if not (
             typed.program_trial_count == cold.program_trial_count == trials
@@ -458,13 +478,44 @@ def _natural_repairs(
             raise ExperimentSafetyError(
                 "typed repair and cold restart violated matched generation cost"
             )
+        query_reservation = trials * len(blind.test_inputs)
+        typed_padding = _consume_query_padding(
+            typed_programs,
+            blind.test_inputs,
+            query_reservation - typed.query_execution_count,
+        )
+        cold_padding = _consume_query_padding(
+            cold_programs,
+            blind.test_inputs,
+            query_reservation - cold.query_execution_count,
+        )
+        typed_observed_queries = typed.query_execution_count + typed_padding
+        cold_observed_queries = cold.query_execution_count + cold_padding
+        if not (typed_observed_queries == cold_observed_queries == query_reservation):
+            raise ExperimentSafetyError(
+                "typed repair and cold restart violated matched query cost"
+            )
         base.update(
             {
                 "status": "generated_and_frozen",
                 "native_cost_reservation": {
                     "program_trials": trials,
                     "demo_program_executions": trials * len(blind.train),
-                    "query_program_executions": trials * len(blind.test_inputs),
+                    "query_program_executions": query_reservation,
+                },
+                "native_cost_observed": {
+                    "typed": {
+                        "program_trials": typed.program_trial_count,
+                        "demo_program_executions": typed.demo_execution_count,
+                        "query_program_executions": typed_observed_queries,
+                        "query_padding_executions": typed_padding,
+                    },
+                    "cold_restart": {
+                        "program_trials": cold.program_trial_count,
+                        "demo_program_executions": cold.demo_execution_count,
+                        "query_program_executions": cold_observed_queries,
+                        "query_padding_executions": cold_padding,
+                    },
                 },
                 "strict_generation_cost_comparable": True,
                 "typed": _repair_result_manifest(typed, blind),
@@ -919,8 +970,10 @@ def main() -> int:
             "controller_claim_allowed": False,
             "neural_provider_claim_allowed": proceed_to_neural_provider,
             "cost_comparison_scope": (
-                "equal program/demo/query reservation for typed repair versus "
-                "cold restart only; no cross-provider scalar cost claim"
+                "equal observed program trials, demo executions, and query "
+                "executions (using prediction-blind padding) for typed repair "
+                "versus cold restart; artifact replay and oracle scoring are "
+                "reported audit overhead; no cross-provider scalar cost claim"
             ),
         },
         "dataset": {
