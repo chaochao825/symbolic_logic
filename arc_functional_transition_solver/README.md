@@ -145,6 +145,13 @@ and residual repair adds no unique union coverage; the report therefore treats
 candidate-language expansion, physical-cost accounting, and uniquely useful
 typed repair as the next research gates.
 
+The first scene-graph object/code expansion is recorded in
+`notes/results/object-code-gate-v3-scene-ast-20260729.md`. On the frozen
+offset-100 development slice it adds exactly 3/100 unique selectable tasks, but
+raises union only to 12/100 and recovers 0/100 natural near misses. The provider
+gate passes narrowly while the broader solver and repair gates fail, so learned
+controllers and masked-neural claims remain frozen.
+
 Unconfigured neural/code providers return explicit abstention receipts. The
 default CLI never resumes M04a or DiffLogic training; programmatically supplied
 callbacks are explicit trusted integration boundaries rather than implicit

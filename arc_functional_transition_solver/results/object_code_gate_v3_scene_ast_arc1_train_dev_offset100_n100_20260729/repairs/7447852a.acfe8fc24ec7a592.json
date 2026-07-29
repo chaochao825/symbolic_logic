@@ -1,0 +1,2500 @@
+{
+  "blind_content_sha256": "2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+  "blind_task_id": "blind_2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+  "cases": [
+    {
+      "case_index": 0,
+      "certificate": {
+        "affected_slots": [
+          "ast.correspond.d4_invariant",
+          "ast.correspond.features",
+          "ast.correspond.policy",
+          "ast.operate.transform",
+          "ast.parse.connectivity",
+          "ast.parse.grouping",
+          "ast.select.role"
+        ],
+        "blind_content_sha256": "2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "blind_task_id": "blind_2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "certificate_id": "1938c1cf4733a5c94e0fc671",
+        "cross_representation": false,
+        "diagnosis": "object_correspondence_mismatch",
+        "evidence": {
+          "demo_count": 3,
+          "execution_failure_count": 0,
+          "mismatch_count": 30,
+          "shape_mismatch_count": 0,
+          "valid_shape_mismatch_count": 0
+        },
+        "parent_hypothesis_id": "1e7b0f8f22007e61d58de0e0",
+        "parent_source": "object_code_dsl",
+        "recommended_action": "object_rematch",
+        "schema": "afts-object-code-failure-certificate/v0.1"
+      },
+      "cold_restart": {
+        "artifact_query_replay_count": 0,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [],
+        "query_execution_count_during_synthesis": 0
+      },
+      "frontier_change_basis": "content_addressed_object_code_program_id",
+      "frontier_changed": true,
+      "initial_pool_program_count": 8,
+      "matched_program_trials": 16,
+      "native_cost_observed": {
+        "cold_restart": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        },
+        "typed": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        }
+      },
+      "native_cost_reservation": {
+        "demo_program_executions": 48,
+        "program_trials": 16,
+        "query_program_executions": 16
+      },
+      "novel_frontier_count": 8,
+      "novel_frontier_program_count": 436,
+      "parent_agreement": 0.7674418604651163,
+      "parent_hypothesis_id": "1e7b0f8f22007e61d58de0e0",
+      "parent_program": {
+        "ast": {
+          "canvas": {
+            "background": 0,
+            "height": null,
+            "mode": "bbox",
+            "op": "infer_canvas",
+            "padding": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "width": null
+          },
+          "correspond": {
+            "d4_invariant": true,
+            "features": [],
+            "op": "correspond_objects",
+            "policy": "none"
+          },
+          "operate": {
+            "axis": null,
+            "op": "object_operation",
+            "operator": "crop",
+            "output_color": null,
+            "repeat_rule": null,
+            "spacing": 0,
+            "transform": "identity"
+          },
+          "parse": {
+            "background": 0,
+            "connectivity": 4,
+            "grouping": "color_groups",
+            "op": "parse_objects"
+          },
+          "render": {
+            "conflict_policy": "reject",
+            "mode": "selected_only",
+            "op": "render_objects"
+          },
+          "select": {
+            "op": "select_objects",
+            "role": "all"
+          }
+        },
+        "kind": "scene_pipeline",
+        "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+        "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+      },
+      "raw_typed_frontier_size": 443,
+      "status": "generated_and_frozen",
+      "strict_generation_cost_comparable": true,
+      "typed": {
+        "artifact_query_replay_count": 8,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          }
+        ],
+        "query_execution_count_during_synthesis": 0
+      },
+      "typed_frontier_size": 436
+    },
+    {
+      "case_index": 1,
+      "certificate": {
+        "affected_slots": [
+          "ast.correspond.d4_invariant",
+          "ast.correspond.features",
+          "ast.correspond.policy",
+          "ast.operate.transform",
+          "ast.parse.connectivity",
+          "ast.parse.grouping",
+          "ast.select.role"
+        ],
+        "blind_content_sha256": "2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "blind_task_id": "blind_2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "certificate_id": "08423979865232b3b879e904",
+        "cross_representation": false,
+        "diagnosis": "object_correspondence_mismatch",
+        "evidence": {
+          "demo_count": 3,
+          "execution_failure_count": 0,
+          "mismatch_count": 30,
+          "shape_mismatch_count": 0,
+          "valid_shape_mismatch_count": 0
+        },
+        "parent_hypothesis_id": "09e89109052c3c16654819e9",
+        "parent_source": "object_code_dsl",
+        "recommended_action": "object_rematch",
+        "schema": "afts-object-code-failure-certificate/v0.1"
+      },
+      "cold_restart": {
+        "artifact_query_replay_count": 0,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [],
+        "query_execution_count_during_synthesis": 0
+      },
+      "frontier_change_basis": "content_addressed_object_code_program_id",
+      "frontier_changed": true,
+      "initial_pool_program_count": 8,
+      "matched_program_trials": 16,
+      "native_cost_observed": {
+        "cold_restart": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        },
+        "typed": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        }
+      },
+      "native_cost_reservation": {
+        "demo_program_executions": 48,
+        "program_trials": 16,
+        "query_program_executions": 16
+      },
+      "novel_frontier_count": 8,
+      "novel_frontier_program_count": 436,
+      "parent_agreement": 0.7674418604651163,
+      "parent_hypothesis_id": "09e89109052c3c16654819e9",
+      "parent_program": {
+        "ast": {
+          "canvas": {
+            "background": 0,
+            "height": null,
+            "mode": "bbox",
+            "op": "infer_canvas",
+            "padding": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "width": null
+          },
+          "correspond": {
+            "d4_invariant": true,
+            "features": [],
+            "op": "correspond_objects",
+            "policy": "none"
+          },
+          "operate": {
+            "axis": null,
+            "op": "object_operation",
+            "operator": "crop",
+            "output_color": null,
+            "repeat_rule": null,
+            "spacing": 0,
+            "transform": "identity"
+          },
+          "parse": {
+            "background": 0,
+            "connectivity": 4,
+            "grouping": "color_groups",
+            "op": "parse_objects"
+          },
+          "render": {
+            "conflict_policy": "reject",
+            "mode": "selected_only",
+            "op": "render_objects"
+          },
+          "select": {
+            "op": "select_objects",
+            "role": "bottommost"
+          }
+        },
+        "kind": "scene_pipeline",
+        "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+        "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+      },
+      "raw_typed_frontier_size": 443,
+      "status": "generated_and_frozen",
+      "strict_generation_cost_comparable": true,
+      "typed": {
+        "artifact_query_replay_count": 8,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          }
+        ],
+        "query_execution_count_during_synthesis": 0
+      },
+      "typed_frontier_size": 436
+    },
+    {
+      "case_index": 2,
+      "certificate": {
+        "affected_slots": [
+          "ast.correspond.d4_invariant",
+          "ast.correspond.features",
+          "ast.correspond.policy",
+          "ast.operate.transform",
+          "ast.parse.connectivity",
+          "ast.parse.grouping",
+          "ast.select.role"
+        ],
+        "blind_content_sha256": "2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "blind_task_id": "blind_2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "certificate_id": "5eb2c5f4d5c35e64085d65b0",
+        "cross_representation": false,
+        "diagnosis": "object_correspondence_mismatch",
+        "evidence": {
+          "demo_count": 3,
+          "execution_failure_count": 0,
+          "mismatch_count": 30,
+          "shape_mismatch_count": 0,
+          "valid_shape_mismatch_count": 0
+        },
+        "parent_hypothesis_id": "08bfe09d0f6b497e61acee9c",
+        "parent_source": "object_code_dsl",
+        "recommended_action": "object_rematch",
+        "schema": "afts-object-code-failure-certificate/v0.1"
+      },
+      "cold_restart": {
+        "artifact_query_replay_count": 0,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [],
+        "query_execution_count_during_synthesis": 0
+      },
+      "frontier_change_basis": "content_addressed_object_code_program_id",
+      "frontier_changed": true,
+      "initial_pool_program_count": 8,
+      "matched_program_trials": 16,
+      "native_cost_observed": {
+        "cold_restart": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        },
+        "typed": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        }
+      },
+      "native_cost_reservation": {
+        "demo_program_executions": 48,
+        "program_trials": 16,
+        "query_program_executions": 16
+      },
+      "novel_frontier_count": 8,
+      "novel_frontier_program_count": 436,
+      "parent_agreement": 0.7674418604651163,
+      "parent_hypothesis_id": "08bfe09d0f6b497e61acee9c",
+      "parent_program": {
+        "ast": {
+          "canvas": {
+            "background": 0,
+            "height": null,
+            "mode": "bbox",
+            "op": "infer_canvas",
+            "padding": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "width": null
+          },
+          "correspond": {
+            "d4_invariant": true,
+            "features": [],
+            "op": "correspond_objects",
+            "policy": "none"
+          },
+          "operate": {
+            "axis": null,
+            "op": "object_operation",
+            "operator": "crop",
+            "output_color": null,
+            "repeat_rule": null,
+            "spacing": 0,
+            "transform": "identity"
+          },
+          "parse": {
+            "background": 0,
+            "connectivity": 4,
+            "grouping": "color_groups",
+            "op": "parse_objects"
+          },
+          "render": {
+            "conflict_policy": "reject",
+            "mode": "selected_only",
+            "op": "render_objects"
+          },
+          "select": {
+            "op": "select_objects",
+            "role": "largest_area"
+          }
+        },
+        "kind": "scene_pipeline",
+        "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+        "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+      },
+      "raw_typed_frontier_size": 443,
+      "status": "generated_and_frozen",
+      "strict_generation_cost_comparable": true,
+      "typed": {
+        "artifact_query_replay_count": 8,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          }
+        ],
+        "query_execution_count_during_synthesis": 0
+      },
+      "typed_frontier_size": 436
+    },
+    {
+      "case_index": 3,
+      "certificate": {
+        "affected_slots": [
+          "ast.correspond.d4_invariant",
+          "ast.correspond.features",
+          "ast.correspond.policy",
+          "ast.operate.transform",
+          "ast.parse.connectivity",
+          "ast.parse.grouping",
+          "ast.select.role"
+        ],
+        "blind_content_sha256": "2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "blind_task_id": "blind_2f6299ba366cd9163cde0b327be0ff5557242b4755a261f59560d5405779df9a",
+        "certificate_id": "3173332598aa1e3197a8aac8",
+        "cross_representation": false,
+        "diagnosis": "object_correspondence_mismatch",
+        "evidence": {
+          "demo_count": 3,
+          "execution_failure_count": 0,
+          "mismatch_count": 30,
+          "shape_mismatch_count": 0,
+          "valid_shape_mismatch_count": 0
+        },
+        "parent_hypothesis_id": "ca6d15dbec2927a96c6cb3f4",
+        "parent_source": "object_code_dsl",
+        "recommended_action": "object_rematch",
+        "schema": "afts-object-code-failure-certificate/v0.1"
+      },
+      "cold_restart": {
+        "artifact_query_replay_count": 0,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [],
+        "query_execution_count_during_synthesis": 0
+      },
+      "frontier_change_basis": "content_addressed_object_code_program_id",
+      "frontier_changed": true,
+      "initial_pool_program_count": 8,
+      "matched_program_trials": 16,
+      "native_cost_observed": {
+        "cold_restart": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        },
+        "typed": {
+          "demo_program_executions": 48,
+          "program_trials": 16,
+          "query_padding_executions": 16,
+          "query_program_executions": 16
+        }
+      },
+      "native_cost_reservation": {
+        "demo_program_executions": 48,
+        "program_trials": 16,
+        "query_program_executions": 16
+      },
+      "novel_frontier_count": 8,
+      "novel_frontier_program_count": 436,
+      "parent_agreement": 0.7674418604651163,
+      "parent_hypothesis_id": "ca6d15dbec2927a96c6cb3f4",
+      "parent_program": {
+        "ast": {
+          "canvas": {
+            "background": 0,
+            "height": null,
+            "mode": "bbox",
+            "op": "infer_canvas",
+            "padding": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "width": null
+          },
+          "correspond": {
+            "d4_invariant": true,
+            "features": [],
+            "op": "correspond_objects",
+            "policy": "none"
+          },
+          "operate": {
+            "axis": null,
+            "op": "object_operation",
+            "operator": "crop",
+            "output_color": null,
+            "repeat_rule": null,
+            "spacing": 0,
+            "transform": "identity"
+          },
+          "parse": {
+            "background": 0,
+            "connectivity": 4,
+            "grouping": "color_groups",
+            "op": "parse_objects"
+          },
+          "render": {
+            "conflict_policy": "reject",
+            "mode": "selected_only",
+            "op": "render_objects"
+          },
+          "select": {
+            "op": "select_objects",
+            "role": "largest_bbox"
+          }
+        },
+        "kind": "scene_pipeline",
+        "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+        "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+      },
+      "raw_typed_frontier_size": 443,
+      "status": "generated_and_frozen",
+      "strict_generation_cost_comparable": true,
+      "typed": {
+        "artifact_query_replay_count": 8,
+        "demo_execution_count": 48,
+        "program_trial_count": 16,
+        "programs": [
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.7674418604651163,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "identity"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "89845693c4ddce42965fe160bf4da3d3f2eb3e987839f30ff601e0223ca6cd2f"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 4,
+                  "grouping": "color_groups",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "most_peers"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          },
+          {
+            "agreement": 0.4883720930232558,
+            "demo_exact": false,
+            "program": {
+              "ast": {
+                "canvas": {
+                  "background": 0,
+                  "height": null,
+                  "mode": "bbox",
+                  "op": "infer_canvas",
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "width": null
+                },
+                "correspond": {
+                  "d4_invariant": false,
+                  "features": [
+                    "relative_position",
+                    "shape",
+                    "size",
+                    "topology"
+                  ],
+                  "op": "correspond_objects",
+                  "policy": "equivalence"
+                },
+                "operate": {
+                  "axis": null,
+                  "op": "object_operation",
+                  "operator": "crop",
+                  "output_color": null,
+                  "repeat_rule": null,
+                  "spacing": 0,
+                  "transform": "flip_vertical"
+                },
+                "parse": {
+                  "background": 0,
+                  "connectivity": 8,
+                  "grouping": "foreground_components",
+                  "op": "parse_objects"
+                },
+                "render": {
+                  "conflict_policy": "reject",
+                  "mode": "selected_only",
+                  "op": "render_objects"
+                },
+                "select": {
+                  "op": "select_objects",
+                  "role": "unique_signature"
+                }
+              },
+              "kind": "scene_pipeline",
+              "object_code_dsl_version": "afts-object-code-dsl/v0.2",
+              "scene_ast_version": "afts-object-code-scene-ast/v0.1"
+            },
+            "query_output_keys": [
+              "1cad41aaf47787da71255629fde30158c1e43cfd29f6254218389c1544421af3"
+            ]
+          }
+        ],
+        "query_execution_count_during_synthesis": 0
+      },
+      "typed_frontier_size": 436
+    }
+  ],
+  "provider_version": "afts-hybrid-object-code/v0.3",
+  "repair_pool_id": "acfe8fc24ec7a5922f0ce3ff9ffc31c1a9f128dd18b557c36822a5b98f15e357",
+  "repair_trial_budget": 16,
+  "schema": "afts.object-code-repair-pool/v2",
+  "task_id": "7447852a",
+  "task_source_sha256": "91541411c48c9e50746f8e853bd66176c79bc0032bb0d01e5417558e62f1f0ba"
+}

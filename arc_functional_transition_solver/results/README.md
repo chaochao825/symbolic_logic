@@ -16,6 +16,7 @@ Directory existence is not evidence that an experiment ran successfully.
 | `m04a_r7_failure_receipt.json` | EXACT FAILURE RECEIPT | Campaign terminal state; SHA-256 is pinned in the analysis report. |
 | `object_code_gate_v1_*_20260728` | VERIFIED NEGATIVE GATE | Two disjoint public-training 100-task audits. v0.1 adds 1/200 unique selectable coverage and 0/65 novel natural repairs; controller remains frozen. |
 | `object_code_gate_v2_*_20260728` | VERIFIED NEGATIVE DEVELOPMENT GATE | Role reachability adds 2,784 trials and 40 role near misses on offset-100, but 0 exact/unique candidates and 0/76 novel repairs; offset-200 confirmation was not scored. |
+| `object_code_gate_v3_scene_ast_*_20260729` | VERIFIED MIXED DEVELOPMENT GATE | Scene roles/canvas inference add exactly 3/100 unique selectable tasks, passing the provider-only gate, but union is 12/100 and natural typed repair is 0/100. This is representation reachability at about 333x v0.2 trials, not an efficiency, router, or neural claim. |
 
 The public publication bundle is closed by `PUBLICATION_MANIFEST.json`:
 
