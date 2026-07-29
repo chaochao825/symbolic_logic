@@ -48,26 +48,40 @@ from afts_arc.grid import Grid, as_grid, grid_key  # noqa: E402
 from afts_arc.hybrid import (  # noqa: E402
     D4LabelCompletionProgram,
     RoleStampProgram,
+    ScenePipelineProgram,
     enumerate_object_code_programs,
     evaluate_hypothesis,
     execute_object_code_program,
     make_object_code_hypothesis,
+    object_code_program_id,
+    object_code_program_from_json,
     rank_verified,
     synthesize_object_code_programs,
     typed_repair_frontier,
 )
 from afts_arc.hybrid.object_code import (  # noqa: E402
     OBJECT_CODE_DSL_VERSION,
+    OBJECT_CODE_DSL_VERSIONS,
     OBJECT_CODE_PROVIDER_VERSION,
     ObjectCodeProgramScore,
     ObjectCodeSynthesisResult,
+)
+from afts_arc.hybrid.scene_graph import (  # noqa: E402
+    SCENE_AST_VERSION,
+    CanvasNode,
+    CorrespondObjectsNode,
+    ObjectOperationNode,
+    ParseObjectsNode,
+    RenderObjectsNode,
+    SelectObjectsNode,
 )
 from afts_arc.hybrid.types import CandidateEvaluation  # noqa: E402
 from afts_arc.task import ARCPair, ARCTask, load_task  # noqa: E402
 
 
-SCHEMA_VERSION = "afts.object-code-gate/v1"
-POOL_SCHEMA_VERSION = "afts.object-code-frozen-pool/v1"
+SCHEMA_VERSION = "afts.object-code-gate/v2"
+POOL_SCHEMA_VERSION = "afts.object-code-frozen-pool/v2"
+REPAIR_POOL_SCHEMA_VERSION = "afts.object-code-repair-pool/v2"
 
 
 def _load_json(path: Path) -> dict[str, object]:
@@ -155,6 +169,30 @@ def _d4_control() -> BlindTask:
     return _blind(((source, target),), (source,))
 
 
+def _scene_control() -> tuple[BlindTask, ScenePipelineProgram]:
+    source = [
+        [0, 8, 0, 8, 0],
+        [0, 5, 5, 5, 0],
+        [0, 5, 0, 5, 0],
+        [0, 8, 0, 8, 0],
+    ]
+    target = [
+        [8, 0, 8],
+        [5, 5, 5],
+        [5, 0, 5],
+        [8, 0, 8],
+    ]
+    program = ScenePipelineProgram(
+        ParseObjectsNode(0, 4, "color_groups"),
+        CorrespondObjectsNode(),
+        SelectObjectsNode("largest_area"),
+        ObjectOperationNode("crop"),
+        CanvasNode("bbox", 0, (1, 1, 0, 0)),
+        RenderObjectsNode("source_crop"),
+    )
+    return _blind(((source, target),), (source,)), program
+
+
 def _score_query_outputs(
     scores: Sequence[ObjectCodeProgramScore],
     query_inputs: Sequence[Grid],
@@ -181,6 +219,19 @@ def _positive_controls(repair_trial_budget: int) -> dict[str, object]:
     d4_program = D4LabelCompletionProgram(0, 4, 4, 1)
     d4_execution = execute_object_code_program(d4_program, d4_task.train[0].input)
     d4_pass = d4_execution.ok and d4_execution.output == d4_task.train[0].output
+
+    scene_task, scene_program = _scene_control()
+    scene_execution = execute_object_code_program(
+        scene_program, scene_task.train[0].input
+    )
+    scene_round_trip = object_code_program_from_json(scene_program.to_json_dict())
+    scene_pass = (
+        scene_execution.ok
+        and scene_execution.output == scene_task.train[0].output
+        and scene_round_trip == scene_program
+        and tuple(item.node_id for item in scene_execution.node_trace)
+        == ("parse", "correspond", "select", "operate", "canvas", "render")
+    )
 
     fault_cases = (
         (
@@ -209,6 +260,7 @@ def _positive_controls(repair_trial_budget: int) -> dict[str, object]:
         ),
     )
     repairs = []
+    novelty_controls = []
     full_frontier = enumerate_object_code_programs(role_task)
     for name, program, holes, expected_action in fault_cases:
         parent = make_object_code_hypothesis(
@@ -218,6 +270,12 @@ def _positive_controls(repair_trial_budget: int) -> dict[str, object]:
         )
         evaluation = evaluate_hypothesis(parent, role_task)
         certificate, typed_frontier = typed_repair_frontier(role_task, evaluation)
+        _, exhausted_frontier = typed_repair_frontier(
+            role_task,
+            evaluation,
+            existing_programs=typed_frontier,
+        )
+        novelty_controls.append(not exhausted_frontier)
         trials = min(repair_trial_budget, len(typed_frontier))
         typed = synthesize_object_code_programs(
             role_task,
@@ -256,13 +314,23 @@ def _positive_controls(repair_trial_budget: int) -> dict[str, object]:
         item["typed_oracle_recovered"] and not item["cold_oracle_recovered"]
         for item in repairs
     )
+    novelty_pass = all(novelty_controls)
     return {
         "role_stamp_oracle_recovered": role_hit,
         "d4_completion_demo_exact": d4_pass,
+        "scene_ast_demo_exact_and_replayable": scene_pass,
+        "novel_frontier_postcondition": novelty_pass,
         "typed_action_causality": action_causality,
         "typed_repair_beats_equal_trial_cold_restart": repair_pass,
         "fault_cases": repairs,
-        "passed": role_hit and d4_pass and action_causality and repair_pass,
+        "passed": (
+            role_hit
+            and d4_pass
+            and scene_pass
+            and novelty_pass
+            and action_causality
+            and repair_pass
+        ),
     }
 
 
@@ -429,9 +497,11 @@ def _natural_repairs(
     case_limit: int,
     output_dir: Path,
 ) -> list[dict[str, object]]:
+    initial_pool_programs = tuple(
+        score.program for score in (*result.exact_scores, *result.near_miss_scores)
+    )
     initial_pool_program_ids = {
-        canonical_sha256(score.program.to_json_dict())
-        for score in (*result.exact_scores, *result.near_miss_scores)
+        object_code_program_id(program) for program in initial_pool_programs
     }
     pending: list[
         tuple[
@@ -443,7 +513,16 @@ def _natural_repairs(
     for case_index, parent_score in enumerate(result.near_miss_scores[:case_limit]):
         parent = make_object_code_hypothesis(parent_score.program, demo_exact=False)
         evaluation = evaluate_hypothesis(parent, blind)
-        certificate, frontier = typed_repair_frontier(blind, evaluation)
+        certificate, raw_frontier = typed_repair_frontier(blind, evaluation)
+        repeated_certificate, frontier = typed_repair_frontier(
+            blind,
+            evaluation,
+            existing_programs=initial_pool_programs,
+        )
+        if repeated_certificate != certificate:
+            raise ExperimentSafetyError(
+                "failure certificate changed while applying the novelty filter"
+            )
         trials = min(repair_trial_budget, len(frontier))
         base: dict[str, object] = {
             "case_index": case_index,
@@ -452,11 +531,16 @@ def _natural_repairs(
             "parent_agreement": parent_score.agreement,
             "certificate": certificate.to_json_dict(),
             "matched_program_trials": trials,
+            "raw_typed_frontier_size": len(raw_frontier),
             "typed_frontier_size": len(frontier),
+            "novel_frontier_program_count": len(frontier),
+            "novel_frontier_count": 0,
+            "frontier_changed": False,
+            "frontier_change_basis": "content_addressed_object_code_program_id",
             "initial_pool_program_count": len(initial_pool_program_ids),
         }
         if trials < 1:
-            base["status"] = "empty_typed_frontier"
+            base["status"] = "no_novel_typed_frontier"
             pending.append((base, None, None))
             continue
         typed_programs = tuple(frontier[:trials])
@@ -471,6 +555,15 @@ def _natural_repairs(
             max_program_trials=trials,
             programs=cold_programs,
         )
+        typed_emitted_program_ids = {
+            program_id
+            for score in (*typed.exact_scores, *typed.near_miss_scores)
+            if (
+                program_id := object_code_program_id(score.program)
+            ) not in initial_pool_program_ids
+        }
+        base["novel_frontier_count"] = len(typed_emitted_program_ids)
+        base["frontier_changed"] = bool(typed_emitted_program_ids)
         if not (
             typed.program_trial_count == cold.program_trial_count == trials
             and typed.demo_execution_count == cold.demo_execution_count
@@ -527,7 +620,7 @@ def _natural_repairs(
     if not pending:
         return []
     artifact_content = {
-        "schema": "afts.object-code-repair-pool/v1",
+        "schema": REPAIR_POOL_SCHEMA_VERSION,
         "task_id": task.task_id,
         "task_source_sha256": task.source_sha256,
         "blind_task_id": blind.task_id,
@@ -569,14 +662,12 @@ def _natural_repairs(
             typed_novel_scores = tuple(
                 score
                 for score in typed.exact_scores
-                if canonical_sha256(score.program.to_json_dict())
-                not in initial_pool_program_ids
+                if object_code_program_id(score.program) not in initial_pool_program_ids
             )
             cold_novel_scores = tuple(
                 score
                 for score in cold.exact_scores
-                if canonical_sha256(score.program.to_json_dict())
-                not in initial_pool_program_ids
+                if object_code_program_id(score.program) not in initial_pool_program_ids
             )
             typed_novel_oracle = _score_query_outputs(
                 typed_novel_scores, blind.test_inputs, oracle
@@ -686,6 +777,9 @@ def main() -> int:
             task = load_task(task_path)
             blind = BlindTask.from_task(task)
             all_programs = enumerate_object_code_programs(blind)
+            grammar_family_counts = Counter(
+                str(program.to_json_dict()["kind"]) for program in all_programs
+            )
             result = synthesize_object_code_programs(
                 blind,
                 max_program_trials=args.max_program_trials,
@@ -702,6 +796,18 @@ def main() -> int:
                 minimum_near_miss_agreement=args.minimum_near_miss_agreement,
             )
             replay_evaluations, _ = _candidate_artifacts(replay_result, blind)
+            tried_programs = all_programs[: result.program_trial_count]
+            tried_family_counts = Counter(
+                str(program.to_json_dict()["kind"]) for program in tried_programs
+            )
+            exact_family_counts = Counter(
+                str(score.program.to_json_dict()["kind"])
+                for score in result.exact_scores
+            )
+            near_miss_family_counts = Counter(
+                str(score.program.to_json_dict()["kind"])
+                for score in result.near_miss_scores
+            )
             signature = _evaluation_signature(evaluations)
             replay_signature = _evaluation_signature(replay_evaluations)
             replay_exact = signature == replay_signature and result == replay_result
@@ -722,6 +828,8 @@ def main() -> int:
                 "blind_content_sha256": blind.blind_content_sha256,
                 "provider_version": OBJECT_CODE_PROVIDER_VERSION,
                 "dsl_version": OBJECT_CODE_DSL_VERSION,
+                "dsl_versions": list(OBJECT_CODE_DSL_VERSIONS),
+                "scene_ast_version": SCENE_AST_VERSION,
                 "config": {
                     "max_program_trials": args.max_program_trials,
                     "max_exact_programs": args.max_exact_programs,
@@ -729,7 +837,13 @@ def main() -> int:
                     "minimum_near_miss_agreement": args.minimum_near_miss_agreement,
                 },
                 "grammar_program_count": len(all_programs),
+                "grammar_program_family_counts": dict(
+                    sorted(grammar_family_counts.items())
+                ),
                 "program_trial_count": result.program_trial_count,
+                "tried_program_family_counts": dict(
+                    sorted(tried_family_counts.items())
+                ),
                 "demo_execution_count": result.demo_execution_count,
                 "query_execution_count": result.query_execution_count,
                 "candidate_verification_execution_count": verification_executions,
@@ -803,12 +917,24 @@ def main() -> int:
                     "pool_id": pool_id,
                     "pool_manifest": pool_relative.as_posix(),
                     "grammar_program_count": len(all_programs),
+                    "grammar_program_family_counts": dict(
+                        sorted(grammar_family_counts.items())
+                    ),
                     "program_trial_count": result.program_trial_count,
+                    "tried_program_family_counts": dict(
+                        sorted(tried_family_counts.items())
+                    ),
                     "grammar_exhaustive_under_limit": (
                         result.program_trial_count == len(all_programs)
                     ),
                     "exact_demo_program_count": len(result.exact_scores),
+                    "exact_demo_program_family_counts": dict(
+                        sorted(exact_family_counts.items())
+                    ),
                     "near_miss_program_count": len(result.near_miss_scores),
+                    "near_miss_program_family_counts": dict(
+                        sorted(near_miss_family_counts.items())
+                    ),
                     "candidate_count": len(evaluations),
                     "replay_exact": replay_exact,
                     "provider_raw_oracle_covered": raw_hit,
@@ -886,6 +1012,14 @@ def main() -> int:
     action_counts = Counter(
         item["certificate"]["recommended_action"] for item in repair_completed
     )
+    repair_status_counts = Counter(
+        str(item.get("status", "missing")) for item in natural_repairs
+    )
+    frontier_change_claim_integrity = all(
+        item.get("frontier_changed")
+        is (int(item.get("novel_frontier_count", 0)) > 0)
+        for item in natural_repairs
+    )
     gates = {
         "implementation_controls": controls["passed"] and not failures,
         "all_candidate_replays_exact": all(
@@ -918,6 +1052,7 @@ def main() -> int:
             "passed": unique_repairs > 0 and typed_repairs > cold_repairs,
         },
         "controlled_residual_causality": controls["typed_action_causality"],
+        "frontier_change_claim_integrity": frontier_change_claim_integrity,
     }
     proceed_to_neural_provider = all(
         (
@@ -929,9 +1064,14 @@ def main() -> int:
             gates["repair_unique_rate"]["passed"],
             gates["repair_beats_equal_trial_cold_restart"]["passed"],
             gates["controlled_residual_causality"],
+            gates["frontier_change_claim_integrity"],
         )
     )
-    if not gates["implementation_controls"] or not gates["all_candidate_replays_exact"]:
+    if (
+        not gates["implementation_controls"]
+        or not gates["all_candidate_replays_exact"]
+        or not gates["frontier_change_claim_integrity"]
+    ):
         negative_result_attribution = "implementation_or_protocol_failure"
     elif (
         not gates["selectable_union"]["passed"]
@@ -954,6 +1094,8 @@ def main() -> int:
         publication_blockers.append("positive_control_failure")
     if not all(record["replay_exact"] for record in task_records):
         publication_blockers.append("candidate_replay_mismatch")
+    if not frontier_change_claim_integrity:
+        publication_blockers.append("false_frontier_change_claim")
     summary = {
         "schema": SCHEMA_VERSION,
         "result_id": "",
@@ -995,12 +1137,15 @@ def main() -> int:
         "provider_config": {
             "provider_version": OBJECT_CODE_PROVIDER_VERSION,
             "dsl_version": OBJECT_CODE_DSL_VERSION,
+            "dsl_versions": list(OBJECT_CODE_DSL_VERSIONS),
+            "scene_ast_version": SCENE_AST_VERSION,
             "max_program_trials": args.max_program_trials,
             "max_exact_programs": args.max_exact_programs,
             "max_near_misses": args.max_near_misses,
             "minimum_near_miss_agreement": args.minimum_near_miss_agreement,
             "repair_trial_budget": args.repair_trial_budget,
             "natural_near_miss_limit": args.natural_near_miss_limit,
+            "novel_frontier_required_for_frontier_changed": True,
         },
         "positive_controls": controls,
         "coverage": {
@@ -1021,6 +1166,7 @@ def main() -> int:
             "unique_typed_novel_oracle_recoveries": unique_repairs,
             "unique_typed_novel_recovery_rate": repair_unique_rate,
             "recommended_action_counts": dict(sorted(action_counts.items())),
+            "status_counts": dict(sorted(repair_status_counts.items())),
             "cases": natural_repairs,
         },
         "failure_analysis": {
@@ -1034,6 +1180,9 @@ def main() -> int:
         },
         "gates": gates,
         "decision": {
+            "object_code_unique_gate_passed": gates[
+                "provider_unique_selectable"
+            ]["passed"],
             "proceed_to_masked_neural_provider": proceed_to_neural_provider,
             "controller_remains_frozen": not proceed_to_neural_provider,
         },

@@ -354,6 +354,14 @@ class ObjectCodeTests(unittest.TestCase):
                 for code in proposals[1].action.reason_codes
             )
         )
+        self.assertIsNotNone(proposals[1].provider_result)
+        diagnostics = proposals[1].provider_result.diagnostics
+        self.assertGreater(diagnostics["novel_frontier_count"], 0)
+        self.assertTrue(diagnostics["frontier_changed"])
+        self.assertEqual(
+            diagnostics["frontier_change_basis"],
+            "content_addressed_object_code_program_id",
+        )
         self.assertEqual(report.status, "solved")
 
     def test_generation_is_invariant_to_hidden_query_output(self) -> None:

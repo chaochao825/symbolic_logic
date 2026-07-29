@@ -35,6 +35,17 @@ from .control import (
     ResidualCompilerConfig,
 )
 from .router import RouteDecision, TaskFeatures
+from .scene_graph import (
+    SCENE_AST_VERSION,
+    SCENE_PIPELINE_DSL_VERSION,
+    ExecutionTraceNode,
+    SceneGraph,
+    ScenePipelineExecution,
+    ScenePipelineProgram,
+    enumerate_scene_pipeline_programs,
+    execute_scene_pipeline,
+    extract_scene_graph,
+)
 from .types import (
     CandidateEvaluation,
     CandidateHypothesis,
@@ -47,7 +58,11 @@ if TYPE_CHECKING:
 
 
 OBJECT_CODE_DSL_VERSION = "afts-object-code-dsl/v0.1"
-OBJECT_CODE_PROVIDER_VERSION = "afts-hybrid-object-code/v0.2"
+OBJECT_CODE_DSL_VERSIONS = (
+    OBJECT_CODE_DSL_VERSION,
+    SCENE_PIPELINE_DSL_VERSION,
+)
+OBJECT_CODE_PROVIDER_VERSION = "afts-hybrid-object-code/v0.3"
 FAILURE_CERTIFICATE_VERSION = "afts-object-code-failure-certificate/v0.1"
 
 ROLE_STAMP_CANVASES = ("blank", "erase_roles", "copy", "crop")
@@ -247,7 +262,9 @@ class D4LabelCompletionProgram:
         )
 
 
-ObjectCodeProgram: TypeAlias = RoleStampProgram | D4LabelCompletionProgram
+ObjectCodeProgram: TypeAlias = (
+    RoleStampProgram | D4LabelCompletionProgram | ScenePipelineProgram
+)
 
 
 def object_code_program_from_json(payload: object) -> ObjectCodeProgram:
@@ -258,6 +275,8 @@ def object_code_program_from_json(payload: object) -> ObjectCodeProgram:
         return RoleStampProgram.from_json_dict(payload)
     if kind == "d4_label_completion":
         return D4LabelCompletionProgram.from_json_dict(payload)
+    if kind == "scene_pipeline":
+        return ScenePipelineProgram.from_json_dict(payload)
     raise ValueError("unknown object/code program kind")
 
 
@@ -268,6 +287,7 @@ class ObjectCodeExecution:
     reason: str | None
     object_count: int = 0
     correspondence_count: int = 0
+    node_trace: tuple[ExecutionTraceNode, ...] = ()
 
     def __post_init__(self) -> None:
         if self.status not in {"ok", "invalid"}:
@@ -602,9 +622,51 @@ def execute_object_code_program(
             return _execute_role_stamp(program, grid)
         if isinstance(program, D4LabelCompletionProgram):
             return _execute_d4_completion(program, grid)
+        if isinstance(program, ScenePipelineProgram):
+            result = execute_scene_pipeline(program, grid)
+            return _object_code_execution_from_scene(result)
         raise TypeError("unknown object/code program type")
     except Exception:
         return ObjectCodeExecution("invalid", None, "internal_error")
+
+
+def _object_code_execution_from_scene(
+    result: ScenePipelineExecution,
+) -> ObjectCodeExecution:
+    return ObjectCodeExecution(
+        result.status,
+        result.output,
+        result.reason,
+        result.object_count,
+        result.correspondence_count,
+        result.node_trace,
+    )
+
+
+def _execute_scored_program(
+    program: ObjectCodeProgram,
+    grid: Grid,
+    scene_cache: dict[tuple[object, ...], SceneGraph],
+) -> ObjectCodeExecution:
+    if not isinstance(program, ScenePipelineProgram):
+        return execute_object_code_program(program, grid)
+    key = (
+        grid_key(grid),
+        program.parse.background,
+        program.parse.connectivity,
+        program.parse.grouping,
+    )
+    scene = scene_cache.get(key)
+    if scene is None:
+        scene = extract_scene_graph(
+            grid,
+            background=program.parse.background,
+            connectivity=program.parse.connectivity,
+            grouping=program.parse.grouping,
+        )
+        scene_cache[key] = scene
+    result = execute_scene_pipeline(program, grid, precomputed_scene=scene)
+    return _object_code_execution_from_scene(result)
 
 
 def _observable_colors(task: BlindTask) -> tuple[int, ...]:
@@ -744,8 +806,20 @@ def enumerate_object_code_programs(task: BlindTask) -> tuple[ObjectCodeProgram, 
                             radius,
                         )
                     )
-    unique = {canonical_json(program.to_json_dict()): program for program in programs}
-    return tuple(unique[key] for key in sorted(unique))
+    # Preserve the complete v0.2 grammar as an identical prefix.  This keeps
+    # legacy trial order and capped-search behavior replayable while the v0.3
+    # scene family is appended as an opt-in representation extension.
+    legacy_unique = {
+        canonical_json(program.to_json_dict()): program for program in programs
+    }
+    scene_programs = enumerate_scene_pipeline_programs(task)
+    scene_unique = {
+        canonical_json(program.to_json_dict()): program for program in scene_programs
+    }
+    return (
+        *(legacy_unique[key] for key in sorted(legacy_unique)),
+        *(scene_unique[key] for key in sorted(scene_unique)),
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -764,7 +838,9 @@ class ObjectCodeProgramScore:
 
 
 def _score_program(
-    program: ObjectCodeProgram, task: BlindTask
+    program: ObjectCodeProgram,
+    task: BlindTask,
+    scene_cache: dict[tuple[object, ...], SceneGraph],
 ) -> ObjectCodeProgramScore:
     outputs: list[Grid | None] = []
     exact_count = 0
@@ -773,7 +849,7 @@ def _score_program(
     cells = 0
     mismatches = 0
     for index, pair in enumerate(task.train):
-        result = execute_object_code_program(program, pair.input)
+        result = _execute_scored_program(program, pair.input, scene_cache)
         output = result.output if result.ok else None
         outputs.append(output)
         residual = compare_grids(
@@ -835,7 +911,8 @@ def synthesize_object_code_programs(
     frontier = tuple(
         enumerate_object_code_programs(task) if programs is None else programs
     )[:max_program_trials]
-    scores = tuple(_score_program(program, task) for program in frontier)
+    scene_cache: dict[tuple[object, ...], SceneGraph] = {}
+    scores = tuple(_score_program(program, task, scene_cache) for program in frontier)
     exact_by_semantics: dict[tuple[object, ...], ObjectCodeProgramScore] = {}
     query_executions = 0
     duplicates = 0
@@ -843,7 +920,7 @@ def synthesize_object_code_programs(
         if not score.all_demo_exact:
             continue
         query_results = tuple(
-            execute_object_code_program(score.program, grid)
+            _execute_scored_program(score.program, grid, scene_cache)
             for grid in task.test_inputs
         )
         query_executions += len(query_results)
@@ -920,9 +997,9 @@ def make_object_code_hypothesis(
 ) -> CandidateHypothesis:
     serialized = program.to_json_dict()
     holes = tuple(sorted(set(ast_holes)))
-    valid_fields = set(serialized) - {"object_code_dsl_version", "kind"}
+    valid_fields = set(_program_fields(program))
     if any(field not in valid_fields for field in holes):
-        raise ValueError("AST holes must name concrete program fields")
+        raise ValueError("AST holes must name concrete typed program slots")
     digest = hashlib.sha256(canonical_json(serialized).encode("ascii")).hexdigest()
 
     def replay(grid: Grid) -> object | None:
@@ -956,6 +1033,7 @@ def make_object_code_hypothesis(
         functional_trace=trace,
         spec={
             "object_code_program": serialized,
+            "object_code_program_id": digest,
             "provisional_ast_holes": list(holes),
         },
         metadata={
@@ -965,6 +1043,9 @@ def make_object_code_hypothesis(
             ),
             "control_operator": control_operator,
             "ast_holes": list(holes),
+            "scene_ast_version": (
+                SCENE_AST_VERSION if isinstance(program, ScenePipelineProgram) else None
+            ),
             # A provisional AST may be replayable for diagnosis but cannot pass
             # selection until every declared hole is filled.
             "support_gate_passed": not holes,
@@ -985,12 +1066,37 @@ def _program_from_candidate(candidate: CandidateHypothesis) -> ObjectCodeProgram
         return None
 
 
+def object_code_program_id(program: ObjectCodeProgram) -> str:
+    """Return a provenance-independent content ID for one replayable program."""
+
+    return hashlib.sha256(
+        canonical_json(program.to_json_dict()).encode("ascii")
+    ).hexdigest()
+
+
+def _flatten_program_fields(
+    value: object, *, prefix: str = ""
+) -> dict[str, object]:
+    if isinstance(value, Mapping):
+        flattened: dict[str, object] = {}
+        for key, child in value.items():
+            if key in {
+                "object_code_dsl_version",
+                "kind",
+                "scene_ast_version",
+                "op",
+            }:
+                continue
+            path = f"{prefix}.{key}" if prefix else key
+            flattened.update(_flatten_program_fields(child, prefix=path))
+        return flattened
+    if isinstance(value, list):
+        return {prefix: tuple(value)}
+    return {prefix: value}
+
+
 def _program_fields(program: ObjectCodeProgram) -> dict[str, object]:
-    return {
-        key: value
-        for key, value in program.to_json_dict().items()
-        if key not in {"object_code_dsl_version", "kind"}
-    }
+    return _flatten_program_fields(program.to_json_dict())
 
 
 def _repair_frontier(
@@ -1006,22 +1112,53 @@ def _repair_frontier(
     if parent is None:
         if operator == "canvas_reinfer":
             return tuple(
-                item for item in candidates if isinstance(item, RoleStampProgram)
+                item
+                for item in candidates
+                if isinstance(item, (RoleStampProgram, ScenePipelineProgram))
             )
         if operator == "fill_ast_hole":
             return ()
         return candidates
     parent_values = _program_fields(parent)
     if operator == "object_rematch":
-        allowed = (
-            {"payload_color", "source_anchor_color", "target_anchor_color", "transform"}
-            if isinstance(parent, RoleStampProgram)
-            else {"structure_color", "connectivity", "attachment_radius"}
-        )
+        if isinstance(parent, RoleStampProgram):
+            allowed = {
+                "payload_color",
+                "source_anchor_color",
+                "target_anchor_color",
+                "transform",
+            }
+        elif isinstance(parent, D4LabelCompletionProgram):
+            allowed = {"structure_color", "connectivity", "attachment_radius"}
+        else:
+            allowed = {
+                "ast.parse.connectivity",
+                "ast.parse.grouping",
+                "ast.correspond.policy",
+                "ast.correspond.features",
+                "ast.correspond.d4_invariant",
+                "ast.select.role",
+                "ast.operate.transform",
+            }
     elif operator == "canvas_reinfer":
-        allowed = {"canvas_mode"}
+        allowed = (
+            {"canvas_mode"}
+            if isinstance(parent, RoleStampProgram)
+            else {
+                "ast.canvas.mode",
+                "ast.canvas.background",
+                "ast.canvas.padding",
+                "ast.canvas.height",
+                "ast.canvas.width",
+                "ast.render.mode",
+            }
+        )
     elif operator == "reparse_background":
-        allowed = {"background"}
+        allowed = (
+            {"background"}
+            if not isinstance(parent, ScenePipelineProgram)
+            else {"ast.parse.background"}
+        )
     else:
         allowed = set(holes)
         if not allowed:
@@ -1128,7 +1265,14 @@ def diagnose_object_code_failure(
     an unaccounted oracle.
     """
 
-    if evaluation.demo_exact:
+    holes = tuple(
+        sorted(
+            value
+            for value in evaluation.hypothesis.spec.get("provisional_ast_holes", [])
+            if isinstance(value, str)
+        )
+    )
+    if evaluation.demo_exact and not holes:
         raise ValueError("an exact demonstration fit has no failure to diagnose")
     residuals = evaluation.residuals
     execution_failures = sum(not item.execution_valid for item in residuals)
@@ -1137,13 +1281,6 @@ def diagnose_object_code_failure(
         item.execution_valid and not item.shape_match for item in residuals
     )
     mismatch_count = sum(item.mismatch_count for item in residuals)
-    holes = tuple(
-        sorted(
-            value
-            for value in evaluation.hypothesis.spec.get("provisional_ast_holes", [])
-            if isinstance(value, str)
-        )
-    )
     program = _program_from_candidate(evaluation.hypothesis)
     if holes:
         diagnosis = "ast_hole"
@@ -1152,7 +1289,18 @@ def diagnose_object_code_failure(
     elif valid_shape_mismatches:
         diagnosis = "canvas_contract_mismatch"
         action = "canvas_reinfer"
-        slots = ("canvas_mode",)
+        slots = (
+            (
+                "ast.canvas.background",
+                "ast.canvas.height",
+                "ast.canvas.mode",
+                "ast.canvas.padding",
+                "ast.canvas.width",
+                "ast.render.mode",
+            )
+            if isinstance(program, ScenePipelineProgram)
+            else ("canvas_mode",)
+        )
     else:
         modal_backgrounds = {
             min(
@@ -1161,10 +1309,19 @@ def diagnose_object_code_failure(
             )
             for pair in task.train
         }
-        if program is not None and program.background not in modal_backgrounds:
+        program_background = (
+            program.parse.background
+            if isinstance(program, ScenePipelineProgram)
+            else getattr(program, "background", None)
+        )
+        if program is not None and program_background not in modal_backgrounds:
             diagnosis = "background_role_mismatch"
             action = "reparse_background"
-            slots = ("background",)
+            slots = (
+                ("ast.parse.background",)
+                if isinstance(program, ScenePipelineProgram)
+                else ("background",)
+            )
         elif execution_failures and program is None:
             diagnosis = "cross_representation_execution_failure"
             action = "reparse_background"
@@ -1184,7 +1341,19 @@ def diagnose_object_code_failure(
                     "transform",
                 )
                 if isinstance(program, RoleStampProgram)
-                else ("attachment_radius", "connectivity", "structure_color")
+                else (
+                    (
+                        "ast.correspond.d4_invariant",
+                        "ast.correspond.features",
+                        "ast.correspond.policy",
+                        "ast.operate.transform",
+                        "ast.parse.connectivity",
+                        "ast.parse.grouping",
+                        "ast.select.role",
+                    )
+                    if isinstance(program, ScenePipelineProgram)
+                    else ("attachment_radius", "connectivity", "structure_color")
+                )
             )
     return FailureCertificate.create(
         task=task,
@@ -1241,19 +1410,42 @@ class ObjectCodeProvider:
         task: BlindTask,
         *,
         programs: Sequence[ObjectCodeProgram] | None = None,
+        existing_program_ids: Sequence[str] = (),
         parent_id: str | None = None,
         operator: str | None = None,
         holes: Sequence[str] = (),
         candidate_slots: int | None = None,
         allow_exact: bool = True,
     ) -> ProviderResult:
+        existing_ids = frozenset(existing_program_ids)
+        if any(
+            not isinstance(program_id, str)
+            or len(program_id) != 64
+            or any(character not in "0123456789abcdef" for character in program_id)
+            for program_id in existing_ids
+        ):
+            raise ValueError("existing object/code program IDs must be SHA256 strings")
+        requested_frontier = (
+            tuple(enumerate_object_code_programs(task))
+            if programs is None and existing_ids
+            else (None if programs is None else tuple(programs))
+        )
+        novel_programs = (
+            None
+            if requested_frontier is None
+            else tuple(
+                program
+                for program in requested_frontier
+                if object_code_program_id(program) not in existing_ids
+            )
+        )
         result = synthesize_object_code_programs(
             task,
             max_program_trials=self.max_program_trials,
             max_exact_programs=self.max_exact_programs,
             max_near_misses=self.max_near_misses,
             minimum_near_miss_agreement=self.minimum_near_miss_agreement,
-            programs=programs,
+            programs=novel_programs,
         )
         scores = (
             *(result.exact_scores if allow_exact else ()),
@@ -1271,8 +1463,19 @@ class ObjectCodeProvider:
         )
         if candidate_slots is not None:
             candidates = candidates[:candidate_slots]
+        emitted_program_ids = tuple(
+            value
+            for candidate in candidates
+            if isinstance(
+                value := candidate.spec.get("object_code_program_id"), str
+            )
+        )
+        novel_frontier_count = sum(
+            program_id not in existing_ids for program_id in emitted_program_ids
+        )
         diagnostics: dict[str, object] = {
             "object_code_dsl_version": OBJECT_CODE_DSL_VERSION,
+            "object_code_dsl_versions": list(OBJECT_CODE_DSL_VERSIONS),
             "action_operator": operator,
             "parent_hypothesis_id": parent_id,
             "exact_program_count": len(result.exact_scores),
@@ -1281,7 +1484,13 @@ class ObjectCodeProvider:
             "invalid_program_count": result.invalid_program_count,
             "candidate_slot_limit": candidate_slots,
             "emitted_candidate_count": len(candidates),
-            "frontier_changed": bool(candidates),
+            "requested_frontier_program_count": (
+                None if requested_frontier is None else len(requested_frontier)
+            ),
+            "novel_program_trial_count": result.program_trial_count,
+            "novel_frontier_count": novel_frontier_count,
+            "frontier_changed": novel_frontier_count > 0,
+            "frontier_change_basis": "content_addressed_object_code_program_id",
             "native_cost": {
                 "object_code_program_trials": result.program_trial_count,
                 "demo_object_code_executions": result.demo_execution_count,
@@ -1290,10 +1499,24 @@ class ObjectCodeProvider:
             "native_cost_status": "executed",
         }
         if not candidates:
+            reason = (
+                "no_novel_object_code_frontier"
+                if requested_frontier is not None
+                and requested_frontier
+                and not novel_programs
+                else "no_object_code_candidate_in_frontier"
+            )
             return ProviderResult.abstained(
                 self.name,
                 self.route,
-                "no_object_code_candidate_in_frontier",
+                reason,
+                diagnostics,
+            )
+        if novel_frontier_count < 1:
+            return ProviderResult.abstained(
+                self.name,
+                self.route,
+                "no_novel_object_code_frontier",
                 diagnostics,
             )
         return ProviderResult.ok(self.name, self.route, candidates, diagnostics)
@@ -1325,6 +1548,12 @@ class ObjectCodeProvider:
             return self._result(
                 task,
                 operator=action.operator,
+                existing_program_ids=tuple(
+                    object_code_program_id(program)
+                    for item in blackboard.evaluations
+                    if (program := _program_from_candidate(item.hypothesis))
+                    is not None
+                ),
                 candidate_slots=action.budget.candidate_slots,
                 allow_exact=self.emit_exact_on_open,
             )
@@ -1349,9 +1578,15 @@ class ObjectCodeProvider:
             if isinstance(value, str)
         )
         frontier = _repair_frontier(task, parent, action.operator, holes=holes)
+        existing_program_ids = tuple(
+            object_code_program_id(program)
+            for item in blackboard.evaluations
+            if (program := _program_from_candidate(item.hypothesis)) is not None
+        )
         return self._result(
             task,
             programs=frontier,
+            existing_program_ids=existing_program_ids,
             parent_id=parent_evaluation.hypothesis.hypothesis_id,
             operator=action.operator,
             holes=(),
@@ -1435,8 +1670,10 @@ class ObjectCodeResidualCompiler:
 def typed_repair_frontier(
     task: BlindTask,
     evaluation: CandidateEvaluation,
+    *,
+    existing_programs: Sequence[ObjectCodeProgram] = (),
 ) -> tuple[FailureCertificate, tuple[ObjectCodeProgram, ...]]:
-    """Public audit helper used by repair-vs-restart experiments."""
+    """Return only typed repair programs absent from a frozen parent pool."""
 
     certificate = diagnose_object_code_failure(task, evaluation)
     parent = _program_from_candidate(evaluation.hypothesis)
@@ -1445,9 +1682,15 @@ def typed_repair_frontier(
         for value in evaluation.hypothesis.spec.get("provisional_ast_holes", [])
         if isinstance(value, str)
     )
-    return certificate, _repair_frontier(
+    frontier = _repair_frontier(
         task,
         parent,
         certificate.recommended_action,
         holes=holes,
+    )
+    existing_ids = {object_code_program_id(program) for program in existing_programs}
+    return certificate, tuple(
+        program
+        for program in frontier
+        if object_code_program_id(program) not in existing_ids
     )
