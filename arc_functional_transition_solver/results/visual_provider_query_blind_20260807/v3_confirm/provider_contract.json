@@ -1,0 +1,106 @@
+{
+  "candidate_contract": {
+    "invalid_candidate_amendment": "v2 strict protocol invalidated before scoring; v2.1 reject rule reused unchanged for confirmatory v3",
+    "invalid_candidate_policy": "reject",
+    "invalid_candidate_rule": "reject non-list, empty, non-rectangular, >30x30, non-integer, or color-outside-[0,9] samples; never repair or coerce",
+    "query_requires_at_least_one_valid_candidate": true,
+    "ranking": "frequency, then first-emission position, then canonical grid JSON",
+    "raw_candidate_count": 6120,
+    "raw_files_frozen_before_gold": true,
+    "rejected_candidate_count": 131,
+    "rejection_reasons": [
+      {
+        "count": 131,
+        "reason": "prediction colors must be integers in [0, 9]"
+      }
+    ],
+    "valid_candidate_count": 5989
+  },
+  "cohort": {
+    "cohort_id": "b070322ec6e90cb02f08fb3a4d41172588839f3a024dba31c0b76792ad7fb19a",
+    "exposure_registry_id": "2a91ea020bb6e978b3069eec3e86b356aee5becf525aa896e717770e29ad7825",
+    "exposure_registry_sha256": "d9f73d8e879ab76488f0f2dae5f80f6d3df09c863a93695470edcb4cddc8180d",
+    "manifest_sha256": "3917256a0cf026f0ef8d8320fec66771357f0c41bc592c12cf19a9125e69858d",
+    "task_count": 11
+  },
+  "compute": {
+    "gpu_launch_inventory": [
+      "0, NVIDIA GeForce RTX 4090, 24564, 15, 0, P8",
+      "1, NVIDIA GeForce RTX 4090, 24564, 15, 0, P8",
+      "2, NVIDIA H200 NVL, 143771, 14, 0, P0",
+      "3, NVIDIA H200 NVL, 143771, 14, 0, P0"
+    ],
+    "gpu_seconds": 1713,
+    "max_task_seconds": 242,
+    "task_failure_count": 0
+  },
+  "contract_id": "707269c65682de2e13aa894f8469a2bc8e743dac293d7479bb987bbc6ee69704",
+  "controller_frozen": true,
+  "name": "VARC ViT static query-blind provider confirm v3",
+  "query_blind_protocol": {
+    "gold_output_present_in_provider_root": false,
+    "provider_visible_test_output": "exact copy of corresponding test input",
+    "released_loader_repair": "sentinel preserves the released preprocessing interface without carrying a query label; this is not an exact paper-script replication",
+    "sentinel_file_count": 572,
+    "sentinel_mismatch_count": 0,
+    "sentinel_query_count": 624
+  },
+  "raw_artifact": {
+    "transfer_package_sha256": "b04a6404f19bcb3e233e37ce420c5768e32b4e3d597ad6dbaf8471f8782d46ba",
+    "validation_id": "003099190248ee962d11d763d30a0ec4ec910223aa2d3c0edff22e2aa24d0313",
+    "validation_sha256": "e4c2097b666fa167af787dce999787e05bdb3dd0fe47d12f10730dd9ca7f8cbf"
+  },
+  "runtime": {
+    "packages": {
+      "diffusers": "0.39.0",
+      "einops": "0.8.2",
+      "timm": "1.0.12",
+      "torch": "2.10.0",
+      "torchvision": "0.25.0+cu128"
+    },
+    "platform": "Linux-5.4.0-42-generic-x86_64-with-glibc2.31",
+    "python": "3.10.20 (main, Mar 11 2026, 17:46:40) [GCC 14.3.0]"
+  },
+  "schema": "afts.visual-provider-contract/v1",
+  "scientific_scope": "solver-track static candidate distribution",
+  "source": {
+    "checkpoint_best_eval_accuracy": 0.7908653846153846,
+    "checkpoint_epoch": 95,
+    "checkpoint_sha256": "c52d719fe9a41066aa8e96548ae6f83a0abf3568facd5103e176d7005e8421b3",
+    "checkpoint_training_provenance": {
+      "data_root": "raw_data/ARC-AGI",
+      "eval_split": "training",
+      "include_rearc": true,
+      "rearc_limit": -1,
+      "rearc_path": "raw_data/re_arc",
+      "status": "self-described by checkpoint metadata; dataset contents not reconstructed",
+      "train_split": "training"
+    },
+    "commit": "bd478ecf362e6499a988b05f33223e5c5fc6a6be",
+    "executed_source_sha256": {
+      "src/ARC_ViT.py": "842022a3f68c48c1f9862f423d91de13d49a68c046119040e80ab321389f5b92",
+      "src/ARC_loader.py": "c249144d59b327b87e5c347f07ebbb25938ad069de78a61602ad06089c1cc666",
+      "test_time_train_ARC.py": "d7adb1726b335befb52bcb9bb9849f05d24259d19d472a2c6a164f067b6312b1"
+    },
+    "repository": "https://github.com/lillian039/VARC"
+  },
+  "test_time_configuration": {
+    "architecture": "vit",
+    "batch_size": 8,
+    "depth": 10,
+    "embed_dim": 512,
+    "epochs": 100,
+    "image_size": 64,
+    "learning_rate": 0.0003,
+    "lr_scheduler": "cosine",
+    "num_attempts": 10,
+    "num_colors": 12,
+    "num_heads": 8,
+    "patch_size": 2,
+    "per_task_timeout_seconds": 2400,
+    "resume_skip_task_token": true,
+    "seed": 42,
+    "ttt_num_each": 1,
+    "weight_decay": 0.0
+  }
+}
