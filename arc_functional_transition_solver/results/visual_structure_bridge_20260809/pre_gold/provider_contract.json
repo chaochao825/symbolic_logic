@@ -1,0 +1,121 @@
+{
+  "candidate_contract": {
+    "grid_synthesis": false,
+    "invalid_candidate_policy": "reject",
+    "invalid_candidate_rule": "reject non-list, empty, non-rectangular, >30x30, non-integer, or color-outside-[0,9] samples; never repair or coerce",
+    "ranking": "candidate 1 is frequency/first-emission/canonical-grid top-1; candidate 2 is highest stable-demo structural-contract match among different complete raw grids",
+    "raw_candidate_count": 6120,
+    "raw_files_frozen_before_gold": true,
+    "rejected_candidate_count": 105,
+    "rejection_reasons": [
+      {
+        "count": 105,
+        "reason": "prediction colors must be integers in [0, 9]"
+      }
+    ],
+    "valid_candidate_count": 6015
+  },
+  "cohort": {
+    "cohort_id": "7a3d2930d894240ed82200b1f6e20cc847919952a8e3ebdc202180631cfe8004",
+    "manifest_sha256": "6227072b7bccdd884942be87bdf7de9112e004895e34573ab89f41026edcc506",
+    "selection": {
+      "algorithm": "sha256(seed + NUL + family_id), ascending",
+      "arc1_task_count": 800,
+      "development_family_count": 31,
+      "eligible_generator_count": 152,
+      "episode_pair_count": 4,
+      "limit": 12,
+      "query_pair_count": 1,
+      "seed": "structured-visual-bridge-confirm-v1-20260809",
+      "source_split": "ARC-GEN generated confirmation",
+      "train_pair_count": 3
+    },
+    "source": {
+      "arc1_submodule_commit": "399030444e0ab0cc8b4e199870fb20b863846f34",
+      "arcgen_commit": "a15cbdb44c776610aeeb9f487a06af875d3d0878",
+      "arcgen_root": "/home/wangmeiqi/codex_runs/arc_visual_posterior_bridge_20260809/external/ARC-GEN"
+    },
+    "task_count": 12
+  },
+  "compute": {
+    "gpu_launch_inventory": [
+      "0, NVIDIA GeForce RTX 4090, 24564, 18, 0, P8",
+      "1, NVIDIA GeForce RTX 4090, 24564, 18, 0, P8",
+      "2, NVIDIA H200 NVL, 143771, 76479, 100, P0",
+      "3, NVIDIA H200 NVL, 143771, 34343, 13, P0"
+    ],
+    "gpu_seconds": 1738,
+    "max_task_seconds": 236,
+    "task_failure_count": 0
+  },
+  "contract_id": "6b1d77b22177f8405e0fdde9a1efb13e852b48ae0db168d2fcf34b195fc999bb",
+  "controller_frozen": true,
+  "name": "VARC ViT static query-blind provider structure bridge v1",
+  "query_blind_protocol": {
+    "gold_output_present_in_provider_root": false,
+    "provider_json_file_count": 624,
+    "provider_visible_test_output": "exact copy of corresponding test input",
+    "released_loader_repair": "sentinel preserves the released preprocessing interface without carrying a query label; this is not an exact paper-script replication",
+    "sentinel_mismatch_count": 0,
+    "sentinel_query_count": 624
+  },
+  "raw_artifact": {
+    "transfer_package_sha256": "dc3bd17e684e7590a32d17edf9b1f5778923fc06a1c0dfecb614cbf0a41600aa",
+    "validation_id": "faa01fd3a7e01aeab23a83488296cb6f96b691bdbec312c3fa9905807c2143d1",
+    "validation_sha256": "4c73d32f42f7674b06998e54953fbf3273efb4121f3157b4c6cdd21bb6973f09"
+  },
+  "runtime": {
+    "packages": {
+      "diffusers": "0.39.0",
+      "einops": "0.8.2",
+      "timm": "1.0.12",
+      "torch": "2.10.0",
+      "torchvision": "0.25.0+cu128"
+    },
+    "platform": "Linux-5.4.0-42-generic-x86_64-with-glibc2.31",
+    "python": "3.10.20 (main, Mar 11 2026, 17:46:40) [GCC 14.3.0]"
+  },
+  "schema": "afts.visual-provider-contract/v1",
+  "scientific_scope": "solver-track structural selection over frozen whole grids",
+  "source": {
+    "checkpoint_best_eval_accuracy": 0.7908653846153846,
+    "checkpoint_epoch": 95,
+    "checkpoint_sha256": "c52d719fe9a41066aa8e96548ae6f83a0abf3568facd5103e176d7005e8421b3",
+    "checkpoint_training_provenance": {
+      "data_root": "raw_data/ARC-AGI",
+      "eval_split": "training",
+      "include_rearc": true,
+      "rearc_limit": -1,
+      "rearc_path": "raw_data/re_arc",
+      "status": "self-described by checkpoint metadata; dataset contents not reconstructed",
+      "train_split": "training"
+    },
+    "commit": "bd478ecf362e6499a988b05f33223e5c5fc6a6be",
+    "executed_source_sha256": {
+      "src/ARC_ViT.py": "842022a3f68c48c1f9862f423d91de13d49a68c046119040e80ab321389f5b92",
+      "src/ARC_loader.py": "c249144d59b327b87e5c347f07ebbb25938ad069de78a61602ad06089c1cc666",
+      "test_time_train_ARC.py": "d7adb1726b335befb52bcb9bb9849f05d24259d19d472a2c6a164f067b6312b1"
+    },
+    "repository": "https://github.com/lillian039/VARC"
+  },
+  "test_time_configuration": {
+    "architecture": "vit",
+    "batch_size": 8,
+    "depth": 10,
+    "embed_dim": 512,
+    "epochs": 100,
+    "image_size": 64,
+    "learning_rate": 0.0003,
+    "lr_scheduler": "cosine",
+    "num_attempts": 10,
+    "num_colors": 12,
+    "num_heads": 8,
+    "patch_size": 2,
+    "per_task_timeout_seconds": 2400,
+    "resume_skip_task_token": true,
+    "seed": 42,
+    "ttt_num_each": 1,
+    "weight_decay": 0.0,
+    "worker_limit": 2
+  }
+}

@@ -12,6 +12,7 @@ from afts_arc.visual_provider_gate import (
     audit_posterior_consensus_bridge,
     audit_posterior_error_localization,
     freeze_and_score_provider,
+    freeze_provider_predictions,
     make_query_blind_payload,
     prepare_query_blind_cohort,
     rank_predictions,
@@ -108,6 +109,32 @@ def test_prepare_excludes_arc1_and_previously_exposed_ids(tmp_path: Path) -> Non
 def test_prediction_ranking_is_frequency_then_first_seen() -> None:
     ranked = rank_predictions([[[2]], [[1]], [[2]], [[1]]])
     assert ranked == (((2,),), ((1,),))
+
+
+def test_predictions_can_freeze_without_gold_or_baseline(tmp_path: Path) -> None:
+    task_id = "00000003"
+    manifest = {
+        "schema": "afts.visual-provider-cohort/v1",
+        "cohort_id": "1" * 64,
+        "tasks": [{"task_id": task_id, "query_count": 1}],
+    }
+    predictions = tmp_path / "predictions"
+    manifest_path = tmp_path / "manifest.json"
+    _write(manifest_path, manifest)
+    _write(predictions / f"{task_id}_predictions.json", {"0": [[[3]], [[4]]]})
+
+    frozen = freeze_provider_predictions(
+        cohort_manifest=manifest_path,
+        prediction_roots=(predictions,),
+        provider_contract={"name": "query-blind-test"},
+        output_path=tmp_path / "frozen.json",
+        invalid_candidate_policy="error",
+    )
+
+    assert frozen["cohort_id"] == manifest["cohort_id"]
+    assert frozen["prediction_validation"]["raw_candidate_count"] == 2
+    assert frozen["prediction_validation"]["valid_candidate_count"] == 2
+    assert "metrics" not in frozen
 
 
 def test_predictions_freeze_before_missing_gold_is_detected(tmp_path: Path) -> None:

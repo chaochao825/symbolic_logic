@@ -22,8 +22,13 @@ from afts_arc.visual_provider_gate import (  # noqa: E402
     aggregate_visual_provider_runs,
     audit_posterior_consensus_bridge,
     audit_posterior_error_localization,
-    prepare_query_blind_cohort,
     freeze_and_score_provider,
+    freeze_provider_predictions,
+    prepare_query_blind_cohort,
+)
+from afts_arc.visual_structure_bridge import (  # noqa: E402
+    freeze_visual_structure_bridge,
+    score_visual_structure_bridge,
 )
 
 
@@ -59,6 +64,17 @@ def _parser() -> argparse.ArgumentParser:
         required=True,
     )
 
+    freeze = commands.add_parser("freeze")
+    freeze.add_argument("cohort_manifest", type=Path)
+    freeze.add_argument("provider_contract", type=Path)
+    freeze.add_argument("output_path", type=Path)
+    freeze.add_argument("--prediction-root", action="append", type=Path, required=True)
+    freeze.add_argument(
+        "--invalid-candidate-policy",
+        choices=("error", "reject"),
+        required=True,
+    )
+
     posterior = commands.add_parser("posterior-audit")
     posterior.add_argument("cohort_manifest", type=Path)
     posterior.add_argument("gold_training_dir", type=Path)
@@ -89,6 +105,27 @@ def _parser() -> argparse.ArgumentParser:
         choices=("error", "reject"),
         required=True,
     )
+
+    structure_freeze = commands.add_parser("structure-freeze")
+    structure_freeze.add_argument("cohort_manifest", type=Path)
+    structure_freeze.add_argument("blind_task_dir", type=Path)
+    structure_freeze.add_argument("frozen_predictions", type=Path)
+    structure_freeze.add_argument("output_path", type=Path)
+    structure_freeze.add_argument(
+        "--prediction-root", action="append", type=Path, required=True
+    )
+    structure_freeze.add_argument(
+        "--invalid-candidate-policy",
+        choices=("error", "reject"),
+        required=True,
+    )
+
+    structure_score = commands.add_parser("structure-score")
+    structure_score.add_argument("cohort_manifest", type=Path)
+    structure_score.add_argument("gold_task_dir", type=Path)
+    structure_score.add_argument("candidate_artifact", type=Path)
+    structure_score.add_argument("visual_score_summary", type=Path)
+    structure_score.add_argument("output_path", type=Path)
 
     aggregate = commands.add_parser("aggregate")
     aggregate.add_argument("output_dir", type=Path)
@@ -130,6 +167,17 @@ def main() -> int:
             pilot_unique_gate=args.pilot_unique_gate,
             invalid_candidate_policy=args.invalid_candidate_policy,
         )
+    elif args.command == "freeze":
+        provider_contract = json.loads(args.provider_contract.read_text(encoding="utf-8"))
+        if not isinstance(provider_contract, dict):
+            raise RuntimeError("provider contract must be a JSON object")
+        result = freeze_provider_predictions(
+            cohort_manifest=args.cohort_manifest,
+            prediction_roots=tuple(args.prediction_root),
+            provider_contract=provider_contract,
+            output_path=args.output_path,
+            invalid_candidate_policy=args.invalid_candidate_policy,
+        )
     elif args.command == "posterior-audit":
         result = audit_posterior_error_localization(
             cohort_manifest=args.cohort_manifest,
@@ -150,6 +198,23 @@ def main() -> int:
             visual_score_summary=args.visual_score_summary,
             output_dir=args.output_dir,
             invalid_candidate_policy=args.invalid_candidate_policy,
+        )
+    elif args.command == "structure-freeze":
+        result = freeze_visual_structure_bridge(
+            cohort_manifest=args.cohort_manifest,
+            blind_task_dir=args.blind_task_dir,
+            prediction_roots=tuple(args.prediction_root),
+            frozen_predictions=args.frozen_predictions,
+            output_path=args.output_path,
+            invalid_candidate_policy=args.invalid_candidate_policy,
+        )
+    elif args.command == "structure-score":
+        result = score_visual_structure_bridge(
+            cohort_manifest=args.cohort_manifest,
+            gold_task_dir=args.gold_task_dir,
+            candidate_artifact=args.candidate_artifact,
+            visual_score_summary=args.visual_score_summary,
+            output_path=args.output_path,
         )
     else:
         result = aggregate_visual_provider_runs(

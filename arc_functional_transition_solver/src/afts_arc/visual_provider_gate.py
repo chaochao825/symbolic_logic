@@ -515,6 +515,52 @@ def _object_provider_flags(payload: Mapping[str, object]) -> dict[str, dict[str,
     return flags
 
 
+def freeze_provider_predictions(
+    *,
+    cohort_manifest: Path,
+    prediction_roots: Sequence[Path],
+    provider_contract: Mapping[str, object],
+    output_path: Path,
+    invalid_candidate_policy: str,
+) -> dict[str, object]:
+    """Freeze provider outputs without reading baseline results or query gold."""
+
+    if output_path.exists():
+        raise VisualProviderGateError(
+            f"frozen-prediction artifact already exists: {output_path}"
+        )
+    manifest = _load_json_object(cohort_manifest)
+    if manifest["schema"] != COHORT_SCHEMA:
+        raise VisualProviderGateError("cohort schema mismatch")
+    task_records = manifest["tasks"]
+    if not isinstance(task_records, list):
+        raise VisualProviderGateError("cohort task records are malformed")
+    task_ids = tuple(record["task_id"] for record in task_records)
+    if any(not isinstance(task_id, str) for task_id in task_ids):
+        raise VisualProviderGateError("cohort task ID is malformed")
+
+    raw_predictions, prediction_files = _load_provider_predictions(
+        task_ids, prediction_roots
+    )
+    combined, prediction_validation = _validate_provider_predictions(
+        raw_predictions,
+        invalid_candidate_policy=invalid_candidate_policy,
+    )
+    content: dict[str, object] = {
+        "schema": FROZEN_PREDICTIONS_SCHEMA,
+        "cohort_id": manifest["cohort_id"],
+        "provider_contract": dict(provider_contract),
+        "prediction_files": prediction_files,
+        "raw_prediction_payload_sha256": canonical_sha256(raw_predictions),
+        "validated_prediction_payload_sha256": canonical_sha256(combined),
+        "prediction_validation": prediction_validation,
+    }
+    artifact = {"frozen_prediction_id": canonical_sha256(content), **content}
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    atomic_write_json(output_path, artifact)
+    return artifact
+
+
 def freeze_and_score_provider(
     *,
     cohort_manifest: Path,

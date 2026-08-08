@@ -165,6 +165,18 @@ The implementation and trust boundary are documented in
 evidence, not a new ARC accuracy result; any claim of improved task coverage
 still requires a frozen evaluation run.
 
+The query-blind visual-posterior follow-up is recorded in
+`notes/results/visual-structure-bridge-20260809.md`. On 12 frozen, generated
+ARC-GEN families, VARC supplies 8/12 raw and 7/12 selectable candidates while
+the frozen legacy portfolio covers 0/12. A demo-derived structural second-view
+selector nevertheless leaves pass@2 unchanged at 7/12, with zero recovery and
+zero regression. The result is therefore a clean null for the current
+structural selector: whole-grid visual hypotheses are complementary, but coarse
+4-connected object-transition marginals do not reliably identify the useful
+minority hypothesis. The controller remains frozen. Content-addressed raw,
+pre-gold, replay, score, and failure-analysis artifacts are under
+`results/visual_structure_bridge_20260809/`.
+
 ## Project map
 
 - `brief/`: topic, contribution, and evidence contracts.
