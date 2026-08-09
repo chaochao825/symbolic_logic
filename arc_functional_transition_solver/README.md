@@ -177,6 +177,19 @@ minority hypothesis. The controller remains frozen. Content-addressed raw,
 pre-gold, replay, score, and failure-analysis artifacts are under
 `results/visual_structure_bridge_20260809/`.
 
+The next relational actuator gate is recorded in
+`notes/results/relational-mask-arc2-confirmation-20260809.md`. After correcting
+and replaying the freshness audit, the frozen bounded scene-AST construction
+retains 0/139 eligible ARC-GEN families (134 clear no-neighbor outcomes and five
+typed construction exclusions).
+An opt-in relational-mask DSL then adds 0/50 exact or unique candidates on a
+frozen ARC-AGI-2 public-training cohort; typed repair and equal-cost restart
+both recover zero. A query-blind post-hoc audit shows that all three
+pixel-agreement parents are background-dominated false near misses. The result
+rejects this representation and near-miss metric, not the unexecuted LODO
+posterior hypothesis. Visual execution and controller training remain frozen.
+Artifacts are under `results/visual_relational_trace_repair_20260809/`.
+
 ## Project map
 
 - `brief/`: topic, contribution, and evidence contracts.
