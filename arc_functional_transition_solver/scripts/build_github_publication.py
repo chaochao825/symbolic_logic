@@ -61,6 +61,9 @@ PROTECTED_RESULT_PREFIXES = (
     "results/arc_tgi_arcmini_cohort_v2_20260810",
     "results/object_program_workspace_arc_tgi_dev_20260811",
     "results/object_program_workspace_controls_20260811",
+    "results/object_graph_rewrite_v2_arc_tgi_dev_20260811",
+    "results/object_graph_rewrite_v2_arc_tgi_reserve_20260811",
+    "results/object_graph_rewrite_v2_qa_20260811",
 )
 PROTECTED_RESULT_PUBLIC_METADATA = frozenset(
     {
@@ -70,6 +73,15 @@ PROTECTED_RESULT_PUBLIC_METADATA = frozenset(
         "results/object_program_workspace_controls_20260811/README.md",
         "results/object_program_workspace_controls_20260811/artifact_sha256.json",
         "results/object_program_workspace_controls_20260811/summary.json",
+        "results/object_graph_rewrite_v2_arc_tgi_dev_20260811/README.md",
+        "results/object_graph_rewrite_v2_arc_tgi_dev_20260811/artifact_sha256.json",
+        "results/object_graph_rewrite_v2_arc_tgi_dev_20260811/summary.json",
+        "results/object_graph_rewrite_v2_arc_tgi_reserve_20260811/README.md",
+        "results/object_graph_rewrite_v2_arc_tgi_reserve_20260811/artifact_sha256.json",
+        "results/object_graph_rewrite_v2_arc_tgi_reserve_20260811/summary.json",
+        "results/object_graph_rewrite_v2_qa_20260811/README.md",
+        "results/object_graph_rewrite_v2_qa_20260811/artifact_sha256.json",
+        "results/object_graph_rewrite_v2_qa_20260811/summary.json",
     }
 )
 INTERNAL_INFRASTRUCTURE_PATTERNS = (

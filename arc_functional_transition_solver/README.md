@@ -222,6 +222,17 @@ demo-exact relational child.  This closes selector-only recolor/erase v1 as a
 representation/output-frontier null and keeps controller training frozen.  See
 `notes/results/object-program-workspace-v1-20260811.md`.
 
+Cognitive Workspace + Object-Graph Rewrite v2 next tested a content-addressed
+goal/memory/failure workspace and a two-stage executable object-program bridge.
+On the frozen 50-family ARC-TGI development cohort it creates one query-blind
+novel output; that output is exact and unique over both the frozen baseline and
+equal-cost cold arm.  This is below the preregistered 5/50 opportunity gate.
+Forty-nine tasks have executable parents, but 48 cannot close a demo-exact
+second stage, localizing the failure to representation and repairability rather
+than routing.  The reserve remains unmaterialized and the controller remains
+frozen.  See
+`notes/results/cognitive-workspace-object-graph-rewrite-v2-20260811.md`.
+
 ## Project map
 
 - `brief/`: topic, contribution, and evidence contracts.

@@ -40,6 +40,54 @@ it for counterfactual rollouts, and assigning delayed credit to the operations
 that changed the model.  A large context window, vector database, planner, or
 router alone implements only one part.
 
+## What remains distinctly difficult after perception is solved
+
+The thought experiment removes recognition, language parsing, and individual
+skills as bottlenecks.  It does not remove four harder problems:
+
+1. **State construction:** decide which specialist outputs refer to the same
+   entity, event, variable, or causal role, and bind them into a compact state
+   that survives across time.
+2. **Counterfactual composition:** reuse known relations and skills in a novel
+   configuration, simulate their consequences, and distinguish an imagined
+   transition from an observed one.
+3. **Long-horizon credit:** identify which representation choice, retrieval, or
+   intermediate action caused a delayed success or failure.
+4. **Resource-rational control:** decide when another retrieval, reparse, or
+   rollout is worth its time and uncertainty, and when to stop.
+
+These are more specific than "executive function" and more useful than naming
+one anatomical region.  The proposed computational core is a closed loop:
+
+```text
+goal and uncertainty
+  -> construct/retrieve a typed shared state
+  -> choose a legal information-changing option
+  -> simulate or execute it
+  -> verify the predicted state change
+  -> store an exposure-scoped episode and assign credit
+  -> update the goal, confidence, and next computation
+```
+
+Language and symbolic thought are important because they compress, compose,
+and externally transmit such states and procedures.  They amplify the loop and
+support cultural accumulation; they are not substitutes for grounded state,
+memory admission, simulation, or control.
+
+There is no settled single-factor account of human cognitive uniqueness.  One
+recent continuity account attributes apparently qualitative differences to a
+quantitative expansion in global information capacity and sharing among
+memory, attention, and learning.  Other accounts emphasize symbols, hierarchy,
+social learning, or open-ended culture.  The architecture below therefore
+treats increased shared capacity and compositional depth as testable scaling
+variables rather than declaring one uniquely human primitive.
+
+A contrasting mental-program account proposes several domain-specific internal
+languages that discretize experience into symbols and recursively compose them
+under an MDL-like pressure.  For ARC, this supports retaining multiple typed
+representations and executable programs, but it does not show that the current
+DSL is expressive enough or that program search alone explains human reasoning.
+
 ## Mapping to this ARC project
 
 | Cognitive function | Auditable implementation |
@@ -72,10 +120,90 @@ software modules are not asserted to be homologous to anatomical brain regions.
   skills and retrieved abstractions.  Their main danger for evaluation is
   outcome contamination; every reusable record therefore needs task/family and
   exposure provenance.
+- ArcMemo reports a relative improvement from concept-level natural-language
+  memory over a strong no-memory baseline.  The complementary test here is
+  whether executable, family-disjoint schemas retain that benefit after
+  outcome-scoped records are quarantined and random-retrieval controls are
+  matched.
 - Recent object-centric ARC models strengthen candidate distributions through
   latent slots and recurrent transitions.  The distinct question here is
   whether an observed failure can cause a legal, budgeted, cross-representation
   frontier change under intervention.
+- Recent hippocampal models make a sharper prediction than "memory helps":
+  replay can construct a new relational state space from reusable cortical
+  building blocks, while a metacontroller can learn when a rollout is worth its
+  opportunity cost.  This motivates compositional graph rewrites and explicit
+  rollout cost, not an unconstrained text reflection loop.
+- The first ARC-AGI-3 milestone systems provide an engineering warning.  Strong
+  multimodal base capabilities, compact running memory, short plan queues, and
+  legal-action constraints were useful, while one winning team reported that
+  hand-built scaffolding could reduce performance.  Added control structure
+  therefore needs selective ablations and an equal-cost baseline.
+- ARCANA is a close 2026 preprint-level comparison: it combines scene graphs,
+  latent DSL proposals, execution feedback, a blackboard, and a learned
+  metacontroller.  Its broad architecture cannot establish novelty for a generic
+  "multi-agent reflection" claim.  The differentiating hypothesis here is the
+  causal and audit contract: typed legal frontier changes, content-addressed
+  replay, exposure-scoped memory, native-cost matching, and prospective oracle
+  gating.  ARCANA's reported semi-private score is not used as an empirical
+  anchor without independent reproduction.
+
+## Minimal implementation and what it does not yet prove
+
+The v2 implementation intentionally supplies only an auditable baseline:
+
+- immutable, content-addressed goals, memories, failures, options, plans, and
+  episodes;
+- separate task-local, family-disjoint validated, outcome-exposed diagnostic,
+  and sealed-oracle memory scopes;
+- deterministic typed option planning under native multi-dimensional budgets;
+- two-stage object/program composition in which a first-stage execution trace
+  exposes a typed hole and a second stage must produce a demo-exact, novel
+  candidate;
+- residual injection, bridge lesion, cost intervention, replay, and
+  equal-native-cost cold-restart controls.
+
+This is not a learned human-like planner, a model of consciousness, or evidence
+that the software modules correspond to brain anatomy.  It tests the prerequisite
+claim that an explicit state bridge can create a candidate region that isolated
+specialists and matched cold restart do not reach.  Learned metacontrol remains
+frozen until that prerequisite passes on a prospective, family-disjoint gate.
+
+## Research ladder
+
+1. **Representation gate:** two-stage graph rewrite must create at least five
+   development opportunities and at least two prospective reserve recoveries.
+2. **Memory gate:** family-disjoint validated schemas must improve prospective
+   results over no-memory and random-retrieval controls without outcome access.
+3. **Planning gate:** bounded counterfactual rollouts must outperform equal-cost
+   myopic execution, with benefit concentrated on tasks requiring composition.
+4. **Metacontrol gate:** injected certificates and cost changes must cause the
+   predicted selective option changes and a net prospective gain.
+5. **Continual gate:** across ARC-AGI-3-style episodes, learned abstractions must
+   transfer while task-specific outcome traces remain quarantined.
+
+Only gates 1--4 together support a brain-inspired functional-switching claim.
+None of them alone supports a biological brain-region claim.
+
+## Benchmark implication
+
+Static ARC-AGI-1/2 remains useful for candidate coverage, abstraction, and exact
+verification, but it is a weak direct assay of long-horizon planning: each task
+contains a few demonstrations and one or two final queries.  Cross-task memory
+can also become benchmark contamination unless the family and outcome boundary
+is explicit.
+
+The two project tracks should therefore diverge after the representation gate:
+
+- **Solver track:** ARC-AGI-2-style pass@2, selectable oracle, native cost, and
+  hidden-family generalization with strong providers.
+- **Mechanism track:** generated prospective families first, then interactive
+  ARC-AGI-3-style environments for goal acquisition, belief update, exploration,
+  memory compression, hierarchical plans, and value-of-computation stopping.
+
+This is not abandoning ARC.  It assigns each ARC variant to the claim it can
+actually test and prevents a static one-query repair from being mislabeled as
+human-like long-term planning.
 
 ## Falsifiable predictions
 
@@ -112,6 +240,8 @@ software modules are not asserted to be homologous to anatomical brain regions.
   https://www.sciencedirect.com/science/article/pii/S0004370299000521
 - Badre (2008), hierarchical cognitive control:
   https://pubmed.ncbi.nlm.nih.gov/18403252/
+- Dehaene et al. (2022), symbols and recursive mental programs:
+  https://pubmed.ncbi.nlm.nih.gov/35933289/
 - Graves et al. (2014), Neural Turing Machines: https://arxiv.org/abs/1410.5401
 - Schrittwieser et al. (2020), MuZero:
   https://www.nature.com/articles/s41586-020-03051-4
@@ -122,9 +252,19 @@ software modules are not asserted to be homologous to anatomical brain regions.
   https://arxiv.org/abs/2501.00663
 - Park et al. (2023), Generative Agents: https://arxiv.org/abs/2304.03442
 - Wang et al. (2023), Voyager: https://arxiv.org/abs/2305.16291
+- Jensen, Hennequin & Mattar (2024), recurrent planning and adaptive replay:
+  https://www.nature.com/articles/s41593-024-01675-7
+- Bakermans et al. (2025), compositional state construction and replay:
+  https://www.nature.com/articles/s41593-025-01908-3
+- Cantlon & Piantadosi (2024), expanded cross-system information capacity as a
+  continuity account of human cognitive uniqueness:
+  https://www.nature.com/articles/s44159-024-00283-3
 - ARC Prize 2025 official analysis:
   https://arcprize.org/blog/arc-prize-2025-results-analysis
+- ARC Prize 2026 ARC-AGI-3 milestone 1:
+  https://arcprize.org/blog/arc-prize-2026-milestone-1
 - Xu et al. (2026), ARC-AGI-3: https://arxiv.org/abs/2603.24621
 - ARC-TGI (2026): https://arxiv.org/abs/2603.05099
 - *Slots, Transitions, Loops* (2026): https://arxiv.org/abs/2606.12316
 - ArcMemo (2025): https://arxiv.org/abs/2509.04439
+- ARCANA (2026 preprint): https://arxiv.org/abs/2607.09059

@@ -32,6 +32,15 @@ def _script_module() -> object:
             "candidate_freeze_a.json"
         ),
         Path("results/object_program_workspace_controls_20260811/solutions.json"),
+        Path(
+            "results/object_graph_rewrite_v2_arc_tgi_dev_20260811/"
+            "candidate_freeze_a.json"
+        ),
+        Path(
+            "results/object_graph_rewrite_v2_arc_tgi_reserve_20260811/"
+            "sealed_oracle.json"
+        ),
+        Path("results/object_graph_rewrite_v2_qa_20260811/pytest.stdout.log"),
     ],
 )
 def test_protected_result_payloads_are_manifest_only(
@@ -63,6 +72,37 @@ def test_object_workspace_public_metadata_is_copied(
     module = _script_module()
     source = tmp_path / "source"
     relative = Path("results/object_program_workspace_controls_20260811") / name
+    payload = source / relative
+    payload.parent.mkdir(parents=True)
+    payload.write_text('{"public": true}\n', encoding="utf-8")
+    output = tmp_path / "publication"
+
+    manifest = module.build(source, output)
+
+    entry = next(
+        item
+        for item in manifest["entries"]
+        if item["path"] == relative.as_posix()
+    )
+    assert entry["disposition"] == "copied"
+    assert (output / relative).read_bytes() == payload.read_bytes()
+
+
+@pytest.mark.parametrize(
+    "directory",
+    [
+        "object_graph_rewrite_v2_arc_tgi_dev_20260811",
+        "object_graph_rewrite_v2_arc_tgi_reserve_20260811",
+        "object_graph_rewrite_v2_qa_20260811",
+    ],
+)
+@pytest.mark.parametrize("name", ["README.md", "artifact_sha256.json", "summary.json"])
+def test_object_graph_rewrite_public_metadata_is_copied(
+    tmp_path: Path, directory: str, name: str
+) -> None:
+    module = _script_module()
+    source = tmp_path / "source"
+    relative = Path("results") / directory / name
     payload = source / relative
     payload.parent.mkdir(parents=True)
     payload.write_text('{"public": true}\n', encoding="utf-8")
