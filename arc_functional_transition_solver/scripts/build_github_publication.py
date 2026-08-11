@@ -58,6 +58,19 @@ MANIFEST_ONLY_RESULT_SUFFIXES = (".printonly.txt",)
 COMPRESSIBLE_SUFFIXES = frozenset({".json", ".jsonl"})
 PROTECTED_RESULT_PREFIXES = (
     "results/m04a_global_source_v0_1/privileged_split_sealed",
+    "results/arc_tgi_arcmini_cohort_v2_20260810",
+    "results/object_program_workspace_arc_tgi_dev_20260811",
+    "results/object_program_workspace_controls_20260811",
+)
+PROTECTED_RESULT_PUBLIC_METADATA = frozenset(
+    {
+        "results/object_program_workspace_arc_tgi_dev_20260811/README.md",
+        "results/object_program_workspace_arc_tgi_dev_20260811/artifact_sha256.json",
+        "results/object_program_workspace_arc_tgi_dev_20260811/summary.json",
+        "results/object_program_workspace_controls_20260811/README.md",
+        "results/object_program_workspace_controls_20260811/artifact_sha256.json",
+        "results/object_program_workspace_controls_20260811/summary.json",
+    }
 )
 INTERNAL_INFRASTRUCTURE_PATTERNS = (
     re.compile(
@@ -198,9 +211,12 @@ def build(source_root: Path, output_root: Path) -> dict[str, object]:
         }
         suffix = source.suffix.lower()
         lower_name = source.name.lower()
-        if any(
-            relative_text == prefix or relative_text.startswith(prefix + "/")
-            for prefix in PROTECTED_RESULT_PREFIXES
+        if (
+            relative_text not in PROTECTED_RESULT_PUBLIC_METADATA
+            and any(
+                relative_text == prefix or relative_text.startswith(prefix + "/")
+                for prefix in PROTECTED_RESULT_PREFIXES
+            )
         ):
             manifest_only_bytes += size
             entries.append(

@@ -190,6 +190,38 @@ rejects this representation and near-miss metric, not the unexecuted LODO
 posterior hypothesis. Visual execution and controller training remain frozen.
 Artifacts are under `results/visual_relational_trace_repair_20260809/`.
 
+The subsequent narrow candidate-frontier program is recorded in the
+query-blind 48-task terminal failure matrix, a reference-scale NVARC/TRM
+anchor, and the exposed visual relational-transducer development gate. The
+failure matrix assigns all residual tasks to 18 parse failures, 14 missing
+relations, 12 canvas incompatibilities, three legal-but-inexact programs, and
+one insufficient AST. The static NVARC/TRM anchor reaches 92/100 strict top-10
+oracle on a synthetic, generator-family-disjoint ARC-TGI confirmation cohort;
+this is not an ARC-AGI score.
+
+On the collision-free 49-task development amendment, the raw VARC/NVARC union
+covers 46/49. A frozen same-canvas family containing exactly 24 D4/color
+transducers adds the other three. Under equal charged native cost, a
+query-blind visual-posterior allocation recovers 3 tasks and the pre-existing
+cold allocation recovers 0; clearing the posterior term replaces 7/15 selected
+tasks but leaves unique recovery unchanged at 3. The development signal is
+therefore candidate-language and composite-allocation evidence, not posterior
+performance attribution. The controller remains frozen until the unchanged 100-task gate
+obtains at least five unique recoveries and strictly exceeds cold restart. See
+`notes/results/relational-delta-v0.2-failure-matrix-20260810.md`,
+`notes/results/nvarc-trm-arc-tgi-anchor-20260811.md`, and
+`notes/results/visual-relational-transducer-development-20260811.md`.
+
+Object–Program Workspace v1 then separated program novelty from output-candidate
+novelty.  A 12-task controlled intervention passes typed execution, replay, and
+matched-cost checks, but visual, residual-cleared, and shuffled arms all recover
+12/12, so visual attribution is absent.  On the frozen outcome-exposed 100-task
+ARC-TGI development cohort, the workspace finds three new program IDs but zero
+new query-output content IDs and zero unique recoveries; 94 tasks have no
+demo-exact relational child.  This closes selector-only recolor/erase v1 as a
+representation/output-frontier null and keeps controller training frozen.  See
+`notes/results/object-program-workspace-v1-20260811.md`.
+
 ## Project map
 
 - `brief/`: topic, contribution, and evidence contracts.
