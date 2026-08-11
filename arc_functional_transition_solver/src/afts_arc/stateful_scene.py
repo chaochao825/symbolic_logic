@@ -663,32 +663,36 @@ def _execution(
     )
 
 
-def execute_stateful_scene_pipeline(
+def _execute_stateful_scene_pipeline(
     program: ScenePipelineProgram,
     grid: Grid,
     *,
     prior: StatefulSceneExecution | None = None,
-    changed_node: str | None = None,
+    changed_nodes: tuple[str, ...] | None = None,
 ) -> StatefulSceneExecution:
-    """Execute once or replay the dependency suffix of one typed AST rewrite."""
+    """Execute once or replay the dependency suffix of a typed AST rewrite."""
 
     if not isinstance(program, ScenePipelineProgram):
         raise TypeError("stateful scene execution requires a scene pipeline program")
     normalized = as_grid(grid)
     input_id = grid_key(normalized)
     if prior is None:
-        if changed_node is not None:
-            raise ValueError("changed_node requires a parent execution")
+        if changed_nodes is not None:
+            raise ValueError("changed nodes require a parent execution")
         reuse_before: tuple[str, ...] = ()
+        first_changed_node = None
     else:
-        if changed_node not in STATEFUL_NODE_ORDER:
-            raise ValueError("typed replay requires one known changed node")
+        if not changed_nodes:
+            raise ValueError("typed replay requires changed nodes")
         if prior.input_grid_id != input_id:
             raise ValueError("parent execution belongs to another input grid")
         differences = scene_program_node_differences(prior.program, program)
-        if differences != (changed_node,):
-            raise ValueError("rewrite must change exactly its declared AST node")
-        reuse_before = STATEFUL_NODE_ORDER[: STATEFUL_NODE_ORDER.index(changed_node)]
+        if differences != changed_nodes:
+            raise ValueError("rewrite must change exactly its declared AST nodes")
+        first_changed_node = changed_nodes[0]
+        reuse_before = STATEFUL_NODE_ORDER[
+            : STATEFUL_NODE_ORDER.index(first_changed_node)
+        ]
 
     trace: list[StatefulTraceNode] = []
     reused: list[str] = []
@@ -702,7 +706,9 @@ def execute_stateful_scene_pipeline(
         parse_reused = True
     else:
         previous = (
-            prior.parse_state if prior is not None and changed_node == "parse" else None
+            prior.parse_state
+            if prior is not None and first_changed_node == "parse"
+            else None
         )
         parse_state = PersistentSceneState.create(
             normalized, program.parse, previous=previous
@@ -877,4 +883,51 @@ def execute_stateful_scene_pipeline(
         trace=trace,
         reused=reused,
         executed=executed,
+    )
+
+
+def execute_stateful_scene_pipeline(
+    program: ScenePipelineProgram,
+    grid: Grid,
+    *,
+    prior: StatefulSceneExecution | None = None,
+    changed_node: str | None = None,
+) -> StatefulSceneExecution:
+    """Execute once or replay exactly one declared typed AST-node rewrite."""
+
+    if changed_node is not None and changed_node not in STATEFUL_NODE_ORDER:
+        raise ValueError("typed replay requires one known changed node")
+    changed_nodes = None if changed_node is None else (changed_node,)
+    return _execute_stateful_scene_pipeline(
+        program,
+        grid,
+        prior=prior,
+        changed_nodes=changed_nodes,
+    )
+
+
+def execute_stateful_scene_transition(
+    program: ScenePipelineProgram,
+    grid: Grid,
+    *,
+    prior: StatefulSceneExecution,
+    changed_nodes: Sequence[str],
+) -> StatefulSceneExecution:
+    """Replay a declared multi-node rewrite from its earliest changed node."""
+
+    if isinstance(changed_nodes, str):
+        raise TypeError("changed_nodes must be a sequence of AST-node names")
+    declared = tuple(changed_nodes)
+    if not declared:
+        raise ValueError("typed transition requires at least one changed node")
+    if any(node_id not in STATEFUL_NODE_ORDER for node_id in declared):
+        raise ValueError("typed transition contains an unknown changed node")
+    canonical = tuple(node_id for node_id in STATEFUL_NODE_ORDER if node_id in declared)
+    if declared != canonical:
+        raise ValueError("typed transition nodes must be unique and dependency ordered")
+    return _execute_stateful_scene_pipeline(
+        program,
+        grid,
+        prior=prior,
+        changed_nodes=declared,
     )

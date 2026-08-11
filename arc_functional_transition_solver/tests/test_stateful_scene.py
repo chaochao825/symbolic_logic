@@ -13,7 +13,10 @@ from afts_arc.hybrid.scene_graph import (
     SelectObjectsNode,
     execute_scene_pipeline,
 )
-from afts_arc.stateful_scene import execute_stateful_scene_pipeline
+from afts_arc.stateful_scene import (
+    execute_stateful_scene_pipeline,
+    execute_stateful_scene_transition,
+)
 
 
 def _two_object_grid() -> Grid:
@@ -165,6 +168,74 @@ def test_typed_replay_rejects_multi_node_or_wrong_input_changes() -> None:
             as_grid([[0, 2], [0, 0]]),
             prior=parent_execution,
             changed_node="assignment",
+        )
+
+
+def test_multi_node_transition_reuses_only_the_unaffected_prefix() -> None:
+    grid = _two_object_grid()
+    parent = _crop_program(
+        "leftmost",
+        canvas=CanvasNode("fixed", 0, height=3, width=3),
+    )
+    child = _crop_program("rightmost")
+    parent_execution = execute_stateful_scene_pipeline(parent, grid)
+
+    replay = execute_stateful_scene_transition(
+        child,
+        grid,
+        prior=parent_execution,
+        changed_nodes=("assignment", "canvas"),
+    )
+
+    assert replay.ok
+    assert replay.output == execute_scene_pipeline(child, grid).output
+    assert replay.reused_node_ids == ("parse",)
+    assert replay.executed_node_ids == (
+        "assignment",
+        "operate",
+        "canvas",
+        "render",
+    )
+    assert replay.parse_state == parent_execution.parse_state
+    assert replay.assignment_state != parent_execution.assignment_state
+
+
+def test_multi_node_transition_requires_an_exact_ordered_bridge_contract() -> None:
+    grid = _two_object_grid()
+    parent = _crop_program(
+        "leftmost",
+        canvas=CanvasNode("fixed", 0, height=3, width=3),
+    )
+    child = _crop_program("rightmost")
+    parent_execution = execute_stateful_scene_pipeline(parent, grid)
+
+    with pytest.raises(ValueError, match="exactly its declared"):
+        execute_stateful_scene_transition(
+            child,
+            grid,
+            prior=parent_execution,
+            changed_nodes=("assignment",),
+        )
+    with pytest.raises(ValueError, match="unique and dependency ordered"):
+        execute_stateful_scene_transition(
+            child,
+            grid,
+            prior=parent_execution,
+            changed_nodes=("canvas", "assignment"),
+        )
+    with pytest.raises(ValueError, match="unique and dependency ordered"):
+        execute_stateful_scene_transition(
+            child,
+            grid,
+            prior=parent_execution,
+            changed_nodes=("assignment", "assignment"),
+        )
+    with pytest.raises(ValueError, match="parent execution"):
+        execute_stateful_scene_transition(
+            child,
+            grid,
+            prior=None,  # type: ignore[arg-type]
+            changed_nodes=("assignment", "canvas"),
         )
 
 
