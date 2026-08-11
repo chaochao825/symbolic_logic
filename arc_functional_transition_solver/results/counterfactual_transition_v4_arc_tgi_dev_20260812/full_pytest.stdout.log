@@ -1,0 +1,625 @@
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+.............................FF.F..................FF..................s [ 36%]
+....................................s...................Fs.............. [ 48%]
+........................................................................ [ 60%]
+........................................................................ [ 72%]
+........................................................................ [ 84%]
+........................................................................ [ 97%]
+.................                                                        [100%]
+=================================== FAILURES ===================================
+__ M04aBlindSidecarTests.test_fixed_sidecar_includes_every_task_and_test_pair __
+
+self = <tests.test_m04a_evidence.M04aBlindSidecarTests testMethod=test_fixed_sidecar_includes_every_task_and_test_pair>
+
+    def test_fixed_sidecar_includes_every_task_and_test_pair(self) -> None:
+>       sidecar = _fixed_blind_sidecar()
+
+tests/test_m04a_evidence.py:590:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_m04a_evidence.py:91: in _fixed_blind_sidecar
+    return build_m04a_blind_input_sidecar(BLIND_BUNDLE, DSL_POOL)
+src/afts_arc/m04a_evidence.py:1561: in build_m04a_blind_input_sidecar
+    blind_bundle = read_closed_world_bundle(blind_bundle_dir)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = PosixPath('/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver/results/e01a_bbox_contact_v1/public_train_dev_blind')
+
+    def read_closed_world_bundle(directory: str | Path) -> VerifiedBundle:
+        """Verify a complete bundle, including absence of symlinks and extra files."""
+
+        requested_root = Path(directory).expanduser()
+        lexical_root = Path(os.path.abspath(os.fspath(requested_root)))
+        manifest_path = lexical_root / "artifact_manifest.json"
+        opened_manifest_paths: list[Path] = []
+        opened_root_identities: list[tuple[int, int]] = []
+        manifest_bytes = _read_regular_snapshot(
+            manifest_path,
+            label="bundle artifact_manifest.json",
+            max_bytes=_MAX_ARTIFACT_MANIFEST_BYTES,
+            canonical_path_out=opened_manifest_paths,
+            parent_identity_out=opened_root_identities,
+        )
+        if len(opened_manifest_paths) != 1 or len(opened_root_identities) != 1:
+            raise RuntimeError("bundle manifest open did not return one bound path")
+        root = opened_manifest_paths[0].paren
+        root_identity = opened_root_identities[0]
+        manifest = _parse_json_bytes(manifest_bytes, label="bundle artifact_manifest.json")
+        if not isinstance(manifest, dict):
+            raise TypeError("artifact manifest must be a JSON object")
+        if manifest.get("schema") == FILE_BUNDLE_SCHEMA_VERSION:
+            _exact_fields(
+                manifest,
+                {
+                    "schema",
+                    "bundle_status",
+                    "artifact_kind",
+                    "semantic_manifest",
+                    "bundle_id",
+                    "artifacts",
+                },
+                label="M04a file-bundle manifest",
+            )
+            if manifest["bundle_status"] != "complete":
+                raise ValueError("bundle_status must be complete")
+            _nonempty_string(manifest["artifact_kind"], field="artifact_kind")
+            _safe_artifact_name(manifest["semantic_manifest"])
+            _sha256(manifest["bundle_id"], field="bundle_id")
+        else:
+            _exact_fields(
+                manifest,
+                {"schema_version", "bundle_status", "run_id", "artifacts"},
+                label="legacy evidence artifact manifest",
+            )
+            if manifest["schema_version"] != 1 or manifest["bundle_status"] != "complete":
+                raise ValueError("unsupported or incomplete legacy evidence bundle")
+            _nonempty_string(manifest["run_id"], field="run_id")
+
+        artifacts = manifest["artifacts"]
+        if not isinstance(artifacts, dict) or not artifacts:
+            raise ValueError("artifact manifest must declare at least one artifact")
+        if len(artifacts) > _MAX_BUNDLE_ARTIFACT_COUNT:
+            raise ValueError("artifact manifest exceeds the artifact-count limit")
+        normalized: dict[str, dict[str, Any]] = {}
+        total_artifact_bytes = 0
+        expected_files = {"artifact_manifest.json"}
+        for raw_name, raw_metadata in artifacts.items():
+            name = _safe_artifact_name(raw_name)
+            if len(PurePosixPath(name).parts) != 1:
+                raise ValueError("closed-world bundles require a flat artifact namespace")
+            metadata = _exact_fields(
+                raw_metadata, {"sha256", "bytes", "rows"}, label=f"metadata for {name}"
+            )
+            _sha256(metadata["sha256"], field=f"{name}.sha256")
+            artifact_bytes = _strict_int(metadata["bytes"], field=f"{name}.bytes")
+            if artifact_bytes > _MAX_SINGLE_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError(
+                    f"bundle artifact exceeds the single-file byte limit: {name}"
+                )
+            total_artifact_bytes += artifact_bytes
+            if total_artifact_bytes > _MAX_TOTAL_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError("bundle artifacts exceed the total byte limit")
+            if name.endswith(".jsonl"):
+                _strict_int(metadata["rows"], field=f"{name}.rows")
+            elif metadata["rows"] is not None:
+                raise ValueError(f"{name}.rows must be null for a non-JSONL artifact")
+            normalized[name] = dict(metadata)
+            expected_files.add(name)
+
+        actual_files, actual_directories = _list_flat_directory_bound(
+            root, expected_identity=root_identity
+        )
+        if actual_files != expected_files:
+>           raise ValueError(
+                "closed-world artifact set mismatch: "
+                f"missing={sorted(expected_files - actual_files)}, "
+                f"extra={sorted(actual_files - expected_files)}"
+            )
+E           ValueError: closed-world artifact set mismatch: missing=['source_snapshot.zip'], extra=[]
+
+src/afts_arc/m04a_evidence.py:1196: ValueError
+_ M04aBlindSidecarTests.test_nonproduction_sidecar_requires_explicit_fixture_mode _
+
+self = <tests.test_m04a_evidence.M04aBlindSidecarTests testMethod=test_nonproduction_sidecar_requires_explicit_fixture_mode>
+
+    def test_nonproduction_sidecar_requires_explicit_fixture_mode(self) -> None:
+>       fixed = _fixed_blind_sidecar()
+
+tests/test_m04a_evidence.py:626:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_m04a_evidence.py:91: in _fixed_blind_sidecar
+    return build_m04a_blind_input_sidecar(BLIND_BUNDLE, DSL_POOL)
+src/afts_arc/m04a_evidence.py:1561: in build_m04a_blind_input_sidecar
+    blind_bundle = read_closed_world_bundle(blind_bundle_dir)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = PosixPath('/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver/results/e01a_bbox_contact_v1/public_train_dev_blind')
+
+    def read_closed_world_bundle(directory: str | Path) -> VerifiedBundle:
+        """Verify a complete bundle, including absence of symlinks and extra files."""
+
+        requested_root = Path(directory).expanduser()
+        lexical_root = Path(os.path.abspath(os.fspath(requested_root)))
+        manifest_path = lexical_root / "artifact_manifest.json"
+        opened_manifest_paths: list[Path] = []
+        opened_root_identities: list[tuple[int, int]] = []
+        manifest_bytes = _read_regular_snapshot(
+            manifest_path,
+            label="bundle artifact_manifest.json",
+            max_bytes=_MAX_ARTIFACT_MANIFEST_BYTES,
+            canonical_path_out=opened_manifest_paths,
+            parent_identity_out=opened_root_identities,
+        )
+        if len(opened_manifest_paths) != 1 or len(opened_root_identities) != 1:
+            raise RuntimeError("bundle manifest open did not return one bound path")
+        root = opened_manifest_paths[0].paren
+        root_identity = opened_root_identities[0]
+        manifest = _parse_json_bytes(manifest_bytes, label="bundle artifact_manifest.json")
+        if not isinstance(manifest, dict):
+            raise TypeError("artifact manifest must be a JSON object")
+        if manifest.get("schema") == FILE_BUNDLE_SCHEMA_VERSION:
+            _exact_fields(
+                manifest,
+                {
+                    "schema",
+                    "bundle_status",
+                    "artifact_kind",
+                    "semantic_manifest",
+                    "bundle_id",
+                    "artifacts",
+                },
+                label="M04a file-bundle manifest",
+            )
+            if manifest["bundle_status"] != "complete":
+                raise ValueError("bundle_status must be complete")
+            _nonempty_string(manifest["artifact_kind"], field="artifact_kind")
+            _safe_artifact_name(manifest["semantic_manifest"])
+            _sha256(manifest["bundle_id"], field="bundle_id")
+        else:
+            _exact_fields(
+                manifest,
+                {"schema_version", "bundle_status", "run_id", "artifacts"},
+                label="legacy evidence artifact manifest",
+            )
+            if manifest["schema_version"] != 1 or manifest["bundle_status"] != "complete":
+                raise ValueError("unsupported or incomplete legacy evidence bundle")
+            _nonempty_string(manifest["run_id"], field="run_id")
+
+        artifacts = manifest["artifacts"]
+        if not isinstance(artifacts, dict) or not artifacts:
+            raise ValueError("artifact manifest must declare at least one artifact")
+        if len(artifacts) > _MAX_BUNDLE_ARTIFACT_COUNT:
+            raise ValueError("artifact manifest exceeds the artifact-count limit")
+        normalized: dict[str, dict[str, Any]] = {}
+        total_artifact_bytes = 0
+        expected_files = {"artifact_manifest.json"}
+        for raw_name, raw_metadata in artifacts.items():
+            name = _safe_artifact_name(raw_name)
+            if len(PurePosixPath(name).parts) != 1:
+                raise ValueError("closed-world bundles require a flat artifact namespace")
+            metadata = _exact_fields(
+                raw_metadata, {"sha256", "bytes", "rows"}, label=f"metadata for {name}"
+            )
+            _sha256(metadata["sha256"], field=f"{name}.sha256")
+            artifact_bytes = _strict_int(metadata["bytes"], field=f"{name}.bytes")
+            if artifact_bytes > _MAX_SINGLE_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError(
+                    f"bundle artifact exceeds the single-file byte limit: {name}"
+                )
+            total_artifact_bytes += artifact_bytes
+            if total_artifact_bytes > _MAX_TOTAL_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError("bundle artifacts exceed the total byte limit")
+            if name.endswith(".jsonl"):
+                _strict_int(metadata["rows"], field=f"{name}.rows")
+            elif metadata["rows"] is not None:
+                raise ValueError(f"{name}.rows must be null for a non-JSONL artifact")
+            normalized[name] = dict(metadata)
+            expected_files.add(name)
+
+        actual_files, actual_directories = _list_flat_directory_bound(
+            root, expected_identity=root_identity
+        )
+        if actual_files != expected_files:
+>           raise ValueError(
+                "closed-world artifact set mismatch: "
+                f"missing={sorted(expected_files - actual_files)}, "
+                f"extra={sorted(actual_files - expected_files)}"
+            )
+E           ValueError: closed-world artifact set mismatch: missing=['source_snapshot.zip'], extra=[]
+
+src/afts_arc/m04a_evidence.py:1196: ValueError
+_____ M04aBlindSidecarTests.test_production_sidecar_parent_hash_is_pinned ______
+
+self = <tests.test_m04a_evidence.M04aBlindSidecarTests testMethod=test_production_sidecar_parent_hash_is_pinned>
+
+    def test_production_sidecar_parent_hash_is_pinned(self) -> None:
+>       fixed = _fixed_blind_sidecar()
+
+tests/test_m04a_evidence.py:654:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_m04a_evidence.py:91: in _fixed_blind_sidecar
+    return build_m04a_blind_input_sidecar(BLIND_BUNDLE, DSL_POOL)
+src/afts_arc/m04a_evidence.py:1561: in build_m04a_blind_input_sidecar
+    blind_bundle = read_closed_world_bundle(blind_bundle_dir)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = PosixPath('/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver/results/e01a_bbox_contact_v1/public_train_dev_blind')
+
+    def read_closed_world_bundle(directory: str | Path) -> VerifiedBundle:
+        """Verify a complete bundle, including absence of symlinks and extra files."""
+
+        requested_root = Path(directory).expanduser()
+        lexical_root = Path(os.path.abspath(os.fspath(requested_root)))
+        manifest_path = lexical_root / "artifact_manifest.json"
+        opened_manifest_paths: list[Path] = []
+        opened_root_identities: list[tuple[int, int]] = []
+        manifest_bytes = _read_regular_snapshot(
+            manifest_path,
+            label="bundle artifact_manifest.json",
+            max_bytes=_MAX_ARTIFACT_MANIFEST_BYTES,
+            canonical_path_out=opened_manifest_paths,
+            parent_identity_out=opened_root_identities,
+        )
+        if len(opened_manifest_paths) != 1 or len(opened_root_identities) != 1:
+            raise RuntimeError("bundle manifest open did not return one bound path")
+        root = opened_manifest_paths[0].paren
+        root_identity = opened_root_identities[0]
+        manifest = _parse_json_bytes(manifest_bytes, label="bundle artifact_manifest.json")
+        if not isinstance(manifest, dict):
+            raise TypeError("artifact manifest must be a JSON object")
+        if manifest.get("schema") == FILE_BUNDLE_SCHEMA_VERSION:
+            _exact_fields(
+                manifest,
+                {
+                    "schema",
+                    "bundle_status",
+                    "artifact_kind",
+                    "semantic_manifest",
+                    "bundle_id",
+                    "artifacts",
+                },
+                label="M04a file-bundle manifest",
+            )
+            if manifest["bundle_status"] != "complete":
+                raise ValueError("bundle_status must be complete")
+            _nonempty_string(manifest["artifact_kind"], field="artifact_kind")
+            _safe_artifact_name(manifest["semantic_manifest"])
+            _sha256(manifest["bundle_id"], field="bundle_id")
+        else:
+            _exact_fields(
+                manifest,
+                {"schema_version", "bundle_status", "run_id", "artifacts"},
+                label="legacy evidence artifact manifest",
+            )
+            if manifest["schema_version"] != 1 or manifest["bundle_status"] != "complete":
+                raise ValueError("unsupported or incomplete legacy evidence bundle")
+            _nonempty_string(manifest["run_id"], field="run_id")
+
+        artifacts = manifest["artifacts"]
+        if not isinstance(artifacts, dict) or not artifacts:
+            raise ValueError("artifact manifest must declare at least one artifact")
+        if len(artifacts) > _MAX_BUNDLE_ARTIFACT_COUNT:
+            raise ValueError("artifact manifest exceeds the artifact-count limit")
+        normalized: dict[str, dict[str, Any]] = {}
+        total_artifact_bytes = 0
+        expected_files = {"artifact_manifest.json"}
+        for raw_name, raw_metadata in artifacts.items():
+            name = _safe_artifact_name(raw_name)
+            if len(PurePosixPath(name).parts) != 1:
+                raise ValueError("closed-world bundles require a flat artifact namespace")
+            metadata = _exact_fields(
+                raw_metadata, {"sha256", "bytes", "rows"}, label=f"metadata for {name}"
+            )
+            _sha256(metadata["sha256"], field=f"{name}.sha256")
+            artifact_bytes = _strict_int(metadata["bytes"], field=f"{name}.bytes")
+            if artifact_bytes > _MAX_SINGLE_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError(
+                    f"bundle artifact exceeds the single-file byte limit: {name}"
+                )
+            total_artifact_bytes += artifact_bytes
+            if total_artifact_bytes > _MAX_TOTAL_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError("bundle artifacts exceed the total byte limit")
+            if name.endswith(".jsonl"):
+                _strict_int(metadata["rows"], field=f"{name}.rows")
+            elif metadata["rows"] is not None:
+                raise ValueError(f"{name}.rows must be null for a non-JSONL artifact")
+            normalized[name] = dict(metadata)
+            expected_files.add(name)
+
+        actual_files, actual_directories = _list_flat_directory_bound(
+            root, expected_identity=root_identity
+        )
+        if actual_files != expected_files:
+>           raise ValueError(
+                "closed-world artifact set mismatch: "
+                f"missing={sorted(expected_files - actual_files)}, "
+                f"extra={sorted(actual_files - expected_files)}"
+            )
+E           ValueError: closed-world artifact set mismatch: missing=['source_snapshot.zip'], extra=[]
+
+src/afts_arc/m04a_evidence.py:1196: ValueError
+_ M04aTraceAndCostTests.test_pool_replay_verifier_binds_checkpoint_sidecar_order_and_receipt _
+
+self = <tests.test_m04a_evidence.M04aTraceAndCostTests testMethod=test_pool_replay_verifier_binds_checkpoint_sidecar_order_and_receipt>
+
+    def test_pool_replay_verifier_binds_checkpoint_sidecar_order_and_receipt(
+        self,
+    ) -> None:
+>       fixed = _fixed_blind_sidecar()
+
+tests/test_m04a_evidence.py:1118:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_m04a_evidence.py:91: in _fixed_blind_sidecar
+    return build_m04a_blind_input_sidecar(BLIND_BUNDLE, DSL_POOL)
+src/afts_arc/m04a_evidence.py:1561: in build_m04a_blind_input_sidecar
+    blind_bundle = read_closed_world_bundle(blind_bundle_dir)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = PosixPath('/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver/results/e01a_bbox_contact_v1/public_train_dev_blind')
+
+    def read_closed_world_bundle(directory: str | Path) -> VerifiedBundle:
+        """Verify a complete bundle, including absence of symlinks and extra files."""
+
+        requested_root = Path(directory).expanduser()
+        lexical_root = Path(os.path.abspath(os.fspath(requested_root)))
+        manifest_path = lexical_root / "artifact_manifest.json"
+        opened_manifest_paths: list[Path] = []
+        opened_root_identities: list[tuple[int, int]] = []
+        manifest_bytes = _read_regular_snapshot(
+            manifest_path,
+            label="bundle artifact_manifest.json",
+            max_bytes=_MAX_ARTIFACT_MANIFEST_BYTES,
+            canonical_path_out=opened_manifest_paths,
+            parent_identity_out=opened_root_identities,
+        )
+        if len(opened_manifest_paths) != 1 or len(opened_root_identities) != 1:
+            raise RuntimeError("bundle manifest open did not return one bound path")
+        root = opened_manifest_paths[0].paren
+        root_identity = opened_root_identities[0]
+        manifest = _parse_json_bytes(manifest_bytes, label="bundle artifact_manifest.json")
+        if not isinstance(manifest, dict):
+            raise TypeError("artifact manifest must be a JSON object")
+        if manifest.get("schema") == FILE_BUNDLE_SCHEMA_VERSION:
+            _exact_fields(
+                manifest,
+                {
+                    "schema",
+                    "bundle_status",
+                    "artifact_kind",
+                    "semantic_manifest",
+                    "bundle_id",
+                    "artifacts",
+                },
+                label="M04a file-bundle manifest",
+            )
+            if manifest["bundle_status"] != "complete":
+                raise ValueError("bundle_status must be complete")
+            _nonempty_string(manifest["artifact_kind"], field="artifact_kind")
+            _safe_artifact_name(manifest["semantic_manifest"])
+            _sha256(manifest["bundle_id"], field="bundle_id")
+        else:
+            _exact_fields(
+                manifest,
+                {"schema_version", "bundle_status", "run_id", "artifacts"},
+                label="legacy evidence artifact manifest",
+            )
+            if manifest["schema_version"] != 1 or manifest["bundle_status"] != "complete":
+                raise ValueError("unsupported or incomplete legacy evidence bundle")
+            _nonempty_string(manifest["run_id"], field="run_id")
+
+        artifacts = manifest["artifacts"]
+        if not isinstance(artifacts, dict) or not artifacts:
+            raise ValueError("artifact manifest must declare at least one artifact")
+        if len(artifacts) > _MAX_BUNDLE_ARTIFACT_COUNT:
+            raise ValueError("artifact manifest exceeds the artifact-count limit")
+        normalized: dict[str, dict[str, Any]] = {}
+        total_artifact_bytes = 0
+        expected_files = {"artifact_manifest.json"}
+        for raw_name, raw_metadata in artifacts.items():
+            name = _safe_artifact_name(raw_name)
+            if len(PurePosixPath(name).parts) != 1:
+                raise ValueError("closed-world bundles require a flat artifact namespace")
+            metadata = _exact_fields(
+                raw_metadata, {"sha256", "bytes", "rows"}, label=f"metadata for {name}"
+            )
+            _sha256(metadata["sha256"], field=f"{name}.sha256")
+            artifact_bytes = _strict_int(metadata["bytes"], field=f"{name}.bytes")
+            if artifact_bytes > _MAX_SINGLE_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError(
+                    f"bundle artifact exceeds the single-file byte limit: {name}"
+                )
+            total_artifact_bytes += artifact_bytes
+            if total_artifact_bytes > _MAX_TOTAL_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError("bundle artifacts exceed the total byte limit")
+            if name.endswith(".jsonl"):
+                _strict_int(metadata["rows"], field=f"{name}.rows")
+            elif metadata["rows"] is not None:
+                raise ValueError(f"{name}.rows must be null for a non-JSONL artifact")
+            normalized[name] = dict(metadata)
+            expected_files.add(name)
+
+        actual_files, actual_directories = _list_flat_directory_bound(
+            root, expected_identity=root_identity
+        )
+        if actual_files != expected_files:
+>           raise ValueError(
+                "closed-world artifact set mismatch: "
+                f"missing={sorted(expected_files - actual_files)}, "
+                f"extra={sorted(actual_files - expected_files)}"
+            )
+E           ValueError: closed-world artifact set mismatch: missing=['source_snapshot.zip'], extra=[]
+
+src/afts_arc/m04a_evidence.py:1196: ValueError
+_ M04aTraceAndCostTests.test_pool_replay_verifier_covers_every_lane_call_and_one_bf16_cache _
+
+self = <tests.test_m04a_evidence.M04aTraceAndCostTests testMethod=test_pool_replay_verifier_covers_every_lane_call_and_one_bf16_cache>
+
+    def test_pool_replay_verifier_covers_every_lane_call_and_one_bf16_cache(
+        self,
+    ) -> None:
+>       fixture = _supported_pool_fixture()
+
+tests/test_m04a_evidence.py:1201:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_m04a_evidence.py:448: in _supported_pool_fixture
+    fixed = _fixed_blind_sidecar()
+tests/test_m04a_evidence.py:91: in _fixed_blind_sidecar
+    return build_m04a_blind_input_sidecar(BLIND_BUNDLE, DSL_POOL)
+src/afts_arc/m04a_evidence.py:1561: in build_m04a_blind_input_sidecar
+    blind_bundle = read_closed_world_bundle(blind_bundle_dir)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+directory = PosixPath('/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver/results/e01a_bbox_contact_v1/public_train_dev_blind')
+
+    def read_closed_world_bundle(directory: str | Path) -> VerifiedBundle:
+        """Verify a complete bundle, including absence of symlinks and extra files."""
+
+        requested_root = Path(directory).expanduser()
+        lexical_root = Path(os.path.abspath(os.fspath(requested_root)))
+        manifest_path = lexical_root / "artifact_manifest.json"
+        opened_manifest_paths: list[Path] = []
+        opened_root_identities: list[tuple[int, int]] = []
+        manifest_bytes = _read_regular_snapshot(
+            manifest_path,
+            label="bundle artifact_manifest.json",
+            max_bytes=_MAX_ARTIFACT_MANIFEST_BYTES,
+            canonical_path_out=opened_manifest_paths,
+            parent_identity_out=opened_root_identities,
+        )
+        if len(opened_manifest_paths) != 1 or len(opened_root_identities) != 1:
+            raise RuntimeError("bundle manifest open did not return one bound path")
+        root = opened_manifest_paths[0].paren
+        root_identity = opened_root_identities[0]
+        manifest = _parse_json_bytes(manifest_bytes, label="bundle artifact_manifest.json")
+        if not isinstance(manifest, dict):
+            raise TypeError("artifact manifest must be a JSON object")
+        if manifest.get("schema") == FILE_BUNDLE_SCHEMA_VERSION:
+            _exact_fields(
+                manifest,
+                {
+                    "schema",
+                    "bundle_status",
+                    "artifact_kind",
+                    "semantic_manifest",
+                    "bundle_id",
+                    "artifacts",
+                },
+                label="M04a file-bundle manifest",
+            )
+            if manifest["bundle_status"] != "complete":
+                raise ValueError("bundle_status must be complete")
+            _nonempty_string(manifest["artifact_kind"], field="artifact_kind")
+            _safe_artifact_name(manifest["semantic_manifest"])
+            _sha256(manifest["bundle_id"], field="bundle_id")
+        else:
+            _exact_fields(
+                manifest,
+                {"schema_version", "bundle_status", "run_id", "artifacts"},
+                label="legacy evidence artifact manifest",
+            )
+            if manifest["schema_version"] != 1 or manifest["bundle_status"] != "complete":
+                raise ValueError("unsupported or incomplete legacy evidence bundle")
+            _nonempty_string(manifest["run_id"], field="run_id")
+
+        artifacts = manifest["artifacts"]
+        if not isinstance(artifacts, dict) or not artifacts:
+            raise ValueError("artifact manifest must declare at least one artifact")
+        if len(artifacts) > _MAX_BUNDLE_ARTIFACT_COUNT:
+            raise ValueError("artifact manifest exceeds the artifact-count limit")
+        normalized: dict[str, dict[str, Any]] = {}
+        total_artifact_bytes = 0
+        expected_files = {"artifact_manifest.json"}
+        for raw_name, raw_metadata in artifacts.items():
+            name = _safe_artifact_name(raw_name)
+            if len(PurePosixPath(name).parts) != 1:
+                raise ValueError("closed-world bundles require a flat artifact namespace")
+            metadata = _exact_fields(
+                raw_metadata, {"sha256", "bytes", "rows"}, label=f"metadata for {name}"
+            )
+            _sha256(metadata["sha256"], field=f"{name}.sha256")
+            artifact_bytes = _strict_int(metadata["bytes"], field=f"{name}.bytes")
+            if artifact_bytes > _MAX_SINGLE_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError(
+                    f"bundle artifact exceeds the single-file byte limit: {name}"
+                )
+            total_artifact_bytes += artifact_bytes
+            if total_artifact_bytes > _MAX_TOTAL_BUNDLE_ARTIFACT_BYTES:
+                raise ValueError("bundle artifacts exceed the total byte limit")
+            if name.endswith(".jsonl"):
+                _strict_int(metadata["rows"], field=f"{name}.rows")
+            elif metadata["rows"] is not None:
+                raise ValueError(f"{name}.rows must be null for a non-JSONL artifact")
+            normalized[name] = dict(metadata)
+            expected_files.add(name)
+
+        actual_files, actual_directories = _list_flat_directory_bound(
+            root, expected_identity=root_identity
+        )
+        if actual_files != expected_files:
+>           raise ValueError(
+                "closed-world artifact set mismatch: "
+                f"missing={sorted(expected_files - actual_files)}, "
+                f"extra={sorted(actual_files - expected_files)}"
+            )
+E           ValueError: closed-world artifact set mismatch: missing=['source_snapshot.zip'], extra=[]
+
+src/afts_arc/m04a_evidence.py:1196: ValueError
+_ M04AProductionDataContractTests.test_frozen_manifest_is_canonical_and_matches_repository_data _
+
+self = <tests.test_m04a_production_data_contract.M04AProductionDataContractTests testMethod=test_frozen_manifest_is_canonical_and_matches_repository_data>
+
+    def test_frozen_manifest_is_canonical_and_matches_repository_data(self) -> None:
+        payload = contract.production_data_manifest_payload()
+        semantic = dict(payload)
+        closure_id = semantic.pop("closure_id")
+        self.assertEqual(closure_id, contract.PRODUCTION_DATA_CLOSURE_ID)
+        self.assertEqual(
+            closure_id,
+            contract.canonical_sha256(semantic),
+        )
+        self.assertEqual(payload["file_count"], 14)
+        self.assertEqual(
+            payload["total_bytes"],
+            sum(row[0] for row in contract.PRODUCTION_DATA_FILES.values()),
+        )
+        repository = Path(__file__).resolve().parents[1]
+        root = repository / "results" / "m04a_global_source_v0_1"
+        if not root.is_dir():
+            self.skipTest("canonical production data fixtures are not present")
+        missing_paths = tuple(
+            root.joinpath(*relative.split("/"))
+            for relative in contract.PRODUCTION_DATA_FILES
+            if not root.joinpath(*relative.split("/")).is_file()
+        )
+        if _publication_marks_missing_paths_manifest_only(repository, missing_paths):
+            self.skipTest(
+                "canonical production-data payloads are manifest-only in this publication"
+            )
+        for relative, (expected_bytes, expected_sha256) in (
+            contract.PRODUCTION_DATA_FILES.items()
+        ):
+            path = root.joinpath(*relative.split("/"))
+>           self.assertEqual(path.stat().st_size, expected_bytes, relative)
+
+tests/test_m04a_production_data_contract.py:126:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver/results/m04a_global_source_v0_1/rearc_train_cache/data.bin')
+
+    def stat(self, *, follow_symlinks=True):
+        """
+        Return the result of the stat() system call on this path, like
+        os.stat() does.
+        """
+>       return os.stat(self, follow_symlinks=follow_symlinks)
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver/results/m04a_global_source_v0_1/rearc_train_cache/data.bin'
+
+/home/wangmeiqi/anaconda3/lib/python3.13/pathlib/_local.py:515: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_m04a_evidence.py::M04aBlindSidecarTests::test_fixed_sidecar_includes_every_task_and_test_pair
+FAILED tests/test_m04a_evidence.py::M04aBlindSidecarTests::test_nonproduction_sidecar_requires_explicit_fixture_mode
+FAILED tests/test_m04a_evidence.py::M04aBlindSidecarTests::test_production_sidecar_parent_hash_is_pinned
+FAILED tests/test_m04a_evidence.py::M04aTraceAndCostTests::test_pool_replay_verifier_binds_checkpoint_sidecar_order_and_receip
+FAILED tests/test_m04a_evidence.py::M04aTraceAndCostTests::test_pool_replay_verifier_covers_every_lane_call_and_one_bf16_cache
+FAILED tests/test_m04a_production_data_contract.py::M04AProductionDataContractTests::test_frozen_manifest_is_canonical_and_matches_repository_data
+6 failed, 584 passed, 3 skipped in 463.16s (0:07:43)
