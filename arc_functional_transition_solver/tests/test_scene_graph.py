@@ -87,6 +87,40 @@ class SceneGraphTests(unittest.TestCase):
             ),
         )
 
+    def test_relation_free_scene_preserves_object_semantics(self) -> None:
+        grid = as_grid(
+            [
+                [1, 0, 2, 0],
+                [1, 0, 2, 2],
+                [0, 0, 0, 0],
+                [3, 3, 0, 4],
+            ]
+        )
+        complete = extract_scene_graph(
+            grid,
+            background=0,
+            connectivity=4,
+            grouping="monochrome_components",
+        )
+        relation_free = extract_scene_graph(
+            grid,
+            background=0,
+            connectivity=4,
+            grouping="monochrome_components",
+            include_relations=False,
+        )
+        self.assertEqual(relation_free.objects, complete.objects)
+        self.assertEqual(relation_free.relations, ())
+        node = CorrespondObjectsNode(
+            "equivalence",
+            ("relative_position", "shape", "size", "topology"),
+            True,
+        )
+        self.assertEqual(
+            object_correspondences(relation_free, node),
+            object_correspondences(complete, node),
+        )
+
     def test_correspondence_uses_shape_size_topology_and_relative_position(self) -> None:
         grid = as_grid(
             [

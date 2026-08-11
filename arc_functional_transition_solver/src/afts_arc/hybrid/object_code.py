@@ -663,6 +663,7 @@ def _execute_scored_program(
             background=program.parse.background,
             connectivity=program.parse.connectivity,
             grouping=program.parse.grouping,
+            include_relations=False,
         )
         scene_cache[key] = scene
     result = execute_scene_pipeline(program, grid, precomputed_scene=scene)

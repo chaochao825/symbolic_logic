@@ -365,6 +365,7 @@ def extract_scene_graph(
     background: int,
     connectivity: int,
     grouping: str,
+    include_relations: bool = True,
 ) -> SceneGraph:
     """Extract a deterministic scene graph from an ARC grid."""
 
@@ -374,6 +375,8 @@ def extract_scene_graph(
         raise ValueError("object connectivity must be 4 or 8")
     if grouping not in SCENE_GROUPINGS:
         raise ValueError("unknown scene grouping")
+    if type(include_relations) is not bool:
+        raise TypeError("scene relation inclusion flag must be boolean")
     height, width = len(normalized), len(normalized[0])
     groups = _component_groups(
         normalized,
@@ -408,30 +411,32 @@ def extract_scene_graph(
                 ),
             )
         )
-    relations = tuple(
-        SceneRelation(
-            source_index=first.index,
-            target_index=second.index,
-            left_of=first.right < second.left,
-            above=first.bottom < second.top,
-            bbox_contains=(
-                first.top <= second.top
-                and first.left <= second.left
-                and first.bottom >= second.bottom
-                and first.right >= second.right
-            ),
-            target_bbox_contains=(
-                second.top <= first.top
-                and second.left <= first.left
-                and second.bottom >= first.bottom
-                and second.right >= first.right
-            ),
-            chebyshev_distance=_bbox_distance(first, second),
+    relations = ()
+    if include_relations:
+        relations = tuple(
+            SceneRelation(
+                source_index=first.index,
+                target_index=second.index,
+                left_of=first.right < second.left,
+                above=first.bottom < second.top,
+                bbox_contains=(
+                    first.top <= second.top
+                    and first.left <= second.left
+                    and first.bottom >= second.bottom
+                    and first.right >= second.right
+                ),
+                target_bbox_contains=(
+                    second.top <= first.top
+                    and second.left <= first.left
+                    and second.bottom >= first.bottom
+                    and second.right >= first.right
+                ),
+                chebyshev_distance=_bbox_distance(first, second),
+            )
+            for first in objects
+            for second in objects
+            if first.index != second.index
         )
-        for first in objects
-        for second in objects
-        if first.index != second.index
-    )
     return SceneGraph(
         height,
         width,
@@ -1474,17 +1479,10 @@ def _correspondence_for_role(
 
 
 def _selected_bbox_shape(
-    grid: Grid,
-    parse: ParseObjectsNode,
+    scene: SceneGraph,
     correspond: CorrespondObjectsNode,
     select: SelectObjectsNode,
 ) -> tuple[int, int] | None:
-    scene = extract_scene_graph(
-        grid,
-        background=parse.background,
-        connectivity=parse.connectivity,
-        grouping=parse.grouping,
-    )
     selected = _select_objects(
         scene, select, object_correspondences(scene, correspond)
     )
@@ -1502,11 +1500,20 @@ def _crop_programs(task: BlindTask) -> list[ScenePipelineProgram]:
     assert first_output is not None
     output_height, output_width = len(first_output), len(first_output[0])
     for parse in _parse_candidates(task):
+        # Grammar construction only needs object descriptors.  Pairwise scene
+        # relations are not consulted by correspondence or role selection here.
+        scene = extract_scene_graph(
+            task.train[0].input,
+            background=parse.background,
+            connectivity=parse.connectivity,
+            grouping=parse.grouping,
+            include_relations=False,
+        )
         for role in SCENE_SELECTORS:
             select = SelectObjectsNode(role)
             for correspond in _correspondence_for_role(role):
                 shape = _selected_bbox_shape(
-                    task.train[0].input, parse, correspond, select
+                    scene, correspond, select
                 )
                 if shape is None:
                     continue

@@ -20,6 +20,7 @@ from .grid import Grid, grid_key
 from .hybrid.object_code import (
     ObjectCodeProgram,
     ObjectCodeProgramScore,
+    enumerate_object_code_programs,
     object_code_program_id,
     synthesize_object_code_programs,
 )
@@ -40,7 +41,6 @@ from .stateful_scene import (
     execute_stateful_scene_pipeline,
     execute_stateful_scene_transition,
     scene_program_node_differences,
-    scene_program_node_payloads,
 )
 
 
@@ -56,13 +56,6 @@ COUNTERFACTUAL_STRATEGIES = (
 
 def _bundle_id(outputs: Sequence[Grid]) -> str:
     return canonical_sha256([grid_key(output) for output in outputs])
-
-
-def _program_sort_key(program: ScenePipelineProgram) -> tuple[object, ...]:
-    return (
-        program.description_bits,
-        object_code_program_id(program),
-    )
 
 
 def _parent_sort_key(score: ObjectCodeProgramScore) -> tuple[object, ...]:
@@ -135,35 +128,36 @@ def _semantic_bundles(node_id: str) -> tuple[tuple[str, ...], ...]:
     return bundles[node_id]
 
 
-def _round_robin_programs(
-    groups: Sequence[Sequence[ScenePipelineProgram]],
+def _round_robin_deltas(
+    groups: Sequence[Sequence["_ProgramDelta"]],
     *,
     max_trials: int,
     schedule: Sequence[int] | None = None,
-) -> tuple[ScenePipelineProgram, ...]:
+) -> tuple["_ProgramDelta", ...]:
     if type(max_trials) is not int or max_trials < 1:
         raise ValueError("transition trial bound must be positive")
-    ordered_groups = tuple(tuple(sorted(group, key=_program_sort_key)) for group in groups)
+    ordered_groups = tuple(
+        tuple(sorted(group, key=lambda delta: delta.sort_key)) for group in groups
+    )
     if not ordered_groups:
         return ()
     cycle = tuple(range(len(ordered_groups))) if schedule is None else tuple(schedule)
     if not cycle or any(index < 0 or index >= len(ordered_groups) for index in cycle):
         raise ValueError("round-robin schedule differs from its program groups")
     offsets = [0 for _ in ordered_groups]
-    selected: list[ScenePipelineProgram] = []
+    selected: list[_ProgramDelta] = []
     selected_ids: set[str] = set()
     while len(selected) < max_trials:
         progressed = False
         for index in cycle:
             group = ordered_groups[index]
             while offsets[index] < len(group):
-                program = group[offsets[index]]
+                delta = group[offsets[index]]
                 offsets[index] += 1
-                program_id = object_code_program_id(program)
-                if program_id in selected_ids:
+                if delta.program_id in selected_ids:
                     continue
-                selected.append(program)
-                selected_ids.add(program_id)
+                selected.append(delta)
+                selected_ids.add(delta.program_id)
                 progressed = True
                 break
             if len(selected) >= max_trials:
@@ -366,30 +360,51 @@ class _TrialEvaluation:
 class _ProgramDelta:
     program: ScenePipelineProgram
     changed_nodes: tuple[str, ...]
-    node_payloads: Mapping[str, object]
+    node_values: tuple[object, ...]
+    program_id: str
+    sort_key: tuple[object, ...]
 
 
 @dataclass(frozen=True, slots=True)
 class _GrammarProgram:
     program: ScenePipelineProgram
-    node_payloads: Mapping[str, object]
+    node_values: tuple[object, ...]
+    program_id: str
+    sort_key: tuple[object, ...]
+
+
+def _scene_node_values(program: ScenePipelineProgram) -> tuple[object, ...]:
+    return (
+        program.parse,
+        (program.correspond, program.select),
+        program.operate,
+        program.canvas,
+        program.render,
+    )
 
 
 def _program_deltas(
     parent: ScenePipelineProgram,
     grammar: Sequence[_GrammarProgram],
 ) -> tuple[_ProgramDelta, ...]:
-    parent_nodes = scene_program_node_payloads(parent)
+    parent_nodes = _scene_node_values(parent)
     deltas = []
     for item in grammar:
-        child_nodes = item.node_payloads
         changed_nodes = tuple(
             node_id
-            for node_id in STATEFUL_NODE_ORDER
-            if parent_nodes[node_id] != child_nodes[node_id]
+            for index, node_id in enumerate(STATEFUL_NODE_ORDER)
+            if parent_nodes[index] != item.node_values[index]
         )
         if 1 <= len(changed_nodes) <= 3:
-            deltas.append(_ProgramDelta(item.program, changed_nodes, child_nodes))
+            deltas.append(
+                _ProgramDelta(
+                    item.program,
+                    changed_nodes,
+                    item.node_values,
+                    item.program_id,
+                    item.sort_key,
+                )
+            )
     return tuple(deltas)
 
 
@@ -558,55 +573,53 @@ def _emit_candidate(
     )
 
 
-def _distance_tiered_programs(
+def _distance_tiered_deltas(
     deltas: Sequence[_ProgramDelta],
     *,
     max_trials: int,
-) -> tuple[ScenePipelineProgram, ...]:
+) -> tuple[_ProgramDelta, ...]:
     groups = tuple(
         tuple(
-            delta.program
+            delta
             for delta in deltas
             if len(delta.changed_nodes) == distance
         )
         for distance in (1, 2, 3)
     )
-    return _round_robin_programs(
+    return _round_robin_deltas(
         groups,
         max_trials=max_trials,
         schedule=(0, 1, 1, 2),
     )
 
 
-def _semantic_programs(
+def _semantic_deltas(
     certificate: StatefulNodeFailureCertificate,
     deltas: Sequence[_ProgramDelta],
     *,
     max_trials: int,
-) -> tuple[ScenePipelineProgram, ...]:
+) -> tuple[_ProgramDelta, ...]:
     bundles = _semantic_bundles(certificate.node_id)
     groups = tuple(
         tuple(
-            delta.program
+            delta
             for delta in deltas
             if delta.changed_nodes == changed_nodes
         )
         for changed_nodes in bundles
     )
-    return _round_robin_programs(groups, max_trials=max_trials)
+    return _round_robin_deltas(groups, max_trials=max_trials)
 
 
 def _extends_partial(
     *,
-    parent: ScenePipelineProgram,
-    partial: ScenePipelineProgram,
+    partial: _ProgramDelta,
     candidate: _ProgramDelta,
 ) -> bool:
-    partial_nodes = scene_program_node_payloads(partial)
-    partial_differences = scene_program_node_differences(parent, partial)
     return all(
-        candidate.node_payloads[node_id] == partial_nodes[node_id]
-        for node_id in partial_differences
+        candidate.node_values[STATEFUL_NODE_ORDER.index(node_id)]
+        == partial.node_values[STATEFUL_NODE_ORDER.index(node_id)]
+        for node_id in partial.changed_nodes
     )
 
 
@@ -627,22 +640,24 @@ def _run_parent_arm(
     int,
 ]:
     if strategy == "distance_tiered":
-        programs = _distance_tiered_programs(
+        selected_deltas = _distance_tiered_deltas(
             deltas, max_trials=max_trials
         )
+        programs = tuple(delta.program for delta in selected_deltas)
         phase_one_count = len(programs)
     elif strategy == "typed_semantic_bundles":
-        programs = _semantic_programs(
+        selected_deltas = _semantic_deltas(
             context.certificate,
             deltas,
             max_trials=max_trials,
         )
+        programs = tuple(delta.program for delta in selected_deltas)
         phase_one_count = len(programs)
     elif strategy == "residual_beam":
         first_budget = max(1, max_trials // 4)
         node_groups = tuple(
             tuple(
-                delta.program
+                delta
                 for delta in deltas
                 if delta.changed_nodes == (node_id,)
             )
@@ -652,11 +667,12 @@ def _run_parent_arm(
         schedule = (diagnosed_index,) + tuple(
             index for index in range(len(STATEFUL_NODE_ORDER)) if index != diagnosed_index
         )
-        phase_one = _round_robin_programs(
+        phase_one_deltas = _round_robin_deltas(
             node_groups,
             max_trials=first_budget,
             schedule=schedule,
         )
+        phase_one = tuple(delta.program for delta in phase_one_deltas)
         phase_one_evaluations = tuple(
             _evaluate_program(
                 strategy=strategy,
@@ -666,8 +682,11 @@ def _run_parent_arm(
             )
             for program in phase_one
         )
+        phase_one_by_program = {
+            delta.program: delta for delta in phase_one_deltas
+        }
         beam = tuple(
-            evaluation.transition.program
+            phase_one_by_program[evaluation.transition.program]
             for evaluation in sorted(
                 phase_one_evaluations,
                 key=lambda evaluation: evaluation.score,
@@ -676,22 +695,22 @@ def _run_parent_arm(
         legal_bundles = frozenset(_semantic_bundles(context.certificate.node_id))
         extension_groups = tuple(
             tuple(
-                candidate.program
+                candidate
                 for candidate in deltas
                 if candidate.changed_nodes in legal_bundles
                 and len(candidate.changed_nodes) > 1
                 and _extends_partial(
-                    parent=context.program,
                     partial=partial,
                     candidate=candidate,
                 )
             )
             for partial in beam
         )
-        extensions = _round_robin_programs(
+        extension_deltas = _round_robin_deltas(
             extension_groups,
             max_trials=max_trials - len(phase_one),
         )
+        extensions = tuple(delta.program for delta in extension_deltas)
         programs = phase_one + extensions
         phase_one_count = len(phase_one)
     else:
@@ -781,13 +800,24 @@ def synthesize_counterfactual_transition_arms(
         if type(value) is not int or value < 1:
             raise ValueError(f"{name} must be a positive integer")
 
+    prepared_first_stage = first_stage_programs
+    prepared_transitions = transition_programs
+    if prepared_first_stage is None and prepared_transitions is None:
+        complete_grammar = enumerate_object_code_programs(task)
+        prepared_first_stage = complete_grammar[:max_first_stage_trials]
+        prepared_transitions = tuple(
+            program
+            for program in complete_grammar
+            if isinstance(program, ScenePipelineProgram)
+        )
+
     first = synthesize_object_code_programs(
         task,
         max_program_trials=max_first_stage_trials,
         max_exact_programs=max_first_stage_trials,
         max_near_misses=max_first_stage_trials,
         minimum_near_miss_agreement=0.0,
-        programs=first_stage_programs,
+        programs=prepared_first_stage,
     )
     parent_scores = sorted(
         (
@@ -821,13 +851,21 @@ def synthesize_counterfactual_transition_arms(
 
     grammar_programs = tuple(
         enumerate_scene_pipeline_programs(task)
-        if transition_programs is None
-        else transition_programs
+        if prepared_transitions is None
+        else prepared_transitions
     )
-    grammar = tuple(
-        _GrammarProgram(program, scene_program_node_payloads(program))
-        for program in grammar_programs
-    )
+    grammar_rows = []
+    for program in grammar_programs:
+        program_id = object_code_program_id(program)
+        grammar_rows.append(
+            _GrammarProgram(
+                program,
+                _scene_node_values(program),
+                program_id,
+                (program.description_bits, program_id),
+            )
+        )
+    grammar = tuple(grammar_rows)
     reserved_trials = max_parents * max_transition_trials
     deltas_by_parent = {
         object_code_program_id(context.program): _program_deltas(
