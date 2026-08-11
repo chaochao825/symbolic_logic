@@ -369,21 +369,27 @@ class _ProgramDelta:
     node_payloads: Mapping[str, object]
 
 
+@dataclass(frozen=True, slots=True)
+class _GrammarProgram:
+    program: ScenePipelineProgram
+    node_payloads: Mapping[str, object]
+
+
 def _program_deltas(
     parent: ScenePipelineProgram,
-    grammar: Sequence[ScenePipelineProgram],
+    grammar: Sequence[_GrammarProgram],
 ) -> tuple[_ProgramDelta, ...]:
     parent_nodes = scene_program_node_payloads(parent)
     deltas = []
-    for program in grammar:
-        child_nodes = scene_program_node_payloads(program)
+    for item in grammar:
+        child_nodes = item.node_payloads
         changed_nodes = tuple(
             node_id
             for node_id in STATEFUL_NODE_ORDER
             if parent_nodes[node_id] != child_nodes[node_id]
         )
         if 1 <= len(changed_nodes) <= 3:
-            deltas.append(_ProgramDelta(program, changed_nodes, child_nodes))
+            deltas.append(_ProgramDelta(item.program, changed_nodes, child_nodes))
     return tuple(deltas)
 
 
@@ -463,7 +469,7 @@ def _evaluate_program(
         executions,
         score,
         exact,
-        score < _parent_residual_score(context, task),
+        score[:4] < _parent_residual_score(context, task)[:4],
     )
 
 
@@ -813,10 +819,14 @@ def synthesize_counterfactual_transition_arms(
             )
         )
 
-    grammar = tuple(
+    grammar_programs = tuple(
         enumerate_scene_pipeline_programs(task)
         if transition_programs is None
         else transition_programs
+    )
+    grammar = tuple(
+        _GrammarProgram(program, scene_program_node_payloads(program))
+        for program in grammar_programs
     )
     reserved_trials = max_parents * max_transition_trials
     deltas_by_parent = {

@@ -134,3 +134,34 @@ def test_all_frozen_arms_recover_a_controlled_two_node_failure() -> None:
             "canvas",
         )
     assert result.arms[2].improving_trial_count >= 2
+
+
+def test_improvement_metric_excludes_description_only_tie_breaks() -> None:
+    bbox = CanvasNode("bbox", 0)
+    simple_parent = _program("leftmost", bbox)
+    verbose_parent = _program("largest_area", bbox)
+    target = _program("rightmost", bbox)
+    grid = _grid()
+    gold = execute_scene_pipeline(target, grid).output
+    assert gold is not None
+    assert execute_scene_pipeline(verbose_parent, grid).output == execute_scene_pipeline(
+        simple_parent, grid
+    ).output
+    task = BlindTask.from_observations(
+        train=(ARCPair(grid, gold),),
+        test_inputs=(grid,),
+    )
+
+    result = synthesize_counterfactual_transition_arms(
+        task,
+        strategies=("distance_tiered",),
+        max_first_stage_trials=1,
+        max_parents=1,
+        max_transition_trials=1,
+        max_candidates=1,
+        first_stage_programs=(verbose_parent,),
+        transition_programs=(simple_parent,),
+    )
+
+    assert result.arms[0].program_trials == 1
+    assert result.arms[0].improving_trial_count == 0
