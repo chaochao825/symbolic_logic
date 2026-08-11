@@ -233,6 +233,17 @@ than routing.  The reserve remains unmaterialized and the controller remains
 frozen.  See
 `notes/results/cognitive-workspace-object-graph-rewrite-v2-20260811.md`.
 
+Stateful Object-Graph Rewrite v3 replaces that lossy raster boundary with
+persistent object/relation identities, node-level failure certificates,
+single-node counterfactual rewrites, and affected-subtree replay. Controlled
+tests validate the mechanism, but the frozen 50-family development gate finds
+0/50 novel-output opportunities. A demo-only all-node audit shows that the
+compiler-selected node improves only 1/196 parents versus 94/196 for an oracle
+over legal nodes, while no node is demo-exact. The result is jointly a typed
+diagnosis and action-language null; reserve materialization and controller
+training remain closed. See
+`notes/results/stateful-object-graph-rewrite-v3-20260811.md`.
+
 ## Project map
 
 - `brief/`: topic, contribution, and evidence contracts.

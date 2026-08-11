@@ -41,6 +41,10 @@ def _script_module() -> object:
             "sealed_oracle.json"
         ),
         Path("results/object_graph_rewrite_v2_qa_20260811/pytest.stdout.log"),
+        Path(
+            "results/stateful_object_graph_rewrite_v3_arc_tgi_dev_20260811/"
+            "failure_audit_retry1.json"
+        ),
     ],
 )
 def test_protected_result_payloads_are_manifest_only(
@@ -94,6 +98,7 @@ def test_object_workspace_public_metadata_is_copied(
         "object_graph_rewrite_v2_arc_tgi_dev_20260811",
         "object_graph_rewrite_v2_arc_tgi_reserve_20260811",
         "object_graph_rewrite_v2_qa_20260811",
+        "stateful_object_graph_rewrite_v3_arc_tgi_dev_20260811",
     ],
 )
 @pytest.mark.parametrize("name", ["README.md", "artifact_sha256.json", "summary.json"])

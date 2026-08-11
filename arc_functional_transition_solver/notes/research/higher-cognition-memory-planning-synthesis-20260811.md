@@ -220,6 +220,32 @@ human-like long-term planning.
 6. If the proposed graph-rewrite bridge is real, certificate injection, bridge
    lesion, and cost intervention will have selective—not global—effects.
 
+## Empirical update: persistent state is necessary but not sufficient
+
+Stateful Object-Graph Rewrite v3 implemented the first bounded version of the
+shared-state hypothesis: persistent object/relation identities, executable
+node traces, typed failure certificates, counterfactual node rewrites, and
+dependency-local replay. Controlled interventions verify those semantics.
+
+The natural development gate is nevertheless null: 0/50 query-blind novel
+outputs. More importantly, a demonstration-only intervention audit finds that
+the compiled node improves 1/196 parents while some legal node improves 94/196;
+even the all-node oracle produces zero demo-exact tasks. This narrows the
+higher-cognition hypothesis in two ways:
+
+1. a workspace needs causal state variables and calibrated credit assignment,
+   not merely persistent records; and
+2. counterfactual planning needs transitions that can coordinate several
+   dependent state changes, not just enumerate one local field mutation.
+
+The result does not justify returning to a larger router. A learned controller
+would currently learn from incorrect intervention labels and an action set
+with zero exact natural successes. The next mechanism evidence must come from
+fresh typed-fault data and bounded multi-node transition plans that beat
+equal-cost restart. Long-term memory remains downstream of that gate: storing
+failed traces cannot compensate for a state/action ontology that cannot express
+the successful counterfactual.
+
 ## Primary references
 
 - Dehaene & Changeux (2011), *Experimental and Theoretical Approaches to

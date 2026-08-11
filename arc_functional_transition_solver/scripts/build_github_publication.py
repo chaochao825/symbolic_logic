@@ -64,6 +64,7 @@ PROTECTED_RESULT_PREFIXES = (
     "results/object_graph_rewrite_v2_arc_tgi_dev_20260811",
     "results/object_graph_rewrite_v2_arc_tgi_reserve_20260811",
     "results/object_graph_rewrite_v2_qa_20260811",
+    "results/stateful_object_graph_rewrite_v3_arc_tgi_dev_20260811",
 )
 PROTECTED_RESULT_PUBLIC_METADATA = frozenset(
     {
@@ -82,6 +83,9 @@ PROTECTED_RESULT_PUBLIC_METADATA = frozenset(
         "results/object_graph_rewrite_v2_qa_20260811/README.md",
         "results/object_graph_rewrite_v2_qa_20260811/artifact_sha256.json",
         "results/object_graph_rewrite_v2_qa_20260811/summary.json",
+        "results/stateful_object_graph_rewrite_v3_arc_tgi_dev_20260811/README.md",
+        "results/stateful_object_graph_rewrite_v3_arc_tgi_dev_20260811/artifact_sha256.json",
+        "results/stateful_object_graph_rewrite_v3_arc_tgi_dev_20260811/summary.json",
     }
 )
 INTERNAL_INFRASTRUCTURE_PATTERNS = (
