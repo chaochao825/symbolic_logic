@@ -166,3 +166,32 @@ def test_typed_replay_rejects_multi_node_or_wrong_input_changes() -> None:
             prior=parent_execution,
             changed_node="assignment",
         )
+
+
+def test_oversize_suffix_is_typed_invalid_instead_of_uncaught() -> None:
+    grid = as_grid(
+        [
+            [2 if column % 2 == 0 else 0 for column in range(21)],
+            [0 for _ in range(21)],
+        ]
+    )
+    program = ScenePipelineProgram(
+        ParseObjectsNode(0, 4, "monochrome_components"),
+        CorrespondObjectsNode(),
+        SelectObjectsNode("leftmost"),
+        ObjectOperationNode(
+            "copy",
+            axis="row",
+            spacing=2,
+            repeat_rule="scene_objects",
+        ),
+        CanvasNode("tight", 0),
+        RenderObjectsNode("objects"),
+    )
+
+    legacy = execute_scene_pipeline(program, grid)
+    stateful = execute_stateful_scene_pipeline(program, grid)
+
+    assert legacy.status == stateful.status == "invalid"
+    assert legacy.reason == stateful.reason == "internal_error"
+    assert legacy.output is stateful.output is None

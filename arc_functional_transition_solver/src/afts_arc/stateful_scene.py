@@ -14,7 +14,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from .experiment_safety import canonical_sha256
-from .grid import Grid, as_grid, grid_key
+from .grid import Grid, GridValidationError, as_grid, grid_key
 from .hybrid.scene_graph import (
     CanvasNode,
     ObjectCorrespondence,
@@ -835,7 +835,15 @@ def execute_stateful_scene_pipeline(
         )
     )
 
-    output = _render_output(program, normalized, parse_state, assignment)
+    try:
+        output = _render_output(program, normalized, parse_state, assignment)
+    except GridValidationError:
+        output = None
+        render_failure_reason = "internal_error"
+    else:
+        render_failure_reason = (
+            None if output is not None else "operation_or_canvas_invalid"
+        )
     executed.append("render")
     render_state_id = canonical_sha256(
         {
@@ -852,7 +860,7 @@ def execute_stateful_scene_pipeline(
             reused=False,
             details={
                 "mode": program.render.mode,
-                "reason": None if output is not None else "operation_or_canvas_invalid",
+                "reason": render_failure_reason,
             },
         )
     )
@@ -861,7 +869,7 @@ def execute_stateful_scene_pipeline(
         grid=normalized,
         status="invalid" if output is None else "ok",
         output=output,
-        reason=None if output is not None else "operation_or_canvas_invalid",
+        reason=render_failure_reason,
         parse_state=parse_state,
         assignment_state=assignment,
         operation_state=operation,
