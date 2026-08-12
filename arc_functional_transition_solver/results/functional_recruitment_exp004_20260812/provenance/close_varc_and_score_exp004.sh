@@ -7,6 +7,7 @@ ELIG=/home/spco/sow_linear/codex_artifacts/hypothesis_population_20260812/exp003
 PROJ=/home/spco/sow_linear/codex_worktrees/arc_failure_matrix_20260810/arc_functional_transition_solver
 VARC=/home/wangmeiqi/codex_runs/arc_visual_provider_probe_20260807/external/VARC
 VARC_PY=/home/wangmeiqi/codex_runs/arc_visual_provider_probe_20260807/.venv-varc/bin/python
+ARC_TGI_PY=/home/spco/sow_linear/.venvs/afts_arc_tgi_20260810/bin/python
 CHECKPOINT="${VARC}/saves/offline_train_ViT/checkpoint_best.pt"
 ARC_TGI=/home/spco/sow_linear/codex_sources/arc_anchor_20260810/arc-tgi
 ARC_TGI_COMMIT=a614132ff5b2cb3628063d541e7cbd74a2cd2edb
@@ -15,6 +16,7 @@ PARENT_PROTOCOL="${PROJ}/notes/research/provenance-relational-effect-v0.4-gate-2
 COHORT_ID=9706b3af57b19564e4579a20c29f7127271d253bab4e2e5c58657216681ffe15
 
 test -s "${EXP}/visual_launch_commitment.json"
+"${ARC_TGI_PY}" -c 'import shortuuid'
 for shard_index in 0 1 2; do
   [[ "$(cat "${EXP}/varc_shard_${shard_index}_launcher_exit_code.txt")" == 0 ]]
   [[ "$(cat "${EXP}/varc_shard_${shard_index}_run_v1/exit_code.txt")" == 0 ]]
@@ -110,7 +112,7 @@ done
 cmp "${EXP}/population_a.json" "${EXP}/population_b.json"
 
 for replay in a b; do
-  PYTHONPATH=src "${VARC_PY}" scripts/afts_arc_tgi_indexed_reserve.py \
+  PYTHONPATH=src "${ARC_TGI_PY}" scripts/afts_arc_tgi_indexed_reserve.py \
     open-population-oracle \
     --arc-tgi-root "${ARC_TGI}" \
     --arc-tgi-commit "${ARC_TGI_COMMIT}" \

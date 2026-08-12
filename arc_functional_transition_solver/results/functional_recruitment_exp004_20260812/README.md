@@ -75,3 +75,13 @@ content-addressed shard, receipt-merge, and equal-native-cost utilities are in
 `scripts/`.  These additions change orchestration and auditing only; provider
 model, checkpoint, augmentation order, per-task numerical configuration,
 candidate ranking, policy order, and gate thresholds remain frozen.
+
+## Closure-runtime incident
+
+All 98 visual tasks completed with zero exit codes.  The first closure attempt
+then stopped before oracle authorization because it invoked ARC-TGI with the
+VARC environment, which lacks ARC-TGI's declared `shortuuid` dependency.  The
+query solutions were neither created nor read.  `ORACLE_RUNTIME_RECOVERY.md`
+records the failure hashes and the non-semantic correction to use the cohort's
+already recorded ARC-TGI Python runtime during deterministic oracle
+regeneration.
