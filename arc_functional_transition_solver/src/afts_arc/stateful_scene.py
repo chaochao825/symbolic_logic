@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from typing import NewType
 
 from .experiment_safety import canonical_sha256
 from .grid import Grid, GridValidationError, as_grid, grid_key
@@ -43,6 +44,8 @@ STATEFUL_NODE_ORDER = ("parse", "assignment", "operate", "canvas", "render")
 
 Coordinate = tuple[int, int]
 BoundingBox = tuple[int, int, int, int]
+PersistentEntityId = NewType("PersistentEntityId", str)
+PersistentRelationId = NewType("PersistentRelationId", str)
 
 
 def _program_id(program: ScenePipelineProgram) -> str:
@@ -93,13 +96,13 @@ def affected_scene_subtree(node_id: str) -> tuple[str, ...]:
 
 @dataclass(frozen=True, slots=True)
 class PersistentObjectRecord:
-    entity_id: str
+    entity_id: PersistentEntityId
     source_object_id: str
     index: int
     cells: tuple[Coordinate, ...]
     colors: tuple[int, ...]
     bounding_box: BoundingBox
-    ancestor_entity_ids: tuple[str, ...]
+    ancestor_entity_ids: tuple[PersistentEntityId, ...]
 
     def to_json_dict(self) -> dict[str, object]:
         return {
@@ -115,9 +118,9 @@ class PersistentObjectRecord:
 
 @dataclass(frozen=True, slots=True)
 class PersistentRelationRecord:
-    relation_id: str
-    source_entity_id: str
-    target_entity_id: str
+    relation_id: PersistentRelationId
+    source_entity_id: PersistentEntityId
+    target_entity_id: PersistentEntityId
     left_of: bool
     above: bool
     bbox_contains: bool
@@ -180,7 +183,7 @@ class PersistentSceneState:
             )
             records.append(
                 PersistentObjectRecord(
-                    canonical_sha256(entity_payload),
+                    PersistentEntityId(canonical_sha256(entity_payload)),
                     object_.object_id,
                     object_.index,
                     object_.cells,
@@ -204,7 +207,7 @@ class PersistentSceneState:
             }
             relations.append(
                 PersistentRelationRecord(
-                    canonical_sha256(payload),
+                    PersistentRelationId(canonical_sha256(payload)),
                     payload["source_entity_id"],
                     payload["target_entity_id"],
                     payload["left_of"],
@@ -248,8 +251,8 @@ class AssignmentState:
     state_id: str
     correspondences: tuple[ObjectCorrespondence, ...]
     selected_objects: tuple[SceneObject, ...]
-    selected_entity_ids: tuple[str, ...]
-    correspondence_entity_ids: tuple[tuple[str, ...], ...]
+    selected_entity_ids: tuple[PersistentEntityId, ...]
+    correspondence_entity_ids: tuple[tuple[PersistentEntityId, ...], ...]
 
     @classmethod
     def create(

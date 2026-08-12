@@ -257,6 +257,20 @@ node; it does not add another raster primitive on the exposed cohort.  See
 `notes/results/anchor-rasterized-delta-v0.3-20260812.md` and
 `notes/decisions/RDR-20260812-relational-causal-footprints.md`.
 
+Provenance-aligned Relational Effect v0.4 implements the next minimal bridge:
+persistent entity/relation IDs, exact cell lineage through supported crop/D4
+traces, typed effect summaries, and strict-LODO failure cores.  Controlled tests
+and byte-identical eight-worker replay pass.  On a fresh sealed reserve-v2
+cohort, however, the frozen twelve-effect sensor reaches only 2/100 tasks from
+one family, exactly tied by global and whole-component recolor.  G1 therefore
+fails; query targets remain sealed, G2--G4 are not run, and the controller stays
+frozen.  The failure matrix localizes 67/100 tasks to single-delta or
+cross-demo role inconsistency and 24/100 to the finite effect language.  Exact
+source provenance covers 97.76% of observed residual cells, so the next bounded
+candidate must add typed multi-effect obligations and relational role binding,
+not another post-hoc raster mask.  See
+`notes/results/provenance-relational-effect-v0.4-reserve100-20260812.md`.
+
 ## Project map
 
 - `brief/`: topic, contribution, and evidence contracts.

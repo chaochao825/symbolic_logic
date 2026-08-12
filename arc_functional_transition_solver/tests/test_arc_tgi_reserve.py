@@ -6,6 +6,7 @@ from afts_arc.arc_tgi_reserve import (
     authorize_oracle_open,
     build_reserve_seal,
     opened_solution_payload,
+    reserve_episode_schedule,
 )
 from afts_arc.experiment_safety import canonical_sha256
 
@@ -95,3 +96,21 @@ def test_authorized_regeneration_must_match_every_sealed_hash() -> None:
     changed["oracle_sha256"] = "changed"
     with pytest.raises(ValueError, match="oracle_sha256"):
         opened_solution_payload(seal=seal, episodes=(changed,))
+
+
+def test_reserve_schedule_is_balanced_family_disjoint_and_deterministic() -> None:
+    family_ids = tuple(f"family-{index:02d}" for index in reversed(range(18)))
+    first = reserve_episode_schedule(family_ids, episode_count=100)
+    second = reserve_episode_schedule(family_ids, episode_count=100)
+
+    counts = {
+        family_id: sum(item[0] == family_id for item in first)
+        for family_id in family_ids
+    }
+    assert first == second
+    assert len(first) == 100
+    assert sorted(counts.values()) == [5] * 8 + [6] * 10
+    assert {item[0] for item in first} == set(family_ids)
+
+    with pytest.raises(ValueError, match="repeats"):
+        reserve_episode_schedule(("family", "family"), episode_count=2)

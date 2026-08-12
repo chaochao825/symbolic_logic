@@ -1,0 +1,66 @@
+{
+  "artifacts": {
+    "candidate_freeze_a_sha256": "26e75dc52a8142a147da65bc1739e7c8bcd35f9bdf55758952220139171a6db6",
+    "candidate_freeze_b_sha256": "26e75dc52a8142a147da65bc1739e7c8bcd35f9bdf55758952220139171a6db6",
+    "candidate_freeze_id": "1d6eeecc4c0aab4d6332ecafc49d4e853ff50de0f5b0e251ee3929d38f786fac",
+    "cohort_id": "9250415ec1a58f03a8557cf96cdf2cc0693d82130edbb82fd2ab50031c139e6c",
+    "failure_audit_a_sha256": "8f4f6538baa1790130725a32ce5474172c59ff488b42778388e95f7a9d600f7d",
+    "failure_audit_b_sha256": "8f4f6538baa1790130725a32ce5474172c59ff488b42778388e95f7a9d600f7d",
+    "failure_audit_id": "4f78389c97137732d2d5d002747a519b45e940082cda9b0a4000ee0aa2c890d0",
+    "protocol_sha256": "1e96d4bce8764919665afbb8fac053634f503124317aa4e8d8fe13239ab4cb5a",
+    "seal_id": "618c4c81a9c6002b1890fac2457b08c23d7c90a06c08d70c438b07be8a29e873"
+  },
+  "controller_training_started": false,
+  "data_boundary": {
+    "family_count": 18,
+    "query_gold_read": false,
+    "task_count": 100
+  },
+  "failure_matrix": {
+    "cross_demo_delta_inconsistent": 13,
+    "delta_semantics_inconsistent": 54,
+    "no_scene_parent": 5,
+    "relation_effect_language_unreachable": 24,
+    "shape_incompatible": 2,
+    "strict_but_baseline_redundant": 2
+  },
+  "gates": {
+    "g0_compatibility_and_replay": "passed",
+    "g1_strict_lodo": "failed",
+    "g2_novel_frontier": "not_evaluated",
+    "g3_natural_utility": "not_evaluated",
+    "g4_residual_causality": "not_evaluated"
+  },
+  "provenance": {
+    "entity_backed_recall": 0.6331908123694939,
+    "source_backed_recall": 0.9775877498259918
+  },
+  "posthoc_demo_only_diagnostics": {
+    "cross_demo_parent_cores": {
+      "one_source_three_targets": 16,
+      "one_source_two_targets": 27,
+      "two_sources_two_targets": 9
+    },
+    "two_delta_parent_demo_summaries": {
+      "one_source_two_targets": 488,
+      "total": 587,
+      "two_sources_one_target": 19,
+      "two_sources_two_targets": 80
+    },
+    "unit": "repeated_parent_or_parent_demo_summary_not_independent_task"
+  },
+  "schema": "afts.provenance-relational-effect-result-summary/v1",
+  "sensor": {
+    "advantage_over_strongest_baseline": 0,
+    "baseline_strict_lodo_tasks": {
+      "component": 2,
+      "global": 2,
+      "identity": 0
+    },
+    "method_family_count": 1,
+    "method_strict_lodo_tasks": 2,
+    "unique_over_all_baselines_family_count": 0,
+    "unique_over_all_baselines_task_count": 0
+  },
+  "status": "valid_scoped_negative"
+}

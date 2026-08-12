@@ -11,6 +11,28 @@ ARC_TGI_RESERVE_SEAL_SCHEMA = "afts.arc-tgi-reserve-seal/v1"
 ARC_TGI_ORACLE_AUTHORIZATION_SCHEMA = "afts.arc-tgi-oracle-authorization/v1"
 
 
+def reserve_episode_schedule(
+    family_ids: Sequence[str],
+    *,
+    episode_count: int,
+) -> tuple[tuple[str, int], ...]:
+    """Allocate deterministic indexed episodes as evenly as possible by family."""
+
+    if not family_ids or any(not isinstance(item, str) or not item for item in family_ids):
+        raise ValueError("reserve schedule requires non-empty family IDs")
+    if len(set(family_ids)) != len(family_ids):
+        raise ValueError("reserve schedule repeats a family ID")
+    if type(episode_count) is not int or episode_count < len(family_ids):
+        raise ValueError("reserve episode count must cover every family")
+    ordered = tuple(sorted(family_ids))
+    quotient, remainder = divmod(episode_count, len(ordered))
+    return tuple(
+        (family_id, episode_index)
+        for family_offset, family_id in enumerate(ordered)
+        for episode_index in range(quotient + int(family_offset < remainder))
+    )
+
+
 def _object(value: object, *, field: str) -> Mapping[str, object]:
     if not isinstance(value, Mapping):
         raise TypeError(f"{field} must be an object")
