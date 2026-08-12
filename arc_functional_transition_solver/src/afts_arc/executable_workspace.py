@@ -21,6 +21,13 @@ import json
 from collections.abc import Mapping
 from dataclasses import dataclass
 
+from .anchor_mask import (
+    ANCHOR_MASK_NODE_ID,
+    ANCHOR_MASK_NODE_TYPE,
+    AnchorRasterizedDeltaNode,
+    effective_anchor_mask,
+    execute_anchor_rasterized_delta,
+)
 from .blind import BlindTask
 from .grid import Grid, as_grid, grid_to_lists
 from .hybrid.scene_graph import (
@@ -33,11 +40,13 @@ from .hybrid.scene_graph import (
     ScenePipelineProgram,
     SelectObjectsNode,
     execute_scene_pipeline,
+    extract_scene_graph,
 )
 
 
 TYPED_SKETCH_SCHEMA_VERSION = "afts.typed-program-sketch/v0.1"
 TYPED_SKETCH_TOPOLOGY_SCHEMA_VERSION = "afts.typed-program-sketch/v0.2"
+TYPED_SKETCH_MASK_TOPOLOGY_SCHEMA_VERSION = "afts.typed-program-sketch/v0.3"
 ABSTRACT_EXECUTION_SCHEMA_VERSION = "afts.abstract-execution/v0.1"
 RECOLOR_REACHABILITY_SCHEMA_VERSION = "afts.recolor-reachability/v0.1"
 INPUT_GRID_NODE_ID = "$input"
@@ -52,8 +61,14 @@ SCENE_PIPELINE_NODE_TYPES = (
     "render",
 )
 RECOLOR_NODE_TYPE = "recolor_grid"
-SKETCH_NODE_TYPES = SCENE_PIPELINE_NODE_TYPES + (RECOLOR_NODE_TYPE,)
+SKETCH_NODE_TYPES = SCENE_PIPELINE_NODE_TYPES + (
+    RECOLOR_NODE_TYPE,
+    ANCHOR_MASK_NODE_TYPE,
+)
 RECOLOR_TOPOLOGY_NODE_TYPES = SCENE_PIPELINE_NODE_TYPES + (RECOLOR_NODE_TYPE,)
+ANCHOR_MASK_TOPOLOGY_NODE_TYPES = SCENE_PIPELINE_NODE_TYPES + (
+    ANCHOR_MASK_NODE_TYPE,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -124,6 +139,7 @@ _NODE_INPUT_TYPES = {
     "canvas": ("operation_plan",),
     "render": ("grid", "scene", "object_set", "operation_plan", "canvas"),
     RECOLOR_NODE_TYPE: ("grid",),
+    ANCHOR_MASK_NODE_TYPE: ("grid", "grid", "scene"),
 }
 _NODE_OUTPUT_TYPES = {
     "parse": "scene",
@@ -133,6 +149,7 @@ _NODE_OUTPUT_TYPES = {
     "canvas": "canvas",
     "render": "grid",
     RECOLOR_NODE_TYPE: "grid",
+    ANCHOR_MASK_NODE_TYPE: "grid",
 }
 _NODE_BINDING_CLASSES = {
     "parse": ParseObjectsNode,
@@ -142,6 +159,7 @@ _NODE_BINDING_CLASSES = {
     "canvas": CanvasNode,
     "render": RenderObjectsNode,
     RECOLOR_NODE_TYPE: RecolorGridNode,
+    ANCHOR_MASK_NODE_TYPE: AnchorRasterizedDeltaNode,
 }
 
 PROOF_OBLIGATION_TYPES = (
@@ -255,6 +273,7 @@ SceneNodeBinding = (
     | CanvasNode
     | RenderObjectsNode
     | RecolorGridNode
+    | AnchorRasterizedDeltaNode
 )
 
 
@@ -383,6 +402,20 @@ class TypedProgramSketch:
                 raise ValueError("recolor topology must extend the render output edge")
             if self.output_node_id != recolor_node.node_id:
                 raise ValueError("recolor topology output must be the appended node")
+        if node_types == ANCHOR_MASK_TOPOLOGY_NODE_TYPES:
+            mask_node = self.nodes[-1]
+            if mask_node.node_id != ANCHOR_MASK_NODE_ID:
+                raise ValueError("anchor-mask topology must use the canonical node ID")
+            if mask_node.input_ids != (
+                self.nodes[-2].node_id,
+                INPUT_GRID_NODE_ID,
+                self.nodes[0].node_id,
+            ):
+                raise ValueError(
+                    "anchor-mask topology must declare render, input, and parse edges"
+                )
+            if self.output_node_id != mask_node.node_id:
+                raise ValueError("anchor-mask topology output must be the appended node")
         prefix_complete = len(self.nodes) >= len(SCENE_PIPELINE_NODE_TYPES) and not any(
             isinstance(node.binding, TypedHole)
             for node in self.nodes[: len(SCENE_PIPELINE_NODE_TYPES)]
@@ -415,9 +448,13 @@ class TypedProgramSketch:
 
     def to_json_dict(self) -> dict[str, object]:
         schema = (
-            TYPED_SKETCH_TOPOLOGY_SCHEMA_VERSION
-            if any(node.node_type == RECOLOR_NODE_TYPE for node in self.nodes)
-            else TYPED_SKETCH_SCHEMA_VERSION
+            TYPED_SKETCH_MASK_TOPOLOGY_SCHEMA_VERSION
+            if any(node.node_type == ANCHOR_MASK_NODE_TYPE for node in self.nodes)
+            else (
+                TYPED_SKETCH_TOPOLOGY_SCHEMA_VERSION
+                if any(node.node_type == RECOLOR_NODE_TYPE for node in self.nodes)
+                else TYPED_SKETCH_SCHEMA_VERSION
+            )
         )
         return {
             "schema": schema,
@@ -433,6 +470,7 @@ class TypedProgramSketch:
         if payload["schema"] not in {
             TYPED_SKETCH_SCHEMA_VERSION,
             TYPED_SKETCH_TOPOLOGY_SCHEMA_VERSION,
+            TYPED_SKETCH_MASK_TOPOLOGY_SCHEMA_VERSION,
         }:
             raise ValueError("unsupported typed program sketch schema")
         nodes = payload["nodes"]
@@ -445,11 +483,19 @@ class TypedProgramSketch:
         has_recolor = any(
             node.node_type == RECOLOR_NODE_TYPE for node in sketch.nodes
         )
+        has_anchor_mask = any(
+            node.node_type == ANCHOR_MASK_NODE_TYPE for node in sketch.nodes
+        )
+        if payload["schema"] == TYPED_SKETCH_SCHEMA_VERSION and (
+            has_recolor or has_anchor_mask
+        ):
+            raise ValueError("typed sketch topology does not match its schema")
         if (
-            payload["schema"] == TYPED_SKETCH_SCHEMA_VERSION and has_recolor
-        ) or (
             payload["schema"] == TYPED_SKETCH_TOPOLOGY_SCHEMA_VERSION
-            and not has_recolor
+            and (not has_recolor or has_anchor_mask)
+        ) or (
+            payload["schema"] == TYPED_SKETCH_MASK_TOPOLOGY_SCHEMA_VERSION
+            and (not has_anchor_mask or has_recolor)
         ):
             raise ValueError("typed sketch topology does not match its schema")
         return sketch
@@ -569,6 +615,8 @@ class TypedProgramSketch:
             return "scene_pipeline"
         if node_types == RECOLOR_TOPOLOGY_NODE_TYPES:
             return "scene_pipeline_recolor"
+        if node_types == ANCHOR_MASK_TOPOLOGY_NODE_TYPES:
+            return "scene_pipeline_anchor_mask"
         return "unsupported"
 
     @property
@@ -580,6 +628,19 @@ class TypedProgramSketch:
         binding = self.nodes[len(SCENE_PIPELINE_NODE_TYPES)].binding
         if not isinstance(binding, (RecolorGridNode, TypedHole)):
             raise TypeError("recolor topology has the wrong postprocess binding")
+        return binding
+
+    @property
+    def anchor_mask_binding(
+        self,
+    ) -> AnchorRasterizedDeltaNode | TypedHole | None:
+        if self.topology == "scene_pipeline":
+            return None
+        if self.topology != "scene_pipeline_anchor_mask":
+            raise ValueError("sketch does not have a supported anchor-mask topology")
+        binding = self.nodes[len(SCENE_PIPELINE_NODE_TYPES)].binding
+        if not isinstance(binding, (AnchorRasterizedDeltaNode, TypedHole)):
+            raise TypeError("anchor-mask topology has the wrong postprocess binding")
         return binding
 
 
@@ -764,11 +825,23 @@ def execute_typed_sketch(
         raise TypeError("typed execution requires a TypedProgramSketch")
     if not sketch.complete:
         raise ValueError("an incomplete typed sketch cannot execute")
-    if sketch.topology not in {"scene_pipeline", "scene_pipeline_recolor"}:
+    if sketch.topology not in {
+        "scene_pipeline",
+        "scene_pipeline_recolor",
+        "scene_pipeline_anchor_mask",
+    }:
         raise ValueError("typed execution does not support this sketch topology")
 
     program = sketch.materialize_scene_pipeline_prefix()
-    prefix = execute_scene_pipeline(program, grid)
+    scene = None
+    if sketch.topology == "scene_pipeline_anchor_mask":
+        scene = extract_scene_graph(
+            grid,
+            background=program.parse.background,
+            connectivity=program.parse.connectivity,
+            grouping=program.parse.grouping,
+        )
+    prefix = execute_scene_pipeline(program, grid, precomputed_scene=scene)
     if not prefix.ok:
         if prefix.reason is None:
             raise ValueError("invalid scene execution is missing its reason")
@@ -783,7 +856,11 @@ def execute_typed_sketch(
 
     output = prefix.output
     trace = prefix.node_trace
-    binding = sketch.recolor_binding
+    binding = (
+        sketch.recolor_binding
+        if sketch.topology == "scene_pipeline_recolor"
+        else None
+    )
     if binding is not None:
         if not isinstance(binding, RecolorGridNode):
             raise TypeError("complete recolor topology has an unresolved binding")
@@ -797,11 +874,40 @@ def execute_typed_sketch(
                 target_color=binding.target_color,
             ),
         )
+    mask_binding = (
+        sketch.anchor_mask_binding
+        if sketch.topology == "scene_pipeline_anchor_mask"
+        else None
+    )
+    if mask_binding is not None:
+        if not isinstance(mask_binding, AnchorRasterizedDeltaNode):
+            raise TypeError("complete anchor-mask topology has an unresolved binding")
+        if scene is None:
+            raise AssertionError("anchor-mask execution lost its persistent scene")
+        changed = effective_anchor_mask(mask_binding, grid, output, scene)
+        output = execute_anchor_rasterized_delta(mask_binding, grid, output, scene)
+        trace = trace + (
+            ExecutionTraceNode.create(
+                ANCHOR_MASK_NODE_ID,
+                ANCHOR_MASK_NODE_TYPE,
+                "ok",
+                anchor_color=mask_binding.anchor_color,
+                mask_kind=mask_binding.mask_kind,
+                mask_parameter=mask_binding.mask_parameter,
+                source_color=mask_binding.source_color,
+                target_color=mask_binding.target_color,
+                effective_mask_size=len(changed),
+            ),
+        )
     return TypedSketchExecution("ok", output, None, trace)
 
 
 def _node_ids_by_type(sketch: TypedProgramSketch) -> dict[str, str]:
-    if sketch.topology not in {"scene_pipeline", "scene_pipeline_recolor"}:
+    if sketch.topology not in {
+        "scene_pipeline",
+        "scene_pipeline_recolor",
+        "scene_pipeline_anchor_mask",
+    }:
         raise ValueError("abstract execution requires a supported canonical topology")
     node_ids = {node.node_type: node.node_id for node in sketch.nodes}
     if any(node_type not in node_ids for node_type in SCENE_PIPELINE_NODE_TYPES):
@@ -876,6 +982,15 @@ def _mismatch_obligation(
             "postprocess_mismatch",
             node_ids=node_ids,
             node_types=(RECOLOR_NODE_TYPE,),
+            demo_indices=(demo_index,),
+            **common_evidence,
+        )
+        reason = "postprocess_mismatch"
+    elif sketch.topology == "scene_pipeline_anchor_mask":
+        obligation = _proof_obligation(
+            "postprocess_mismatch",
+            node_ids=node_ids,
+            node_types=(ANCHOR_MASK_NODE_TYPE,),
             demo_indices=(demo_index,),
             **common_evidence,
         )
