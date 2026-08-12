@@ -1,0 +1,59 @@
+{
+  "candidate_contract": {
+    "invalid_candidate_policy": "reject",
+    "invalid_candidate_rule": "reject non-list, empty, non-rectangular, >30x30, non-integer, or color-outside-[0,9] samples; never repair or coerce",
+    "query_requires_at_least_one_valid_candidate": true,
+    "ranking": "frequency, then first-emission position, then canonical grid JSON"
+  },
+  "cohort": {
+    "cohort_id": "9706b3af57b19564e4579a20c29f7127271d253bab4e2e5c58657216681ffe15",
+    "seal_id": "d9c3c71ca6eb10289e3a64eeff3fedbec3107c6c8f947160ff50afc2edd9fe60",
+    "task_count": 98
+  },
+  "contract_id": "7e14d1c1c3b77e1f5034a792edc3bde6efb257da20b19212c648363af70ad4f3",
+  "controller_frozen": true,
+  "execution": {
+    "augmentation": "full-cohort sorted index, then byte-identical task partition",
+    "mode": "three isolated serialized single-GPU shards",
+    "shard_assignment_id": "7c1cdb12b02dc2323fc9d2ecf6f880cdfac1272a8cf852bcc128bbdd102877b2"
+  },
+  "name": "VARC ViT static query-blind provider EXP-004",
+  "provider_version": "afts-varc-vit-ttt/v1",
+  "query_blind_protocol": {
+    "candidate_logits_consume": [
+      "attention_mask",
+      "inputs",
+      "task_ids"
+    ],
+    "provider_visible_test_output": "exact copy of corresponding test input",
+    "query_gold_read": false,
+    "training_examples": "demonstrations only"
+  },
+  "schema": "afts.varc-provider-preexecution-contract/v1",
+  "scientific_scope": "solver-track static candidate distribution",
+  "source": {
+    "checkpoint_sha256": "c52d719fe9a41066aa8e96548ae6f83a0abf3568facd5103e176d7005e8421b3",
+    "commit": "bd478ecf362e6499a988b05f33223e5c5fc6a6be",
+    "repository": "https://github.com/lillian039/VARC"
+  },
+  "test_time_configuration": {
+    "architecture": "vit",
+    "batch_size": 8,
+    "depth": 10,
+    "embed_dim": 512,
+    "epoch_argument": 100,
+    "executed_epoch_count": 101,
+    "image_size": 64,
+    "learning_rate": 0.0003,
+    "lr_scheduler": "cosine",
+    "num_attempts": 10,
+    "num_colors": 12,
+    "num_heads": 8,
+    "patch_size": 2,
+    "per_task_timeout_seconds": 2400,
+    "resume_skip_task_token": true,
+    "seed": 42,
+    "ttt_num_each": 1,
+    "weight_decay": 0.0
+  }
+}

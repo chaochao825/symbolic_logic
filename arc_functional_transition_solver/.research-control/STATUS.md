@@ -49,6 +49,17 @@ a predeclared 30% budget.
 - A blind-only derivation excludes those two tasks and assigns the retained 98
   tasks new cohort and seal identities; provider settings and gates remain
   unchanged for `EXP-004`.
+- `EXP-004` passed two byte-identical NVARC boundary audits: all 98 tasks are
+  represented, all training labels derive from demonstrations, all test inputs
+  derive from queries, and all collision/overflow counts are zero.
+- The independently rerun recursive anchor exited zero.  Its native receipt,
+  top-10 candidate pool, 98-task universe, and unchanged recruitment policy
+  are frozen before visual execution; the 30% prefix contains exactly 30
+  tasks and 256 random controls remain fixed.
+- Visual wall-clock parallelism is restricted to a 33/33/32 deterministic
+  partition after full-cohort augmentation.  Byte-level shard equivalence,
+  single-GPU task semantics, isolated outputs, and merged native-cost receipts
+  are mandatory; only GPUs idle at the recorded launch boundary may be used.
 - Earlier online control reduced native symbolic cost by about one third at
   unchanged 14/100 coverage, showing that gating can save work but not create
   missing hypotheses.
@@ -63,15 +74,15 @@ recruitment, while preserving the brain-inspired functional analogy.
 
 ## Next Actions
 
-1. Commit the `EXP-004` protocol and eligible seal before provider execution.
-2. Compile the 98-task recursive dataset and require a clean two-run boundary
-   audit before using an idle A800.
-3. Freeze the recursive candidate and the 10/20/30/49-task recruitment plan
-   before the visual provider runs.
-4. Run the visual provider with isolated single-GPU semantics and auditable
+1. Commit and push the pre-visual recursive candidate, recruitment plan,
+   visual shard assignment, and exact provenance scripts.
+2. Generate full-cohort VARC augmentations, prove byte-identical shard
+   projection twice, and freeze the idle-GPU launch assignment.
+3. Run the visual provider with isolated single-GPU semantics and auditable
    native cost, then authorize oracle opening only after the population freeze.
-5. Stop the recruitment claim if visual strict complement is below 3/98;
-   otherwise test the unchanged 30-task policy and equal-cost controls.
+4. Stop the recruitment claim if visual strict complement is below 3/98;
+   otherwise test the unchanged 30-task policy and both task-count and
+   equal-native-cost random controls.
 
 ## Parked
 

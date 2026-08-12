@@ -18,6 +18,8 @@ collision-free prospective reserve experiment.
 - Query gold written or opened: no
 - Frozen protocol:
   `.research-control/experiments/protocols/EXP-004.md`
+- Protocol commit:
+  `216800f9c2e9d00e36e5ee8b458e269e58b2138a`
 
 The two excluded tasks were selected solely because a query input exactly
 equals a demonstration input.  Provider outcomes played no role.  `EXP-003`
@@ -26,3 +28,37 @@ remains an invalid protocol record and is not pooled with this experiment.
 The primary ordering and gates are frozen before either provider outcome on
 this cohort.  Recursive candidates are frozen before the visual run; the
 visual provider cannot influence the recruitment plan.
+
+## Pre-visual freeze
+
+The recursive dataset boundary audit passed twice with byte-identical output:
+98 represented tasks, no out-of-bound training pair or test input, and no
+demonstration/query input collision.  The audit ID is
+`e7e345dc8490628bcd5271bf8610403de7207d5716c06d9e2ac9c02cd7062a68`.
+
+The frozen recursive run exited zero after 5,608 exact replayed training steps
+and 104 evaluation batches.  Its receipt ID is
+`279770b882819a300674f06d4bebc97a153fb0a6e706ae223cbbe14995d01b7d`;
+its candidate-freeze ID is
+`00f11f4eee979c245fb7554457439270117ae1a32635cb42dfee12999e34dadc`.
+The upstream zero pass rates are not ARC scores: the upstream evaluator sees
+opaque query sentinels by construction.  Query gold remains unopened.
+
+The full anchor-only recruitment plan was frozen before visual data
+preparation.  Its plan ID is
+`65a6391381ed4425e736de736560f97c033fc8effdb11f1eae843e9d1e21c424`;
+the committed task counts are 10, 20, 30, and 49.  The pre-visual commitment ID
+is `9035b0ddcc1e4eb8b7d2f14be83ea726b0af9318f7f223a4aa3ba3407fea9e69`.
+
+The visual run is partitioned into deterministic 33/33/32-task shards only to
+reduce wall-clock time.  Full-cohort augmentation precedes partitioning, and a
+byte-level audit must prove that every task and augmentation file is identical
+to the full-cohort version.  Each shard remains a serial single-GPU run.  The
+assignment ID is
+`7c1cdb12b02dc2323fc9d2ecf6f880cdfac1272a8cf852bcc128bbdd102877b2`.
+
+The exact orchestration and scoring scripts are under `provenance/`.  General
+content-addressed shard, receipt-merge, and equal-native-cost utilities are in
+`scripts/`.  These additions change orchestration and auditing only; provider
+model, checkpoint, augmentation order, per-task numerical configuration,
+candidate ranking, policy order, and gate thresholds remain frozen.
