@@ -85,3 +85,29 @@ query solutions were neither created nor read.  `ORACLE_RUNTIME_RECOVERY.md`
 records the failure hashes and the non-semantic correction to use the cohort's
 already recorded ARC-TGI Python runtime during deterministic oracle
 regeneration.
+
+## Final result
+
+`EXP-004` is valid and completed, but its preregistered outcome is
+**provider-null**.  NVARC reaches 93/98 raw strict oracle coverage and VARC
+88/98; their union reaches 96/98.  VARC contributes two strict exclusive tasks,
+below the frozen threshold of three.  The seven recursive-exclusive tasks and
+three neither-hit tasks are retained in the full population result.
+
+The outcome is more informative than the one-task threshold gap suggests.  A
+seal-grounded family audit finds 18 source families, and all three anchor-miss
+union-hit tasks belong to one family: two are VARC-exclusive and one is
+query-wise cross-provider composition.  Thus the marginal task count has
+effective family count one and cluster concentration 3/3.
+
+The frozen policy is still useful descriptive evidence.  Its first ten tasks
+recover all three marginal tasks using 1,910/20,112 visual GPU seconds; the
+30-task prefix also recovers 3/3 using 6,076/20,112 seconds, versus a frozen
+random median of one.  The equal-native-cost random median is also one.  These
+numbers do not rescue the failed complement gate and are not a confirmatory
+recruitment result.
+
+This experiment validates the execution and audit path, and shows that cheap
+anchor uncertainty can localize the one complementary family.  It does not
+establish broad provider specialization, final pass@2 improvement, ARC-AGI
+competitiveness, residual-driven repair, or a biological switching mechanism.

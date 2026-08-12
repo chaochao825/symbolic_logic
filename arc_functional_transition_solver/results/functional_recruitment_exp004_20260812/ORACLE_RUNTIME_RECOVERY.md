@@ -26,3 +26,9 @@ The failed closure products are preserved under the experiment-local ignored
 `trash/` tree.  The closure is rerun from the frozen raw visual predictions;
 all A/B receipt, candidate, population, authorization, and score comparisons
 remain mandatory.
+
+The first post-closure checksum list also included its own file while that file
+was being written.  It was preserved under experiment-local `trash/` and
+replaced by a manifest that explicitly excludes itself.  Every listed digest
+verifies; the corrected manifest SHA-256 is
+`2d2a7572b2839af2d1661a1065e127b410e435647b05b047bee5dc47866197cc`.

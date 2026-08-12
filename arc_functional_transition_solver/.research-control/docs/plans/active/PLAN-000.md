@@ -1,6 +1,6 @@
 # PLAN-000: Establish population complement and recruitability
 
-- Status: active
+- Status: completed; provider pair parked
 - Owner: researcher and Agent
 - Gate: G-002 prospective recruitability
 - Claims: C-000
@@ -40,11 +40,11 @@ content-addressed population.
    `EXP-002` recovers 2/2 marginal tasks on a disjoint historical split.
 4. Completed: derive and freeze the collision-free 98-task `EXP-004` cohort
    using only blind input identities after `EXP-003` stopped invalid.
-5. Compile and audit the recursive dataset, then freeze its candidates and the
-   unchanged policy before visual execution.
-6. Run the visual provider with native cost receipts, open solutions only after
-   both candidate freezes, and test complement, recruitment, and equal-cost
-   gates in order.
+5. Completed: compile and audit the recursive dataset, then freeze its
+   candidates and the unchanged policy before visual execution.
+6. Completed: run the visual provider with native cost receipts, open solutions
+   only after both candidate freezes, and test complement before descriptive
+   recruitment and equal-cost replay.
 
 ## Stop and escalation rules
 
@@ -56,6 +56,9 @@ permission to tune it on the same cohort.
 
 ## Closure
 
-Close the plan only after prospective `G-002`.  A pass advances to final
-selection (`C-003`); a null parks recruitment and returns effort to stronger
-candidate providers rather than learned routing.
+`G-002` closed as provider-null: VARC contributed two exclusive tasks, below
+the minimum of three, and all three marginal tasks came from one sealed source
+family.  The frozen ranking recovered all three descriptively, but this does
+not unlock final selection (`C-003`).  The NVARC+VARC pair is parked for
+confirmation; the next candidate must add family-diverse coverage rather than
+a learned router.

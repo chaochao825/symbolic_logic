@@ -1,6 +1,6 @@
 # Program Roadmap
 
-Updated: 2026-08-12
+Updated: 2026-08-13
 
 ## Horizon 0: normalize the heterogeneous population
 
@@ -30,8 +30,13 @@ Exit gate: either a pre-provider signal recovers at least half of complement at
 - Test pass@2 selection from the recruited population, not only oracle union.
 - Test cost intervention, provider lesion, and insertion of a new provider.
 
-Exit gate: `C-000` is supported, narrowed, or rejected under prospective native
-cost and final-output metrics.
+`EXP-004` closes the first provider-pair gate as null: two visual-exclusive
+tasks and one composed task all come from one sealed family.  The frozen policy
+recovers them cheaply only as descriptive evidence.
+
+Re-entry gate: a new structurally distinct provider contributes at least three
+exclusive sealed families.  Only then test recruitment and final pass@2 under
+prospective native cost.
 
 ## Horizon 3: procedural memory and bounded repair
 

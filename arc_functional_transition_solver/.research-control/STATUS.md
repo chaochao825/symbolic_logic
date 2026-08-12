@@ -1,26 +1,26 @@
 # Current Research Status
 
-Updated: 2026-08-12
+Updated: 2026-08-13
 
 ## Mainline
 
 `L-000` develops budgeted functional recruitment over heterogeneous hypothesis
-populations.  The controller remains frozen.  `EXP-000`--`EXP-002` establish
-replayable provider complement and two retrospective recruitment signals.
+populations.  The controller remains frozen.  `EXP-004` closes the first
+prospective provider-pair gate as a valid provider-null while preserving a
+descriptive recruitment signal.
 
 ## Current Gate
 
-`G-002`: run `EXP-004`, the preregistered collision-free 98-task prospective
-replication of the frozen anchor-disagreement policy with independently rerun
-recursive and visual providers.
+`G-002` is closed.  Do not advance to final selection or controller learning.
+The next gate must first demonstrate at least three recruited-provider
+exclusive sealed families on a new family-disjoint cohort.
 
 ## Unique Bottleneck
 
-The remaining bottleneck is external validity.  Only three marginal-value tasks
-exist in the exposed 100-task cohort and two in the disjoint 50-task split, so
-successful selection can still be a small-sample accident.  A fresh cohort
-must first reproduce provider complement, then test the unchanged policy under
-a predeclared 30% budget.
+The unique bottleneck is family-diverse candidate complement.  NVARC and VARC
+have high raw coverage on ARC-TGI, but every `EXP-004` marginal task belongs to
+one source family.  Better routing cannot create independent candidate regions
+that the recruited provider does not contain.
 
 ## Evidence since last decision
 
@@ -60,11 +60,25 @@ a predeclared 30% budget.
   partition after full-cohort augmentation.  Byte-level shard equivalence,
   single-GPU task semantics, isolated outputs, and merged native-cost receipts
   are mandatory; only GPUs idle at the recorded launch boundary may be used.
+- All 98 VARC runs exited zero.  NVARC raw strict coverage is 93/98, VARC is
+  88/98, and their union is 96/98; NVARC and VARC pass@2 are 89/98 and 80/98.
+- `G-002a` fails with two visual-exclusive tasks against a frozen minimum of
+  three.  The valid outcome is provider-null, not an implementation failure.
+- The two visual-exclusive tasks and one cross-provider-composed task are all
+  replicas of one sealed source family.  Family-effective marginal coverage is
+  therefore 1/18 and concentration is 3/3.
+- Descriptively, the unchanged first ten policy choices recover all three
+  marginal tasks using 1,910/20,112 visual GPU seconds.  The 30-task prefix
+  also recovers 3/3 using 6,076/20,112 seconds versus random median one.  This
+  does not override the failed complement gate.
+- The closure runtime incident occurred before oracle authorization and was
+  corrected by using the already recorded ARC-TGI environment.  All A/B
+  identities remain exact; the correction changed no model or score semantics.
 - Earlier online control reduced native symbolic cost by about one third at
   unchanged 14/100 coverage, showing that gating can save work but not create
   missing hypotheses.
-- These observations are outcome-exposed development evidence, not a new
-  confirmatory result.
+- The current result is synthetic ARC-TGI evidence, not an ARC-AGI benchmark
+  or biological-mechanism result.
 
 ## User Decision
 
@@ -74,18 +88,18 @@ recruitment, while preserving the brain-inspired functional analogy.
 
 ## Next Actions
 
-1. Commit and push the pre-visual recursive candidate, recruitment plan,
-   visual shard assignment, and exact provenance scripts.
-2. Generate full-cohort VARC augmentations, prove byte-identical shard
-   projection twice, and freeze the idle-GPU launch assignment.
-3. Run the visual provider with isolated single-GPU semantics and auditable
-   native cost, then authorize oracle opening only after the population freeze.
-4. Stop the recruitment claim if visual strict complement is below 3/98;
-   otherwise test the unchanged 30-task policy and both task-count and
-   equal-native-cost random controls.
+1. Keep the NVARC+VARC pair and all learned routers parked for confirmation.
+2. Select one structurally distinct strong provider using development evidence
+   only; prefer code/program induction or a genuinely different masked-neural
+   distribution over another correlated raster ensemble member.
+3. Freeze a family-disjoint cohort and require at least three exclusive sealed
+   families before recruitment scoring.
+4. If complement passes, reuse the unchanged cheap anchor-state policy first;
+   only then freeze a separate final pass@2 selector experiment.
 
 ## Parked
 
 - Narrow relation/effect languages and typed local repair are parked until a
   naturally occurring executable near-miss cluster satisfies a revival gate.
 - Learned routers are parked until query-blind recruitment has a causal signal.
+- Final pass@2 selection is parked because `G-002a` did not unlock `C-003`.

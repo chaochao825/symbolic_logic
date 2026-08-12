@@ -254,6 +254,7 @@ PY
 fi
 
 find "${EXP}" -maxdepth 2 -type f \
-  ! -path '*/trash/*' -print0 \
+  ! -path '*/trash/*' \
+  ! -name 'final_artifacts.sha256' -print0 \
   | sort -z \
   | xargs -0 sha256sum > "${EXP}/final_artifacts.sha256"
