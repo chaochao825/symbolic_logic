@@ -41,6 +41,13 @@ a predeclared 30% budget.
   is not solely a missing-output shortcut.
 - The abstention-aware v2 population leaves the prior v1 population
   byte-identical, preserving old artifact identities and numerical behavior.
+- `EXP-003` stopped before GPU execution: two of 100 sealed reserve tasks have
+  a query input identical to a demonstration input, and the protocol cited a
+  provenance-distinct seal ID.  This is an invalid data/protocol result, not an
+  algorithmic null.
+- A blind-only derivation excludes those two tasks and assigns the retained 98
+  tasks new cohort and seal identities; provider settings and gates remain
+  unchanged for `EXP-004`.
 - Earlier online control reduced native symbolic cost by about one third at
   unchanged 14/100 coverage, showing that gating can save work but not create
   missing hypotheses.

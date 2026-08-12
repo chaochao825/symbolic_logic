@@ -19,6 +19,7 @@ import afts_arc_tgi_cohort as cohort  # noqa: E402
 from afts_arc.arc_tgi_reserve import (  # noqa: E402
     authorize_oracle_open,
     authorize_population_oracle_open,
+    build_collision_free_reserve_subset,
     build_reserve_seal,
     opened_solution_payload,
     reserve_episode_schedule,
@@ -184,6 +185,33 @@ def _freeze_blind(args: argparse.Namespace) -> dict[str, object]:
     }
 
 
+def _filter_blind_collisions(args: argparse.Namespace) -> dict[str, object]:
+    if args.output_root.exists():
+        raise FileExistsError(f"refusing to replace output root: {args.output_root}")
+    challenges_path = args.challenges.resolve()
+    seal_path = args.seal.resolve()
+    protocol_path = args.protocol.resolve()
+    challenges, seal = build_collision_free_reserve_subset(
+        challenges=_read_object(challenges_path),
+        seal=_read_object(seal_path),
+        source_files={
+            "parent_challenges": file_sha256(challenges_path),
+            "parent_seal": file_sha256(seal_path),
+            "protocol": file_sha256(protocol_path),
+            "subset_builder": file_sha256(Path(__file__).resolve()),
+        },
+    )
+    args.output_root.mkdir(parents=True)
+    atomic_write_json(args.output_root / "eligible_challenges.json", challenges)
+    atomic_write_json(args.output_root / "eligible_seal_manifest.json", seal)
+    return {
+        "cohort_id": seal["cohort_id"],
+        "excluded_task_count": seal["eligibility"]["excluded_task_count"],
+        "retained_task_count": seal["task_count"],
+        "seal_id": seal["seal_id"],
+    }
+
+
 def _open_oracle(args: argparse.Namespace) -> dict[str, object]:
     episodes = _episodes(args)
     seal = _read_object(args.seal)
@@ -213,7 +241,17 @@ def _open_oracle(args: argparse.Namespace) -> dict[str, object]:
 def _open_population_oracle(args: argparse.Namespace) -> dict[str, object]:
     episodes = _episodes(args)
     seal = _read_object(args.seal)
-    if _cohort_id(args, episodes) != seal["cohort_id"]:
+    regenerated_cohort_id = _cohort_id(args, episodes)
+    if "parent_cohort_id" in seal:
+        if regenerated_cohort_id != seal["parent_cohort_id"]:
+            raise ValueError("regenerated indexed cohort differs from parent seal")
+        sealed_task_ids = {row["task_id"] for row in seal["tasks"]}
+        episodes = tuple(
+            episode for episode in episodes if episode["task_id"] in sealed_task_ids
+        )
+        if {episode["task_id"] for episode in episodes} != sealed_task_ids:
+            raise ValueError("regenerated episodes differ from subset seal")
+    elif regenerated_cohort_id != seal["cohort_id"]:
         raise ValueError("regenerated indexed cohort differs from the seal")
     authorization = authorize_population_oracle_open(
         seal=seal,
@@ -251,6 +289,12 @@ def main() -> None:
     freeze = commands.add_parser("freeze-blind")
     _shared(freeze)
     freeze.set_defaults(handler=_freeze_blind)
+    filter_blind = commands.add_parser("filter-blind-collisions")
+    filter_blind.add_argument("--challenges", type=Path, required=True)
+    filter_blind.add_argument("--seal", type=Path, required=True)
+    filter_blind.add_argument("--protocol", type=Path, required=True)
+    filter_blind.add_argument("--output-root", type=Path, required=True)
+    filter_blind.set_defaults(handler=_filter_blind_collisions)
     open_oracle = commands.add_parser("open-oracle")
     _shared(open_oracle)
     open_oracle.add_argument("--seal", type=Path, required=True)

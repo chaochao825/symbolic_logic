@@ -8,6 +8,7 @@ from .experiment_safety import canonical_sha256
 
 
 ARC_TGI_RESERVE_SEAL_SCHEMA = "afts.arc-tgi-reserve-seal/v1"
+ARC_TGI_RESERVE_SUBSET_SEAL_SCHEMA = "afts.arc-tgi-reserve-subset-seal/v1"
 ARC_TGI_ORACLE_AUTHORIZATION_SCHEMA = "afts.arc-tgi-oracle-authorization/v1"
 POPULATION_ORACLE_AUTHORIZATION_SCHEMA = (
     "afts.population-recruitment-oracle-authorization/v1"
@@ -97,6 +98,91 @@ def build_reserve_seal(
         "tasks": task_rows,
     }
     return challenges, {"seal_id": canonical_sha256(content), **content}
+
+
+def build_collision_free_reserve_subset(
+    *,
+    challenges: Mapping[str, object],
+    seal: Mapping[str, object],
+    source_files: Mapping[str, str],
+) -> tuple[dict[str, object], dict[str, object]]:
+    """Remove blind tasks whose query input duplicates a demonstration input."""
+
+    seal_content = {key: value for key, value in seal.items() if key != "seal_id"}
+    if seal["seal_id"] != canonical_sha256(seal_content):
+        raise ValueError("reserve seal ID differs from canonical content")
+    if seal["query_gold_written"] is not False:
+        raise ValueError("reserve seal already exposes query gold")
+    sealed_rows = {
+        _object(item, field="sealed task")["task_id"]: dict(
+            _object(item, field="sealed task")
+        )
+        for item in seal["tasks"]
+    }
+    if set(challenges) != set(sealed_rows):
+        raise ValueError("reserve challenge and seal task sets differ")
+    if seal["challenge_content_sha256"] != canonical_sha256(challenges):
+        raise ValueError("reserve challenge content differs from seal")
+
+    excluded_rows = []
+    retained: dict[str, object] = {}
+    for task_id in sorted(challenges):
+        task = _object(challenges[task_id], field=f"challenge[{task_id}]")
+        demonstration_inputs = {
+            canonical_sha256(
+                _object(example, field="demonstration")["input"]
+            )
+            for example in task["train"]
+        }
+        colliding_queries = [
+            query_index
+            for query_index, raw_query in enumerate(task["test"])
+            if canonical_sha256(_object(raw_query, field="query")["input"])
+            in demonstration_inputs
+        ]
+        if colliding_queries:
+            excluded_rows.append(
+                {
+                    "query_indices": colliding_queries,
+                    "reason": "demo_query_input_collision",
+                    "task_id": task_id,
+                }
+            )
+        else:
+            retained[task_id] = dict(task)
+    if not retained or not excluded_rows:
+        raise ValueError("collision-free subset requires retained and excluded tasks")
+
+    cohort_identity = {
+        "eligibility_rule": "no-demo-query-input-collision/v1",
+        "parent_cohort_id": seal["cohort_id"],
+        "parent_seal_id": seal["seal_id"],
+        "retained_task_ids": sorted(retained),
+        "schema": "afts.arc-tgi-query-blind-eligible-subset/v1",
+    }
+    cohort_id = canonical_sha256(cohort_identity)
+    content: dict[str, object] = {
+        "challenge_content_sha256": canonical_sha256(retained),
+        "cohort_id": cohort_id,
+        "eligibility": {
+            "excluded_task_count": len(excluded_rows),
+            "excluded_tasks": excluded_rows,
+            "retained_task_count": len(retained),
+            "rule": cohort_identity["eligibility_rule"],
+        },
+        "parent_cohort_id": seal["cohort_id"],
+        "parent_seal_id": seal["seal_id"],
+        "partition_id": seal["partition_id"],
+        "query_gold_written": False,
+        "schema": ARC_TGI_RESERVE_SUBSET_SEAL_SCHEMA,
+        "solver_artifact": "eligible_challenges.json",
+        "source_files": dict(sorted(source_files.items())),
+        "status": "blind_frozen_oracle_hash_sealed",
+        "task_count": len(retained),
+        "tasks": [sealed_rows[task_id] for task_id in sorted(retained)],
+        "witness_written": False,
+    }
+    return retained, {"seal_id": canonical_sha256(content), **content}
 
 
 def authorize_oracle_open(

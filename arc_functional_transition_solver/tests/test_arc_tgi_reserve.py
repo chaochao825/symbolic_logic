@@ -5,6 +5,7 @@ import pytest
 from afts_arc.arc_tgi_reserve import (
     authorize_oracle_open,
     authorize_population_oracle_open,
+    build_collision_free_reserve_subset,
     build_reserve_seal,
     opened_solution_payload,
     reserve_episode_schedule,
@@ -200,3 +201,44 @@ def test_population_oracle_requires_bound_query_blind_population_and_plan() -> N
             population=population,
             recruitment_plan=forged_plan,
         )
+
+
+def test_collision_free_subset_uses_only_blind_inputs_and_retains_oracle_hashes() -> None:
+    colliding = _episode()
+    clean = dict(_episode())
+    clean["task_id"] = "clean-task"
+    clean["episode_id"] = "clean-episode"
+    clean["blind"] = {
+        "train": [{"input": [[1]], "output": [[2]]}],
+        "test": [{"input": [[5]]}],
+    }
+    clean["blind_content_sha256"] = canonical_sha256(clean["blind"])
+    colliding["blind"] = {
+        "train": [{"input": [[3]], "output": [[2]]}],
+        "test": [{"input": [[3]]}],
+    }
+    colliding["blind_content_sha256"] = canonical_sha256(colliding["blind"])
+    challenges, parent_seal = build_reserve_seal(
+        episodes=(colliding, clean),
+        cohort_id="parent-cohort",
+        partition_id="partition-a",
+        source_files={"protocol": "sha256"},
+    )
+
+    eligible, subset_seal = build_collision_free_reserve_subset(
+        challenges=challenges,
+        seal=parent_seal,
+        source_files={"parent": "a" * 64},
+    )
+
+    assert set(eligible) == {"clean-task"}
+    assert subset_seal["query_gold_written"] is False
+    assert subset_seal["parent_seal_id"] == parent_seal["seal_id"]
+    assert subset_seal["eligibility"]["excluded_tasks"] == [
+        {
+            "query_indices": [0],
+            "reason": "demo_query_input_collision",
+            "task_id": "reserve-task",
+        }
+    ]
+    assert subset_seal["tasks"][0]["oracle_sha256"] == clean["oracle_sha256"]
