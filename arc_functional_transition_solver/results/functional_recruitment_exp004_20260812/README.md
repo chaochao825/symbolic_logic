@@ -57,6 +57,19 @@ to the full-cohort version.  Each shard remains a serial single-GPU run.  The
 assignment ID is
 `7c1cdb12b02dc2323fc9d2ecf6f880cdfac1272a8cf852bcc128bbdd102877b2`.
 
+Full-cohort augmentation and shard projection passed two byte-identical
+audits.  All 98 tasks and 4,998 evaluation/augmentation JSON files match the
+full-cohort bytes; audit ID
+`ae1a97a89b19e889f5f2a46dfee721c60dcd8f16e15c43e9e3f77ce903e3cbe9`.
+The data-preparation ID is
+`5dd4399b6fea228711e128beb50eb2c3d5895462117cd89bac3d92ee08c79e49`.
+
+The launch assignment was frozen while GPUs 0, 1, and 3 were idle; GPU 2 was
+excluded because an unrelated job was active.  Shards 0, 1, and 2 map to GPUs
+0, 1, and 3 respectively.  The launch commitment ID is
+`eca2577a08d9e044f8b1c590f481f46092afe39cd478f5cb2f22f4159ec983d2`.
+Query gold was still unopened at this commitment.
+
 The exact orchestration and scoring scripts are under `provenance/`.  General
 content-addressed shard, receipt-merge, and equal-native-cost utilities are in
 `scripts/`.  These additions change orchestration and auditing only; provider
