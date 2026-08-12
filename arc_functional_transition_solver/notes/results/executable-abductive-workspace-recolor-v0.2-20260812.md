@@ -30,6 +30,16 @@ null, not a broken implementation: parent and blind hashes matched, both freezes
 and scores were byte-identical, 62 dependency tests passed, and the controlled
 abstract/concrete audit had zero mismatches.
 
+Post-hoc demonstration-only refinement makes the next bottleneck sharper. None
+of the 188 same-shape misses is a pure global multi-color map. Forty-eight
+parents from 12 tasks need one color pair applied to only part of its raster
+support; every such mask cuts through both 4- and 8-connected components. The
+remaining 140 parents from 35 tasks need multiple mappings whose output depends
+on position or relation. Therefore neither `ColorMapGridNode` nor a whole-
+component recolor is a justified next wedge. The plausible next interface is a
+typed relation/region proposal that supplies a mask to a local recolor or local
+transition, with its own bounded abstract reachability and equal-cost gate.
+
 ## Interpretation relative to the original motivation
 
 The experiment separates two questions that earlier portfolio experiments

@@ -34,6 +34,15 @@ global recolor and four have incompatible output shapes. One task has no frozen
 scene parent. Thus the null is not an implementation or replay failure: the
 candidate language is too narrow and overlaps the incumbent where it does fit.
 
+A post-hoc, demonstration-only refinement further separates those 188 parents.
+No parent is solvable by merely widening the node to a global multi-color map.
+Forty-eight parents across 12 tasks have one recolor pair but require a spatial
+mask; in every case the changed cells cut through a 4- and 8-connected source
+color component, so whole-component recolor is also insufficient. The other
+140 parents across 35 tasks require multiple spatially conditional mappings.
+This refinement is diagnostic, not a preregistered endpoint, but it rules out
+`global ColorMapGridNode` as the obvious next widening.
+
 ## Fairness and reproducibility
 
 - Every task reserved 2,048 native program trials, matching frozen cold restart.
@@ -51,4 +60,6 @@ This exposed-development null does not disprove typed topology insertion in
 general. It rejects this single global-recolor node over this frozen parent
 distribution as a source of novel natural utility. It does not authorize a
 second node by default; the next proposal must be chosen from the observed
-failure certificates rather than from the query score.
+failure certificates rather than from the query score. If another output-edge
+node is tested, the evidence points to a structured relation/region mask feeding
+a typed local recolor or transition—not a larger unconditional color map.
