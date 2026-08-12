@@ -10,8 +10,9 @@ replayable provider complement and two retrospective recruitment signals.
 
 ## Current Gate
 
-`G-002`: prospectively replicate the frozen anchor-disagreement policy on a new
-family-disjoint cohort with independently rerun recursive and visual providers.
+`G-002`: run `EXP-004`, the preregistered collision-free 98-task prospective
+replication of the frozen anchor-disagreement policy with independently rerun
+recursive and visual providers.
 
 ## Unique Bottleneck
 
@@ -62,15 +63,15 @@ recruitment, while preserving the brain-inspired functional analogy.
 
 ## Next Actions
 
-1. Audit unused ARC-TGI generator families and all historical task IDs before
-   cohort creation.
-2. Freeze cohort, provider configurations, checkpoints, costs, task universe,
-   and unchanged abstention-then-disagreement policy before provider outcomes.
-3. Run the recursive anchor first and freeze the recruitment plan before the
-   visual candidate freeze is opened; then run the visual provider.
-4. Stop the recruitment claim if fresh added-provider strict complement is
-   below 3/100; otherwise score the fixed 30% policy, random controls, and an
-   equal-native-cost comparator.
+1. Commit the `EXP-004` protocol and eligible seal before provider execution.
+2. Compile the 98-task recursive dataset and require a clean two-run boundary
+   audit before using an idle A800.
+3. Freeze the recursive candidate and the 10/20/30/49-task recruitment plan
+   before the visual provider runs.
+4. Run the visual provider with isolated single-GPU semantics and auditable
+   native cost, then authorize oracle opening only after the population freeze.
+5. Stop the recruitment claim if visual strict complement is below 3/98;
+   otherwise test the unchanged 30-task policy and equal-cost controls.
 
 ## Parked
 

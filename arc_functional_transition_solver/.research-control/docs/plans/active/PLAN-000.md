@@ -38,10 +38,13 @@ content-addressed population.
    2/3 exposed marginal tasks.
 3. Completed: add explicit provider abstention without changing v1 artifacts;
    `EXP-002` recovers 2/2 marginal tasks on a disjoint historical split.
-4. Audit unused task identities, then seal a fresh prospective cohort and the
-   unchanged policy before provider outcomes.
-5. Run providers with native cost receipts, open solutions only after candidate
-   freezes, and test complement, recruitment, and equal-cost gates in order.
+4. Completed: derive and freeze the collision-free 98-task `EXP-004` cohort
+   using only blind input identities after `EXP-003` stopped invalid.
+5. Compile and audit the recursive dataset, then freeze its candidates and the
+   unchanged policy before visual execution.
+6. Run the visual provider with native cost receipts, open solutions only after
+   both candidate freezes, and test complement, recruitment, and equal-cost
+   gates in order.
 
 ## Stop and escalation rules
 
