@@ -244,6 +244,19 @@ diagnosis and action-language null; reserve materialization and controller
 training remain closed. See
 `notes/results/stateful-object-graph-rewrite-v3-20260811.md`.
 
+The next bounded topology experiment inserts one finite
+`Grid x Grid x Scene -> Grid` anchor-rasterized delta node.  Its controlled
+semantics, content addressing, typed insertion, and replay pass, but the valid
+dev50 run is a preregistered sensor null: only 1/50 tasks passes strict LODO,
+0/50 creates a novel query frontier, and unique recovery is 0/50.  Exact
+reachability rejects all 48 previously identified spatially conditioned
+single-color parents, showing that independent anchor-color raster marginals
+are too weak.  The active research direction now derives support as the causal
+footprint of a typed intervention on persistent objects, relations, or an AST
+node; it does not add another raster primitive on the exposed cohort.  See
+`notes/results/anchor-rasterized-delta-v0.3-20260812.md` and
+`notes/decisions/RDR-20260812-relational-causal-footprints.md`.
+
 ## Project map
 
 - `brief/`: topic, contribution, and evidence contracts.
