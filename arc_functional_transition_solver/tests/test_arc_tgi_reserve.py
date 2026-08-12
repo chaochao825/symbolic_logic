@@ -4,11 +4,17 @@ import pytest
 
 from afts_arc.arc_tgi_reserve import (
     authorize_oracle_open,
+    authorize_population_oracle_open,
     build_reserve_seal,
     opened_solution_payload,
     reserve_episode_schedule,
 )
 from afts_arc.experiment_safety import canonical_sha256
+from afts_arc.functional_recruitment import freeze_functional_recruitment_plan
+from afts_arc.hypothesis_population import freeze_hypothesis_population
+from afts_arc.nvarc_anchor import freeze_submission
+from afts_arc.varc_blind import build_query_blind_tasks
+from afts_arc.varc_candidates import freeze_varc_predictions
 
 
 def _episode() -> dict[str, object]:
@@ -114,3 +120,83 @@ def test_reserve_schedule_is_balanced_family_disjoint_and_deterministic() -> Non
 
     with pytest.raises(ValueError, match="repeats"):
         reserve_episode_schedule(("family", "family"), episode_count=2)
+
+
+def test_population_oracle_requires_bound_query_blind_population_and_plan() -> None:
+    episode = _episode()
+    challenges, seal = build_reserve_seal(
+        episodes=(episode,),
+        cohort_id="cohort-a",
+        partition_id="partition-a",
+        source_files={"protocol": "sha256"},
+    )
+    attempts = {f"attempt_{rank}": [[rank % 2]] for rank in range(1, 11)}
+    anchor = freeze_submission(
+        challenges=challenges,
+        submission={"reserve-task": [attempts]},
+        cohort_id="cohort-a",
+        anchor_run_id="anchor-run",
+        source_files={"challenges": "a" * 64, "submission": "b" * 64},
+    )
+    _, blind_manifest = build_query_blind_tasks(
+        challenges=challenges,
+        source_cohort_id="cohort-a",
+        source_challenges_sha256="a" * 64,
+    )
+    visual = freeze_varc_predictions(
+        challenges=challenges,
+        blind_manifest=blind_manifest,
+        predictions={"reserve-task": {"0": [[[4]], [[4]], [[3]]]}},
+        provider_contract={"checkpoint": "visual", "seed": 42},
+        source_files={"challenges": "a" * 64, "predictions": "c" * 64},
+    )
+    plan = freeze_functional_recruitment_plan(
+        anchor_freeze=anchor,
+        cohort_id="cohort-a",
+        anchor_provider_name="recursive",
+        recruited_provider_name="visual",
+        budget_percentages=(100,),
+        random_seed_count=2,
+        source_files={
+            "anchor_candidate_freeze": "d" * 64,
+            "anchor_cost_receipt": "e" * 64,
+            "protocol": "f" * 64,
+            "task_universe_manifest": "0" * 64,
+        },
+        task_universe=("reserve-task",),
+    )
+    population = freeze_hypothesis_population(
+        cohort_id="cohort-a",
+        provider_freezes={"recursive": anchor, "visual": visual},
+        provider_families={
+            "recursive": "recursive-test-time-learning",
+            "visual": "visual-test-time-training",
+        },
+        provider_freeze_sha256s={"recursive": "1" * 64, "visual": "2" * 64},
+        provider_receipt_sha256s={"recursive": "3" * 64, "visual": "4" * 64},
+    )
+
+    authorization = authorize_population_oracle_open(
+        seal=seal,
+        anchor_freeze=anchor,
+        recruited_freeze=visual,
+        population=population,
+        recruitment_plan=plan,
+    )
+    assert authorization["authorized"] is True
+    assert authorization["task_count"] == 1
+
+    forged_plan = dict(plan)
+    forged_plan["anchor_candidate_freeze_id"] = "5" * 64
+    forged_body = {
+        key: value for key, value in forged_plan.items() if key != "plan_id"
+    }
+    forged_plan["plan_id"] = canonical_sha256(forged_body)
+    with pytest.raises(ValueError, match="anchor freeze differs"):
+        authorize_population_oracle_open(
+            seal=seal,
+            anchor_freeze=anchor,
+            recruited_freeze=visual,
+            population=population,
+            recruitment_plan=forged_plan,
+        )

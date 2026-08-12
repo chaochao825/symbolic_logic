@@ -9,6 +9,9 @@ from .experiment_safety import canonical_sha256
 
 ARC_TGI_RESERVE_SEAL_SCHEMA = "afts.arc-tgi-reserve-seal/v1"
 ARC_TGI_ORACLE_AUTHORIZATION_SCHEMA = "afts.arc-tgi-oracle-authorization/v1"
+POPULATION_ORACLE_AUTHORIZATION_SCHEMA = (
+    "afts.population-recruitment-oracle-authorization/v1"
+)
 
 
 def reserve_episode_schedule(
@@ -143,6 +146,82 @@ def authorize_oracle_open(
         "observed_opportunities": opportunity_count,
         "task_count": len(sealed_tasks),
         "authorized": True,
+    }
+    return {"authorization_id": canonical_sha256(content), **content}
+
+
+def authorize_population_oracle_open(
+    *,
+    seal: Mapping[str, object],
+    anchor_freeze: Mapping[str, object],
+    recruited_freeze: Mapping[str, object],
+    population: Mapping[str, object],
+    recruitment_plan: Mapping[str, object],
+) -> dict[str, object]:
+    """Authorize gold only after a query-blind population and plan are frozen."""
+
+    from .functional_recruitment import _validated_plan
+    from .hypothesis_population import _validated_population
+    from .nvarc_anchor import _validated_candidates as _validated_nvarc_candidates
+    from .varc_candidates import _validated_freeze as _validated_varc_freeze
+
+    seal_content = {key: value for key, value in seal.items() if key != "seal_id"}
+    if seal["seal_id"] != canonical_sha256(seal_content):
+        raise ValueError("reserve seal ID differs from canonical content")
+    if seal["query_gold_written"] is not False:
+        raise ValueError("reserve seal already exposes query gold")
+    sealed_task_ids = {
+        _object(item, field="sealed task")["task_id"] for item in seal["tasks"]
+    }
+
+    anchor_cohort_id, anchor_tasks = _validated_nvarc_candidates(anchor_freeze)
+    _, recruited_tasks = _validated_varc_freeze(recruited_freeze)
+    if anchor_cohort_id != seal["cohort_id"]:
+        raise ValueError("anchor candidate cohort differs from reserve seal")
+    if not set(anchor_tasks) <= sealed_task_ids:
+        raise ValueError("anchor candidate freeze contains an unsealed task")
+    if set(recruited_tasks) != sealed_task_ids:
+        raise ValueError("recruited candidate task set differs from reserve seal")
+
+    provider_names, population_tasks = _validated_population(population)
+    priority_order, _ = _validated_plan(recruitment_plan)
+    if set(population_tasks) != sealed_task_ids:
+        raise ValueError("population task set differs from reserve seal")
+    if set(priority_order) != sealed_task_ids:
+        raise ValueError("recruitment plan task set differs from reserve seal")
+    if population["cohort_id"] != seal["cohort_id"]:
+        raise ValueError("population cohort differs from reserve seal")
+    if recruitment_plan["cohort_id"] != seal["cohort_id"]:
+        raise ValueError("recruitment plan cohort differs from reserve seal")
+
+    anchor_name = recruitment_plan["anchor_provider_name"]
+    recruited_name = recruitment_plan["recruited_provider_name"]
+    if set(provider_names) != {anchor_name, recruited_name}:
+        raise ValueError("population providers differ from recruitment plan")
+    provider_freeze_ids = {
+        _object(row, field="population provider")["name"]: _object(
+            row, field="population provider"
+        )["candidate_freeze_id"]
+        for row in population["providers"]
+    }
+    expected_freeze_ids = {
+        anchor_name: anchor_freeze["freeze_id"],
+        recruited_name: recruited_freeze["freeze_id"],
+    }
+    if provider_freeze_ids != expected_freeze_ids:
+        raise ValueError("population provider freezes differ from supplied freezes")
+    if recruitment_plan["anchor_candidate_freeze_id"] != anchor_freeze["freeze_id"]:
+        raise ValueError("recruitment plan anchor freeze differs")
+
+    content: dict[str, object] = {
+        "anchor_candidate_freeze_id": anchor_freeze["freeze_id"],
+        "authorized": True,
+        "population_id": population["population_id"],
+        "recruited_candidate_freeze_id": recruited_freeze["freeze_id"],
+        "recruitment_plan_id": recruitment_plan["plan_id"],
+        "schema": POPULATION_ORACLE_AUTHORIZATION_SCHEMA,
+        "seal_id": seal["seal_id"],
+        "task_count": len(sealed_task_ids),
     }
     return {"authorization_id": canonical_sha256(content), **content}
 

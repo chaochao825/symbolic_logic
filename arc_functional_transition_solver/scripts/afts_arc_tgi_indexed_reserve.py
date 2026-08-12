@@ -18,6 +18,7 @@ for path in (SOURCE_ROOT, SCRIPT_ROOT):
 import afts_arc_tgi_cohort as cohort  # noqa: E402
 from afts_arc.arc_tgi_reserve import (  # noqa: E402
     authorize_oracle_open,
+    authorize_population_oracle_open,
     build_reserve_seal,
     opened_solution_payload,
     reserve_episode_schedule,
@@ -209,6 +210,33 @@ def _open_oracle(args: argparse.Namespace) -> dict[str, object]:
     }
 
 
+def _open_population_oracle(args: argparse.Namespace) -> dict[str, object]:
+    episodes = _episodes(args)
+    seal = _read_object(args.seal)
+    if _cohort_id(args, episodes) != seal["cohort_id"]:
+        raise ValueError("regenerated indexed cohort differs from the seal")
+    authorization = authorize_population_oracle_open(
+        seal=seal,
+        anchor_freeze=_read_object(args.anchor_freeze),
+        recruited_freeze=_read_object(args.recruited_freeze),
+        population=_read_object(args.population),
+        recruitment_plan=_read_object(args.recruitment_plan),
+    )
+    solutions = opened_solution_payload(seal=seal, episodes=episodes)
+    args.output_root.mkdir(parents=True, exist_ok=True)
+    atomic_write_json(
+        args.output_root / "population_oracle_authorization.json", authorization
+    )
+    atomic_write_json(args.output_root / "reserve100_solutions.json", solutions)
+    return {
+        "authorization_id": authorization["authorization_id"],
+        "task_count": authorization["task_count"],
+        "solutions_sha256": file_sha256(
+            args.output_root / "reserve100_solutions.json"
+        ),
+    }
+
+
 def _shared(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--arc-tgi-root", type=Path, required=True)
     parser.add_argument("--arc-tgi-commit", required=True)
@@ -229,6 +257,14 @@ def main() -> None:
     open_oracle.add_argument("--candidate-freeze", type=Path, required=True)
     open_oracle.add_argument("--minimum-opportunities", type=int, default=5)
     open_oracle.set_defaults(handler=_open_oracle)
+    open_population = commands.add_parser("open-population-oracle")
+    _shared(open_population)
+    open_population.add_argument("--seal", type=Path, required=True)
+    open_population.add_argument("--anchor-freeze", type=Path, required=True)
+    open_population.add_argument("--recruited-freeze", type=Path, required=True)
+    open_population.add_argument("--population", type=Path, required=True)
+    open_population.add_argument("--recruitment-plan", type=Path, required=True)
+    open_population.set_defaults(handler=_open_population_oracle)
     args = parser.parse_args()
     print(json.dumps(args.handler(args), sort_keys=True, indent=2))
 
